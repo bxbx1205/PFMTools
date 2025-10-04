@@ -57,9 +57,28 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
     }
   }
 
+  const validateStep = (currentStep) => {
+    switch (currentStep) {
+      case 1:
+        return formData.ageGroup && formData.familySize && formData.monthlyIncome
+      case 2:
+        // Step 2 is optional (debt information)
+        return true
+      case 3:
+        // Step 3 validation can be minimal since most fields are optional
+        return true
+      default:
+        return false
+    }
+  }
+
   const handleNext = () => {
-    if (step < 3) {
-      setStep(step + 1)
+    if (validateStep(step)) {
+      if (step < 3) {
+        setStep(step + 1)
+      }
+    } else {
+      alert('Please fill in all required fields before proceeding.')
     }
   }
 
@@ -83,39 +102,35 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
       const monthlyIncome = parseFloat(formData.monthlyIncome) || 0
       const dailyIncome = monthlyIncome > 0 ? Math.round(monthlyIncome / 30) : 0
 
-      // Prepare profile data with all fields
+      // Prepare profile data - ALL FIELDS AS STRINGS to match Profile model
       const profileData = {
-        // Core fields for ML model
+        // Core fields for ML model (as strings)
         ageGroup: formData.ageGroup,
-        familySize: parseInt(formData.familySize) || 1,
-        dailyIncome: dailyIncome,  // Calculated from monthly
-        monthlyIncome: monthlyIncome,
+        familySize: formData.familySize.toString(),
+        dailyIncome: dailyIncome.toString(),
+        monthlyIncome: formData.monthlyIncome.toString(),
         
-        // Debt information (stored in Profile model)
-        hasDebt: formData.debtAmount && parseFloat(formData.debtAmount) > 0,
-        debtAmount: parseFloat(formData.debtAmount) || 0,
-        loanType: formData.loanType || 'None',
-        interestRate: parseFloat(formData.interestRate) || 0,
-        loanTenureMonths: parseInt(formData.loanTenureMonths) || 0,
-        remainingTenureMonths: parseInt(formData.remainingTenureMonths) || 0,
-        monthlyEMI: parseFloat(formData.monthlyEMI) || 0,
+        // Debt information (stored in Profile model as strings)
+        debtAmount: formData.debtAmount.toString(),
+        loanType: formData.loanType || '',
+        interestRate: formData.interestRate.toString(),
+        loanTenureMonths: formData.loanTenureMonths.toString(),
+        remainingTenureMonths: formData.remainingTenureMonths.toString(),
+        monthlyEMI: formData.monthlyEMI.toString(),
         
-        // Additional profile info
+        // Additional profile info (as strings)
         occupation: formData.occupation,
         primaryGoal: formData.primaryGoal,
         riskTolerance: formData.riskTolerance,
-        monthlyBudget: parseFloat(formData.monthlyBudget) || 0,
-        savingsTarget: parseFloat(formData.savingsTarget) || 0,
+        monthlyBudget: formData.monthlyBudget.toString(),
+        savingsTarget: formData.savingsTarget.toString(),
         investmentExperience: formData.investmentExperience,
-        hasExistingInvestments: formData.hasExistingInvestments === 'yes',
+        hasExistingInvestments: formData.hasExistingInvestments,
         
-        // Preferences
+        // Preferences (specific types for these)
         notificationPreferences: formData.notificationPreferences,
         preferredCurrency: formData.preferredCurrency,
-        darkMode: formData.darkMode,
-        
-        // Profile completion flag
-        profileCompleted: true
+        darkMode: formData.darkMode
       }
 
       console.log('Saving profile data:', profileData)
@@ -139,17 +154,15 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
       const profileResult = await profileResponse.json()
       console.log('✓ Profile saved:', profileResult)
 
-      // Save debt data separately if provided
+      // Save debt data separately if provided using individual debt creation
       if (formData.debtAmount && parseFloat(formData.debtAmount) > 0) {
         const debtData = {
-          debts: [{
-            creditorName: formData.loanType || 'Personal Loan',
-            debtType: formData.loanType || 'Personal Loan',
-            currentBalance: parseFloat(formData.debtAmount) || 0,
-            minimumPayment: parseFloat(formData.monthlyEMI) || 0,
-            interestRate: parseFloat(formData.interestRate) || 0,
-            dueDate: new Date(Date.now() + (parseInt(formData.remainingTenureMonths) || 12) * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-          }]
+          creditorName: formData.loanType || 'Initial Loan',
+          debtType: formData.loanType || 'Personal Loan',
+          currentBalance: parseFloat(formData.debtAmount) || 0,
+          minimumPayment: parseFloat(formData.monthlyEMI) || 0,
+          interestRate: parseFloat(formData.interestRate) || 0,
+          dueDate: 'Monthly'
         }
 
         console.log('Saving debt data:', debtData)
@@ -167,7 +180,8 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
           const debtResult = await debtResponse.json()
           console.log('✓ Debt saved:', debtResult)
         } else {
-          console.error('Failed to save debt data')
+          const debtError = await debtResponse.text()
+          console.error('Failed to save debt data:', debtError)
         }
       }
 
@@ -458,12 +472,47 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
             </div>
           )}
 
-          {/* Step 3: Preferences */}
+          {/* Step 3: Preferences & Summary */}
           {step === 3 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-xl font-semibold text-white mb-4">Preferences & Settings</h3>
-                <p className="text-gray-400 mb-6">Customize your experience and notification preferences.</p>
+                <h3 className="text-xl font-semibold text-white mb-4">Preferences & Review</h3>
+                <p className="text-gray-400 mb-6">Customize your experience and review your information.</p>
+              </div>
+
+              {/* Summary Section */}
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6 mb-6">
+                <h4 className="text-blue-400 font-semibold mb-4">📋 Profile Summary</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-400">Age Group:</span>
+                    <span className="text-white ml-2">{formData.ageGroup || 'Not specified'}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Family Size:</span>
+                    <span className="text-white ml-2">{formData.familySize || 'Not specified'}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Monthly Income:</span>
+                    <span className="text-white ml-2">₹{formData.monthlyIncome ? parseInt(formData.monthlyIncome).toLocaleString() : 'Not specified'}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Occupation:</span>
+                    <span className="text-white ml-2">{formData.occupation || 'Not specified'}</span>
+                  </div>
+                  {formData.debtAmount && parseFloat(formData.debtAmount) > 0 && (
+                    <>
+                      <div>
+                        <span className="text-gray-400">Total Debt:</span>
+                        <span className="text-red-400 ml-2">₹{parseInt(formData.debtAmount).toLocaleString()}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400">Monthly EMI:</span>
+                        <span className="text-yellow-400 ml-2">₹{formData.monthlyEMI ? parseInt(formData.monthlyEMI).toLocaleString() : 'Not specified'}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-6">
@@ -575,6 +624,23 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                       <option value="intermediate">Intermediate (2-5 years)</option>
                       <option value="experienced">Experienced (5+ years)</option>
                       <option value="expert">Expert (10+ years)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Do you have existing investments?
+                    </label>
+                    <select
+                      name="hasExistingInvestments"
+                      value={formData.hasExistingInvestments}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                    >
+                      <option value="">Select an option</option>
+                      <option value="yes">Yes, I have investments</option>
+                      <option value="no">No, I'm new to investing</option>
+                      <option value="planning">Planning to start investing</option>
                     </select>
                   </div>
                 </div>

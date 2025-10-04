@@ -10,7 +10,16 @@ export default function Dashboard() {
   const [profile, setProfile] = useState(null)
   const [debts, setDebts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [currentTime, setCurrentTime] = useState(new Date())
   const router = useRouter()
+
+  // Update time every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 60000)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     checkAuth()
@@ -108,163 +117,229 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 flex items-center justify-center relative overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden">
+        {/* Neural Network Background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-900/10 via-transparent to-cyan-900/10"></div>
+          {/* Floating particles */}
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-gradient-to-r from-violet-400/20 to-cyan-400/20 animate-float"
+              style={{
+                width: Math.random() * 4 + 2 + 'px',
+                height: Math.random() * 4 + 2 + 'px',
+                left: Math.random() * 100 + '%',
+                top: Math.random() * 100 + '%',
+                animationDelay: Math.random() * 5 + 's',
+                animationDuration: Math.random() * 10 + 10 + 's'
+              }}
+            />
+          ))}
         </div>
         
-        <div className="text-center relative z-10">
-          {/* SavR Logo Loading */}
-          <div className="relative mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 rounded-3xl shadow-2xl animate-pulse">
-              <span className="text-3xl font-black text-white tracking-tight">S</span>
+        {/* Loading Content */}
+        <div className="relative z-10 text-center">
+          {/* SavR Logo */}
+          <div className="relative mb-8 group">
+            <div className="w-24 h-24 mx-auto relative">
+              {/* Outer ring */}
+              <div className="absolute inset-0 rounded-full border-2 border-gradient-to-r from-violet-500 to-cyan-500 animate-spin"></div>
+              {/* Inner logo */}
+              <div className="absolute inset-2 bg-gradient-to-br from-violet-600 via-purple-600 to-cyan-600 rounded-full flex items-center justify-center shadow-2xl">
+                <span className="text-2xl font-black text-white tracking-tighter">S</span>
+              </div>
+              {/* Pulse effect */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500/30 to-cyan-500/30 animate-ping"></div>
             </div>
-            <div className="absolute -inset-3 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-3xl blur opacity-40 animate-pulse"></div>
           </div>
           
-          {/* Loading Animation */}
-          <div className="relative mb-6">
-            <div className="w-12 h-12 border-4 border-slate-700 border-t-emerald-400 rounded-full animate-spin mx-auto"></div>
-            <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-teal-500 rounded-full animate-ping mx-auto"></div>
+          {/* Loading text */}
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-white tracking-tight">
+              Sav<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">R</span>
+            </h2>
+            <p className="text-slate-400 font-medium">Initializing your financial ecosystem...</p>
+            
+            {/* Progress dots */}
+            <div className="flex justify-center space-x-2 mt-6">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="w-2 h-2 bg-gradient-to-r from-violet-500 to-cyan-500 rounded-full animate-pulse"
+                  style={{ animationDelay: `${i * 0.3}s` }}
+                />
+              ))}
+            </div>
           </div>
-          
-          <h2 className="text-2xl font-bold text-white mb-2">
-            Sav<span className="text-emerald-400">R</span>
-          </h2>
-          <p className="text-slate-300 font-medium animate-pulse">Loading your financial universe...</p>
         </div>
       </div>
     )
   }
 
+  const getGreeting = () => {
+    const hour = currentTime.getHours()
+    if (hour < 12) return 'Good Morning'
+    if (hour < 17) return 'Good Afternoon'
+    return 'Good Evening'
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+    <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        {/* Base gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-900/5 via-slate-900/10 to-cyan-900/5"></div>
+        
+        {/* Animated mesh */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '3s'}}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-rose-500/10 to-pink-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '6s'}}></div>
+        </div>
+
+        {/* Floating particles */}
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-gradient-to-r from-violet-400/10 to-cyan-400/10 animate-float"
+            style={{
+              width: Math.random() * 6 + 3 + 'px',
+              height: Math.random() * 6 + 3 + 'px',
+              left: Math.random() * 100 + '%',
+              top: Math.random() * 100 + '%',
+              animationDelay: Math.random() * 10 + 's',
+              animationDuration: Math.random() * 20 + 15 + 's'
+            }}
+          />
+        ))}
       </div>
 
-      {/* Custom Scrollbar & Enhanced Styles */}
+      {/* Enhanced Styles */}
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
         
         * {
-          font-family: 'Inter', system-ui, -apple-system, sans-serif;
+          font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+          font-feature-settings: "cv02", "cv03", "cv04", "cv11";
         }
         
-        /* Enhanced Webkit Scrollbar */
         ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
+          width: 6px;
+          height: 6px;
         }
         
         ::-webkit-scrollbar-track {
-          background: rgba(15, 23, 42, 0.3);
+          background: rgba(15, 15, 24, 0.8);
           border-radius: 12px;
         }
         
         ::-webkit-scrollbar-thumb {
-          background: linear-gradient(135deg, #10b981, #059669);
+          background: linear-gradient(135deg, #8b5cf6, #06b6d4);
           border-radius: 12px;
-          border: 1px solid rgba(15, 23, 42, 0.2);
-          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+          box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
         }
         
         ::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(135deg, #059669, #047857);
-          box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
+          background: linear-gradient(135deg, #7c3aed, #0891b2);
         }
-        
-        /* Firefox */
-        * {
-          scrollbar-width: thin;
-          scrollbar-color: #10b981 rgba(15, 23, 42, 0.3);
-        }
-        
-        /* Smooth animations */
-        * {
-          scroll-behavior: smooth;
-        }
-        
-        /* Glass morphism enhancement */
+
         .glass-morphism {
-          background: rgba(255, 255, 255, 0.05);
+          background: rgba(15, 15, 24, 0.4);
           backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(139, 92, 246, 0.1);
           box-shadow: 
-            0 8px 32px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
-        
-        /* Glow effects */
-        .glow-emerald {
-          box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+
+        .card-hover {
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        
-        .glow-blue {
-          box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+
+        .card-hover:hover {
+          transform: translateY(-8px) scale(1.02);
+          box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.4),
+            0 0 40px rgba(139, 92, 246, 0.15);
         }
-        
-        /* Animation keyframes */
+
         @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          33% { transform: translateY(-10px) rotate(1deg); }
+          66% { transform: translateY(-5px) rotate(-1deg); }
         }
-        
-        @keyframes slideInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+
+        @keyframes pulse-glow {
+          0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+          50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); }
         }
-        
+
         .animate-float {
-          animation: float 6s ease-in-out infinite;
+          animation: float 10s ease-in-out infinite;
         }
-        
-        .animate-slide-in-up {
-          animation: slideInUp 0.8s ease-out forwards;
+
+        .animate-pulse-glow {
+          animation: pulse-glow 3s ease-in-out infinite;
+        }
+
+        .text-gradient {
+          background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .border-gradient {
+          border-image: linear-gradient(135deg, #8b5cf6, #06b6d4) 1;
         }
       `}</style>
 
-      {/* Enhanced Header */}
-      <header className="glass-morphism border-b border-white/10 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center">
-              {/* SavR Logo */}
+      {/* Floating Header */}
+      <header className="fixed top-6 left-6 right-6 z-50">
+        <div className="glass-morphism rounded-2xl px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              {/* Logo */}
               <div className="relative group">
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 rounded-2xl shadow-xl glow-emerald group-hover:scale-105 transition-all duration-300">
-                  <span className="text-2xl font-black text-white tracking-tight">S</span>
+                <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-xl font-black text-white">S</span>
                 </div>
-                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-cyan-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
               </div>
-              <div className="ml-4">
-                <h1 className="text-3xl font-black text-white tracking-tight">
-                  Sav<span className="text-emerald-400">R</span>
+              
+              {/* Greeting */}
+              <div>
+                <h1 className="text-xl font-bold text-white tracking-tight">
+                  {getGreeting()}, <span className="text-gradient">{user?.name}</span>
                 </h1>
-                <p className="text-sm text-slate-400 font-medium">Smart Financial Management</p>
+                <p className="text-sm text-slate-400 font-medium">
+                  {currentTime.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </p>
               </div>
             </div>
-            <div className="flex items-center space-x-6">
-              <div className="hidden md:flex items-center space-x-3">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <span className="text-slate-300 font-medium">Welcome back, <span className="text-white font-semibold">{user?.name}</span>!</span>
+
+            {/* Actions */}
+            <div className="flex items-center space-x-4">
+              <div className="hidden md:flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm text-slate-300 font-medium">All systems operational</span>
               </div>
+              
               <button
                 onClick={handleLogout}
-                className="group relative overflow-hidden bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                className="group relative overflow-hidden bg-gradient-to-r from-red-500/20 to-rose-500/20 hover:from-red-500/30 hover:to-rose-500/30 border border-red-500/30 text-red-300 hover:text-white px-4 py-2 rounded-xl font-medium transition-all duration-300"
               >
-                <span className="relative z-10">Sign Out</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-rose-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span className="relative z-10 flex items-center space-x-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span>Sign Out</span>
+                </span>
               </button>
             </div>
           </div>
@@ -272,332 +347,423 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        {/* Hero Welcome Section */}
-        <div className="glass-morphism rounded-3xl p-8 mb-10 relative overflow-hidden animate-slide-in-up">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-teal-500/20 rounded-full blur-2xl"></div>
-          <div className="relative">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-4xl font-black text-white mb-3 tracking-tight">
-                  Your Financial <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Universe</span>
-                </h2>
-                <p className="text-xl text-slate-300 font-medium max-w-2xl leading-relaxed">
-                  Take control of your financial future with SavR's intelligent insights and personalized recommendations
-                </p>
-              </div>
-              <div className="hidden lg:block">
-                <div className="relative">
-                  <div className="w-24 h-24 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center animate-float">
-                    <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
+      <main className="relative z-10 pt-32 pb-12 px-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Welcome Hero */}
+          <div className="glass-morphism rounded-3xl p-8 mb-12 card-hover">
+            <div className="relative">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-violet-500/10 to-cyan-500/10 rounded-full blur-2xl"></div>
+              <div className="relative">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                        <div className="w-2 h-2 bg-rose-400 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
+                      </div>
+                      <span className="text-sm text-slate-400 font-medium uppercase tracking-wider">Financial Command Center</span>
+                    </div>
+                    <h2 className="text-5xl font-black text-white mb-4 tracking-tight">
+                      Your Money,<br />
+                      <span className="text-gradient">Simplified</span>
+                    </h2>
+                    <p className="text-xl text-slate-300 font-medium max-w-2xl leading-relaxed">
+                      Advanced analytics and intelligent insights to optimize your financial future
+                    </p>
                   </div>
-                  <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full blur opacity-30 animate-pulse"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {/* Monthly Income */}
-          <div className="group glass-morphism rounded-2xl p-6 hover:scale-105 transition-all duration-300 animate-slide-in-up" style={{animationDelay: '0.1s'}}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="p-3 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Monthly Income</p>
-                  <p className="text-2xl font-black text-white mt-1">
-                    {profile?.monthlyIncome ? formatCurrency(profile.monthlyIncome) : 'Not set'}
-                  </p>
-                </div>
-              </div>
-              <div className="w-3 h-3 bg-emerald-400 rounded-full opacity-80 group-hover:opacity-100 transition-opacity"></div>
-            </div>
-          </div>
-
-          {/* Total Debts */}
-          <div className="group glass-morphism rounded-2xl p-6 hover:scale-105 transition-all duration-300 animate-slide-in-up" style={{animationDelay: '0.2s'}}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="p-3 bg-gradient-to-br from-red-500/20 to-rose-500/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Total Debts</p>
-                  <p className="text-2xl font-black text-white mt-1">
-                    {formatCurrency(debts.reduce((sum, debt) => sum + debt.currentBalance, 0))}
-                  </p>
-                </div>
-              </div>
-              <div className="w-3 h-3 bg-red-400 rounded-full opacity-80 group-hover:opacity-100 transition-opacity"></div>
-            </div>
-          </div>
-
-          {/* Savings Target */}
-          <div className="group glass-morphism rounded-2xl p-6 hover:scale-105 transition-all duration-300 animate-slide-in-up" style={{animationDelay: '0.3s'}}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="p-3 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Savings Target</p>
-                  <p className="text-2xl font-black text-white mt-1">
-                    {profile?.savingsTarget ? formatCurrency(profile.savingsTarget) : 'Not set'}
-                  </p>
-                </div>
-              </div>
-              <div className="w-3 h-3 bg-blue-400 rounded-full opacity-80 group-hover:opacity-100 transition-opacity"></div>
-            </div>
-          </div>
-
-          {/* Risk Level */}
-          <div className="group glass-morphism rounded-2xl p-6 hover:scale-105 transition-all duration-300 animate-slide-in-up" style={{animationDelay: '0.4s'}}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="p-3 bg-gradient-to-br from-purple-500/20 to-violet-500/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Risk Profile</p>
-                  <p className="text-2xl font-black text-white mt-1 capitalize">
-                    {profile?.riskTolerance || 'Not set'}
-                  </p>
-                </div>
-              </div>
-              <div className="w-3 h-3 bg-purple-400 rounded-full opacity-80 group-hover:opacity-100 transition-opacity"></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-          {/* Debts Overview */}
-          <div className="glass-morphism rounded-3xl p-8 animate-slide-in-up" style={{animationDelay: '0.5s'}}>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-white flex items-center">
-                <div className="w-3 h-8 bg-gradient-to-b from-red-400 to-rose-500 rounded-full mr-3"></div>
-                Debt Portfolio
-              </h3>
-              <div className="text-sm text-slate-400 bg-slate-800/50 px-3 py-1 rounded-full">
-                {debts.length} {debts.length === 1 ? 'debt' : 'debts'}
-              </div>
-            </div>
-            {debts.length > 0 ? (
-              <div className="space-y-4 max-h-80 overflow-y-auto">
-                {debts.map((debt, index) => (
-                  <div key={debt.id} className="group bg-slate-800/30 hover:bg-slate-800/50 rounded-2xl p-5 transition-all duration-300 border border-slate-700/50 hover:border-slate-600/50" style={{animationDelay: `${0.1 * index}s`}}>
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center mb-2">
-                          <h4 className="font-bold text-white text-lg">{debt.creditorName}</h4>
-                          <span className="ml-3 text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-full font-medium uppercase tracking-wider">{debt.debtType}</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 mt-4">
-                          <div>
-                            <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Balance</p>
-                            <p className="text-xl font-black text-white">{formatCurrency(debt.currentBalance)}</p>
+                  
+                  {/* Floating Stats Preview */}
+                  <div className="hidden lg:block relative">
+                    <div className="space-y-4">
+                      <div className="bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-500/20 rounded-2xl p-4 backdrop-blur-sm">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
                           </div>
                           <div>
-                            <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Interest Rate</p>
-                            <p className="text-xl font-black text-red-400">{debt.interestRate}%</p>
+                            <p className="text-sm text-slate-400">Total Balance</p>
+                            <p className="text-lg font-bold text-white">
+                              {profile?.monthlyIncome ? formatCurrency(profile.monthlyIncome) : '₹0'}
+                            </p>
                           </div>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-slate-700/50">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-slate-400 font-medium">Monthly Payment</span>
-                            <span className="text-lg font-bold text-white">{formatCurrency(debt.minimumPayment)}</span>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-2xl p-4 backdrop-blur-sm">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-sm text-slate-400">Active Goals</p>
+                            <p className="text-lg font-bold text-white">{debts.length}</p>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-float">
-                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div className="absolute -inset-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full blur opacity-20 animate-pulse"></div>
                 </div>
-                <h4 className="text-xl font-bold text-white mb-2">Debt-Free Zone! 🎉</h4>
-                <p className="text-slate-400 font-medium">You're doing amazing by staying debt-free</p>
               </div>
-            )}
-          </div>
-
-          {/* Profile Summary */}
-          <div className="glass-morphism rounded-3xl p-8 animate-slide-in-up" style={{animationDelay: '0.6s'}}>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-white flex items-center">
-                <div className="w-3 h-8 bg-gradient-to-b from-blue-400 to-cyan-500 rounded-full mr-3"></div>
-                Profile Insights
-              </h3>
-              <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
             </div>
-            {profile ? (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-slate-800/30 rounded-xl p-4">
-                    <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Age Group</p>
-                    <p className="text-lg font-bold text-white">{profile.ageGroup || 'Not specified'}</p>
-                  </div>
-                  <div className="bg-slate-800/30 rounded-xl p-4">
-                    <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Occupation</p>
-                    <p className="text-lg font-bold text-white">{profile.occupation || 'Not specified'}</p>
-                  </div>
-                  <div className="bg-slate-800/30 rounded-xl p-4">
-                    <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Family Size</p>
-                    <p className="text-lg font-bold text-white">{profile.familySize || 'Not specified'}</p>
-                  </div>
-                  <div className="bg-slate-800/30 rounded-xl p-4">
-                    <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Primary Goal</p>
-                    <p className="text-lg font-bold text-white capitalize">{profile.primaryGoal?.replace('-', ' ') || 'Not specified'}</p>
-                  </div>
-                </div>
-                <div className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-2xl p-6 border border-slate-600/30">
-                  <h4 className="text-lg font-bold text-white mb-4 flex items-center">
-                    <svg className="w-5 h-5 text-emerald-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                    </svg>
-                    Financial Snapshot
-                  </h4>
-                  <div className="space-y-3">
-                    {profile.monthlyIncome && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-300 font-medium">Monthly Income</span>
-                        <span className="text-white font-bold text-lg">{formatCurrency(profile.monthlyIncome)}</span>
-                      </div>
-                    )}
-                    {profile.monthlyBudget && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-300 font-medium">Monthly Budget</span>
-                        <span className="text-white font-bold text-lg">{formatCurrency(profile.monthlyBudget)}</span>
-                      </div>
-                    )}
-                    {profile.savingsTarget && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-300 font-medium">Savings Target</span>
-                        <span className="text-white font-bold text-lg">{formatCurrency(profile.savingsTarget)}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <div className="relative">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </div>
-                  <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full blur opacity-20 animate-pulse"></div>
-                </div>
-                <h4 className="text-xl font-bold text-white mb-2">Complete Your Journey</h4>
-                <p className="text-slate-400 font-medium mb-4">Set up your financial profile for personalized insights</p>
-                <button
-                  onClick={() => setShowOnboarding(true)}
-                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
-                >
-                  Get Started
-                </button>
-              </div>
-            )}
           </div>
-        </div>
 
-        {/* Enhanced Quick Actions */}
-        <div className="glass-morphism rounded-3xl p-8 animate-slide-in-up" style={{animationDelay: '0.7s'}}>
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-2xl font-bold text-white flex items-center">
-              <div className="w-3 h-8 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-full mr-3"></div>
-              Quick Actions
-            </h3>
-            <div className="text-sm text-slate-400">Take control of your finances</div>
+          {/* Smart Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+            {/* Financial Overview */}
+            <div className="lg:col-span-8 space-y-8">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Income Card */}
+                <div className="glass-morphism rounded-2xl p-6 card-hover group">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-400 font-medium uppercase tracking-wider">Monthly Income</p>
+                          <div className="flex items-center space-x-2">
+                            <p className="text-2xl font-black text-white">
+                              {profile?.monthlyIncome ? formatCurrency(profile.monthlyIncome) : 'Not set'}
+                            </p>
+                            <div className="flex items-center space-x-1 text-emerald-400 text-sm">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                              </svg>
+                              <span className="font-medium">+12%</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse-glow"></div>
+                  </div>
+                </div>
+
+                {/* Debts Card */}
+                <div className="glass-morphism rounded-2xl p-6 card-hover group">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-400 font-medium uppercase tracking-wider">Total Obligations</p>
+                          <div className="flex items-center space-x-2">
+                            <p className="text-2xl font-black text-white">
+                              {formatCurrency(debts.reduce((sum, debt) => sum + debt.currentBalance, 0))}
+                            </p>
+                            <div className="flex items-center space-x-1 text-red-400 text-sm">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                              </svg>
+                              <span className="font-medium">{debts.length} active</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse-glow"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Debt Portfolio */}
+              <div className="glass-morphism rounded-2xl p-8 card-hover">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-2 h-8 bg-gradient-to-b from-violet-500 to-purple-500 rounded-full"></div>
+                    <h3 className="text-2xl font-bold text-white">Debt Portfolio</h3>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-sm text-slate-400 bg-slate-800/30 px-3 py-1 rounded-full border border-slate-700/50">
+                      {debts.length} {debts.length === 1 ? 'obligation' : 'obligations'}
+                    </div>
+                    <button 
+                      onClick={() => router.push('/loans')}
+                      className="text-sm bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300"
+                    >
+                      Manage
+                    </button>
+                  </div>
+                </div>
+                
+                {debts.length > 0 ? (
+                  <div className="space-y-4 max-h-80 overflow-y-auto">
+                    {debts.map((debt, index) => (
+                      <div key={debt.id} className="bg-gradient-to-r from-slate-800/20 to-slate-700/20 hover:from-slate-800/40 hover:to-slate-700/40 rounded-xl p-6 transition-all duration-300 border border-slate-700/30 hover:border-slate-600/50">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                <span className="text-sm font-bold text-white">{debt.creditorName[0]}</span>
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-white text-lg">{debt.creditorName}</h4>
+                                <span className="text-xs bg-gradient-to-r from-violet-500/20 to-purple-500/20 border border-violet-500/30 text-violet-300 px-2 py-1 rounded-full font-medium uppercase tracking-wider">{debt.debtType}</span>
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-3 gap-6">
+                              <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Outstanding</p>
+                                <p className="text-xl font-black text-white">{formatCurrency(debt.currentBalance)}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Rate</p>
+                                <p className="text-xl font-black text-red-400">{debt.interestRate}%</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Payment</p>
+                                <p className="text-xl font-black text-white">{formatCurrency(debt.minimumPayment)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-16">
+                    <div className="relative mb-6">
+                      <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-green-500 rounded-full flex items-center justify-center mx-auto animate-float">
+                        <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div className="absolute -inset-3 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full blur opacity-20 animate-pulse"></div>
+                    </div>
+                    <h4 className="text-2xl font-bold text-white mb-3">Debt-Free Excellence! 🚀</h4>
+                    <p className="text-slate-400 font-medium max-w-md mx-auto">You're crushing it with zero debt obligations. Keep building that wealth!</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Profile Sidebar */}
+            <div className="lg:col-span-4 space-y-8">
+              {/* Profile Card */}
+              <div className="glass-morphism rounded-2xl p-6 card-hover">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-8 bg-gradient-to-b from-cyan-500 to-blue-500 rounded-full"></div>
+                    <h3 className="text-xl font-bold text-white">Profile</h3>
+                  </div>
+                  <div className="w-3 h-3 bg-cyan-400 rounded-full animate-pulse"></div>
+                </div>
+                
+                {profile ? (
+                  <div className="space-y-6">
+                    {/* Quick Stats */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-gradient-to-br from-slate-800/40 to-slate-700/40 rounded-xl p-4 border border-slate-600/30">
+                        <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Age Group</p>
+                        <p className="text-lg font-bold text-white">{profile.ageGroup || 'Not set'}</p>
+                      </div>
+                      <div className="bg-gradient-to-br from-slate-800/40 to-slate-700/40 rounded-xl p-4 border border-slate-600/30">
+                        <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Risk Level</p>
+                        <p className="text-lg font-bold text-white capitalize">{profile.riskTolerance || 'Moderate'}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Financial Goals */}
+                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-xl p-6">
+                      <h4 className="text-lg font-bold text-white mb-4 flex items-center">
+                        <svg className="w-5 h-5 text-cyan-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Goals & Targets
+                      </h4>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-300 font-medium">Savings Target</span>
+                          <span className="text-white font-bold">
+                            {profile.savingsTarget ? formatCurrency(profile.savingsTarget) : 'Not set'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-300 font-medium">Primary Goal</span>
+                          <span className="text-cyan-300 font-bold capitalize">
+                            {profile.primaryGoal?.replace('-', ' ') || 'Not set'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="relative mb-6">
+                      <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <div className="absolute -inset-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full blur opacity-20 animate-pulse"></div>
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">Setup Profile</h4>
+                    <p className="text-slate-400 font-medium text-sm mb-4">Complete your financial profile</p>
+                    <button
+                      onClick={() => setShowOnboarding(true)}
+                      className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-4 py-2 rounded-xl font-medium transition-all duration-300"
+                    >
+                      Get Started
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Insights */}
+              <div className="glass-morphism rounded-2xl p-6 card-hover">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-2 h-8 bg-gradient-to-b from-rose-500 to-pink-500 rounded-full"></div>
+                  <h3 className="text-xl font-bold text-white">Quick Insights</h3>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/20 rounded-xl">
+                    <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-emerald-300">Spending Trend</p>
+                      <p className="text-white font-bold">12% below budget</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl">
+                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-blue-300">Savings Rate</p>
+                      <p className="text-white font-bold">
+                        {profile?.savingsTarget && profile?.monthlyIncome 
+                          ? `${Math.round((profile.savingsTarget / profile.monthlyIncome) * 100)}%`
+                          : 'Calculate now'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <button 
-              onClick={() => router.push('/transactions')}
-              className="group relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white p-6 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 text-left"
-            >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition-all duration-300"></div>
-              <div className="relative z-10">
-                <div className="bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                </div>
-                <h4 className="font-bold text-lg mb-2">Add Transaction</h4>
-                <p className="text-sm text-emerald-100 font-medium">Record income or expense with smart categorization</p>
+
+          {/* Action Hub */}
+          <div className="glass-morphism rounded-2xl p-8 card-hover">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center space-x-4">
+                <div className="w-2 h-8 bg-gradient-to-b from-rose-500 to-pink-500 rounded-full"></div>
+                <h3 className="text-2xl font-bold text-white">Action Hub</h3>
               </div>
-            </button>
+              <div className="text-sm text-slate-400">Take charge of your finances</div>
+            </div>
             
-            <button 
-              onClick={() => router.push('/loans')}
-              className="group relative overflow-hidden bg-gradient-to-br from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white p-6 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 text-left"
-            >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition-all duration-300"></div>
-              <div className="relative z-10">
-                <div className="bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Add Transaction */}
+              <button 
+                onClick={() => router.push('/transactions')}
+                className="group relative overflow-hidden bg-gradient-to-br from-violet-500/10 to-purple-500/10 hover:from-violet-500/20 hover:to-purple-500/20 border border-violet-500/30 hover:border-violet-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
+              >
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                    </div>
+                    <svg className="w-5 h-5 text-violet-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Record Transaction</h4>
+                  <p className="text-sm text-slate-400 font-medium">Track income, expenses with smart categorization</p>
                 </div>
-                <h4 className="font-bold text-lg mb-2">Manage Loans</h4>
-                <p className="text-sm text-red-100 font-medium">Track multiple loans and debt payments</p>
-              </div>
-            </button>
-            
-            <button 
-              onClick={() => router.push('/analytics')}
-              className="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white p-6 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 text-left"
-            >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition-all duration-300"></div>
-              <div className="relative z-10">
-                <div className="bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
+              </button>
+              
+              {/* Manage Debts */}
+              <button 
+                onClick={() => router.push('/loans')}
+                className="group relative overflow-hidden bg-gradient-to-br from-red-500/10 to-rose-500/10 hover:from-red-500/20 hover:to-rose-500/20 border border-red-500/30 hover:border-red-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
+              >
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-red-500/20 to-rose-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                    </div>
+                    <svg className="w-5 h-5 text-red-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Debt Manager</h4>
+                  <p className="text-sm text-slate-400 font-medium">Optimize payment strategies and track progress</p>
                 </div>
-                <h4 className="font-bold text-lg mb-2">Analytics Hub</h4>
-                <p className="text-sm text-blue-100 font-medium">Deep insights and spending patterns analysis</p>
-              </div>
-            </button>
-            
-            <button 
-              onClick={() => router.push('/settings')}
-              className="group relative overflow-hidden bg-gradient-to-br from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700 text-white p-6 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 text-left"
-            >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition-all duration-300"></div>
-              <div className="relative z-10">
-                <div className="bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
+              </button>
+              
+              {/* Analytics */}
+              <button 
+                onClick={() => router.push('/analytics')}
+                className="group relative overflow-hidden bg-gradient-to-br from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/20 hover:to-blue-500/20 border border-cyan-500/30 hover:border-cyan-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
+              >
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                    <svg className="w-5 h-5 text-cyan-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Analytics Hub</h4>
+                  <p className="text-sm text-slate-400 font-medium">Deep insights and predictive analysis</p>
                 </div>
-                <h4 className="font-bold text-lg mb-2">Profile Settings</h4>
-                <p className="text-sm text-purple-100 font-medium">Customize preferences and financial goals</p>
-              </div>
-            </button>
+              </button>
+              
+              {/* Settings */}
+              <button 
+                onClick={() => router.push('/settings')}
+                className="group relative overflow-hidden bg-gradient-to-br from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 border border-amber-500/30 hover:border-amber-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
+              >
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <svg className="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Preferences</h4>
+                  <p className="text-sm text-slate-400 font-medium">Customize goals and notification settings</p>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </main>
