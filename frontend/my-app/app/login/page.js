@@ -99,7 +99,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
+    <div className="min-h-screen bg-gray-950 relative overflow-hidden">
       {/* Enhanced Styles */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
@@ -110,9 +110,9 @@ export default function LoginPage() {
         }
         
         .glass-morphism {
-          background: rgba(15, 15, 24, 0.4);
+          background: rgba(10, 15, 10, 0.6);
           backdrop-filter: blur(20px);
-          border: 1px solid rgba(139, 92, 246, 0.1);
+          border: 1px solid rgba(34, 197, 94, 0.2);
           box-shadow: 
             0 8px 32px rgba(0, 0, 0, 0.4),
             inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -126,7 +126,7 @@ export default function LoginPage() {
           transform: translateY(-8px) scale(1.02);
           box-shadow: 
             0 20px 60px rgba(0, 0, 0, 0.4),
-            0 0 40px rgba(139, 92, 246, 0.15);
+            0 0 40px rgba(34, 197, 94, 0.15);
         }
 
         @keyframes float {
@@ -137,11 +137,11 @@ export default function LoginPage() {
 
         @keyframes pulse-glow {
           0%, 100% { 
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
             transform: scale(1);
           }
           50% { 
-            box-shadow: 0 0 40px rgba(139, 92, 246, 0.6);
+            box-shadow: 0 0 40px rgba(34, 197, 94, 0.6);
             transform: scale(1.05);
           }
         }
@@ -155,7 +155,7 @@ export default function LoginPage() {
         }
 
         .text-gradient {
-          background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+          background: linear-gradient(135deg, #22c55e, #16a34a);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -167,22 +167,22 @@ export default function LoginPage() {
 
         .input-field:focus {
           transform: translateY(-2px);
-          box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+          box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
         }
       `}</style>
 
       {/* Dynamic Background */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-900/10 via-transparent to-cyan-900/10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-emerald-900/10"></div>
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-float" style={{animationDelay: '3s'}}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-emerald-500/15 to-teal-500/15 rounded-full blur-3xl animate-float" style={{animationDelay: '1.5s'}}></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-lime-500/20 to-green-500/20 rounded-full blur-3xl animate-float" style={{animationDelay: '3s'}}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-emerald-500/15 to-green-500/15 rounded-full blur-3xl animate-float" style={{animationDelay: '1.5s'}}></div>
         </div>
         {[...Array(15)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full bg-gradient-to-r from-violet-400/20 to-cyan-400/20 animate-float"
+            className="absolute rounded-full bg-gradient-to-r from-green-400/20 to-emerald-400/20 animate-float"
             style={{
               width: Math.random() * 6 + 3 + 'px',
               height: Math.random() * 6 + 3 + 'px',
@@ -209,7 +209,7 @@ export default function LoginPage() {
                 priority
               />
             </div>
-            <p className="text-slate-400 font-medium text-lg">
+            <p className="text-green-300 font-medium text-lg">
               Sign in with your mobile number using OTP
             </p>
           </div>
@@ -232,12 +232,12 @@ export default function LoginPage() {
 
             {/* Enhanced Success Message */}
             {success && (
-              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-4 mb-6 backdrop-blur-sm">
+              <div className="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 mb-6 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
-                  <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <p className="text-emerald-400 font-medium">{success}</p>
+                  <p className="text-green-400 font-medium">{success}</p>
                 </div>
               </div>
             )}
@@ -245,32 +245,32 @@ export default function LoginPage() {
             {/* Enhanced Form */}
             <form onSubmit={step === 'enter-phone' ? requestOtp : verifyOtp} className="space-y-6">
               <div className="space-y-3">
-                <label className="block text-sm font-bold text-slate-400 tracking-wide uppercase">Full Name</label>
+                <label className="block text-sm font-bold text-green-300 tracking-wide uppercase">Full Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your full name"
                   disabled={loading || step === 'enter-otp'}
-                  className="w-full px-6 py-4 bg-slate-800/30 border border-slate-600/50 rounded-2xl focus:ring-2 focus:ring-violet-400/50 focus:border-violet-400 text-white placeholder-slate-400 font-medium transition-all duration-300 input-field"
+                  className="w-full px-6 py-4 bg-gray-800/30 border border-green-600/50 rounded-2xl focus:ring-2 focus:ring-green-400/50 focus:border-green-400 text-white placeholder-green-400/60 font-medium transition-all duration-300 input-field"
                 />
               </div>
 
               <div className="space-y-3">
-                <label className="block text-sm font-bold text-slate-400 tracking-wide uppercase">Mobile Number</label>
+                <label className="block text-sm font-bold text-green-300 tracking-wide uppercase">Mobile Number</label>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="e.g. 9876543210"
                   disabled={loading || step === 'enter-otp'}
-                  className="w-full px-6 py-4 bg-slate-800/30 border border-slate-600/50 rounded-2xl focus:ring-2 focus:ring-violet-400/50 focus:border-violet-400 text-white placeholder-slate-400 font-medium transition-all duration-300 input-field"
+                  className="w-full px-6 py-4 bg-gray-800/30 border border-green-600/50 rounded-2xl focus:ring-2 focus:ring-green-400/50 focus:border-green-400 text-white placeholder-green-400/60 font-medium transition-all duration-300 input-field"
                 />
               </div>
 
               {step === 'enter-otp' && (
                 <div className="space-y-3">
-                  <label className="block text-sm font-bold text-slate-400 tracking-wide uppercase">Enter OTP</label>
+                  <label className="block text-sm font-bold text-green-300 tracking-wide uppercase">Enter OTP</label>
                   <input
                     type="text"
                     value={otp}
@@ -278,10 +278,10 @@ export default function LoginPage() {
                     placeholder="6-digit code"
                     disabled={loading}
                     maxLength={6}
-                    className="w-full px-6 py-4 bg-slate-800/30 border border-slate-600/50 rounded-2xl focus:ring-2 focus:ring-violet-400/50 focus:border-violet-400 text-white placeholder-slate-400 text-center text-2xl tracking-widest font-bold transition-all duration-300 input-field"
+                    className="w-full px-6 py-4 bg-gray-800/30 border border-green-600/50 rounded-2xl focus:ring-2 focus:ring-green-400/50 focus:border-green-400 text-white placeholder-green-400/60 text-center text-2xl tracking-widest font-bold transition-all duration-300 input-field"
                   />
                   {devCode && (
-                    <p className="text-xs text-slate-400">Dev OTP: {devCode}</p>
+                    <p className="text-xs text-green-400">Dev OTP: {devCode}</p>
                   )}
                 </div>
               )}
@@ -289,7 +289,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-2xl hover:shadow-violet-500/25 mt-4"
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-2xl hover:shadow-green-500/25 mt-4"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
@@ -306,7 +306,7 @@ export default function LoginPage() {
                   type="button"
                   disabled={loading}
                   onClick={requestOtp}
-                  className="w-full bg-slate-800/30 hover:bg-slate-700/30 border border-slate-600/50 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-300"
+                  className="w-full bg-gray-800/30 hover:bg-gray-700/30 border border-green-600/50 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-300"
                 >
                   Resend OTP
                 </button>
@@ -316,13 +316,13 @@ export default function LoginPage() {
 
           {/* Enhanced Footer */}
           <div className="text-center mt-12 space-y-4">
-            <p className="text-slate-400 font-medium">© 2025 sav₹. All rights reserved.</p>
+            <p className="text-green-300 font-medium">© 2025 sav₹. All rights reserved.</p>
             <div className="flex justify-center space-x-6 text-sm">
-              <button className="text-slate-500 hover:text-violet-400 transition-colors duration-300 font-medium">Privacy Policy</button>
-              <span className="text-slate-600">•</span>
-              <button className="text-slate-500 hover:text-violet-400 transition-colors duration-300 font-medium">Terms of Service</button>
-              <span className="text-slate-600">•</span>
-              <button className="text-slate-500 hover:text-violet-400 transition-colors duration-300 font-medium">Help Center</button>
+              <button className="text-green-400/70 hover:text-green-400 transition-colors duration-300 font-medium">Privacy Policy</button>
+              <span className="text-green-600">•</span>
+              <button className="text-green-400/70 hover:text-green-400 transition-colors duration-300 font-medium">Terms of Service</button>
+              <span className="text-green-600">•</span>
+              <button className="text-green-400/70 hover:text-green-400 transition-colors duration-300 font-medium">Help Center</button>
             </div>
           </div>
         </div>

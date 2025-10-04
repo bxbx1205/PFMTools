@@ -3,7 +3,23 @@
 import Image from "next/image"
 import Link from "next/link"
 
-const navLinks = [{ label: "Features", href: "#features" }]
+const navLinks = [{ 							<div className="pointer-events-none absolute top-1/2 left-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-lime-400/15 blur-2xl" />
+
+							<div className="relative">
+								<p className="text-xs uppercase tracking-[0.3em] text-green-300">Straight from our users</p>
+								<h2 className="mt-5 text-lg font-semibold text-green-50">"This platform feels like a finance co-pilot."</h2>
+								<p className="mt-2 text-xs text-green-200">
+									A subtle, focused overview of the wins our customers rave about—paired with calming color flares.
+								</p>
+								<ul className="mt-6 space-y-3 text-sm text-green-100">
+									{spotlight.map((item) => (
+										<li key={item} className="flex items-start gap-2">
+											<span className="mt-1 text-green-400">✦</span>
+											<span>{item}</span>
+										</li>
+									))}
+								</ul>
+							</div>, href: "#features" }]
 
 const features = [
 	{
@@ -98,18 +114,18 @@ export default function Landing() {
 						<div className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-green-500/20 bg-gray-900/80 p-6 text-left shadow-[0_25px_80px_rgba(34,197,94,0.2)]">
 							<div className="pointer-events-none absolute -top-16 right-10 h-40 w-40 rounded-full bg-green-500/20 blur-3xl" />
 							<div className="pointer-events-none absolute bottom-0 left-0 h-32 w-32 rounded-full bg-emerald-400/15 blur-2xl" />
-							<div className="pointer-events-none absolute top-1/2 left-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-lime-400/15 blur-2xl" />
+							<div className="pointer-events-none absolute top-1/2 left-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/20 blur-2xl" />
 
 							<div className="relative">
-								<p className="text-xs uppercase tracking-[0.3em] text-green-300">Straight from our users</p>
-								<h2 className="mt-5 text-lg font-semibold text-green-50">"This platform feels like a finance co-pilot."</h2>
-								<p className="mt-2 text-xs text-green-200">
+								<p className="text-xs uppercase tracking-[0.3em] text-slate-300">Straight from our users</p>
+								<h2 className="mt-5 text-lg font-semibold text-white">“This platform feels like a finance co-pilot.”</h2>
+								<p className="mt-2 text-xs text-slate-300">
 									A subtle, focused overview of the wins our customers rave about—paired with calming color flares.
 								</p>
-								<ul className="mt-6 space-y-3 text-sm text-green-100">
+								<ul className="mt-6 space-y-3 text-sm text-slate-100">
 									{spotlight.map((item) => (
 										<li key={item} className="flex items-start gap-2">
-											<span className="mt-1 text-green-400">✦</span>
+											<span className="mt-1 text-cyan-300">✦</span>
 											<span>{item}</span>
 										</li>
 									))}

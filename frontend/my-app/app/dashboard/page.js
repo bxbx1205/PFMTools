@@ -119,15 +119,15 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center relative overflow-hidden">
         {/* Neural Network Background */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-900/10 via-transparent to-cyan-900/10"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-emerald-900/10"></div>
           {/* Floating particles */}
           {[...Array(20)].map((_, i) => (
             <div
               key={i}
-              className="absolute rounded-full bg-gradient-to-r from-violet-400/20 to-cyan-400/20 animate-float"
+              className="absolute rounded-full bg-gradient-to-r from-green-400/20 to-emerald-400/20 animate-float"
               style={{
                 width: Math.random() * 4 + 2 + 'px',
                 height: Math.random() * 4 + 2 + 'px',
@@ -146,29 +146,29 @@ export default function Dashboard() {
           <div className="relative mb-8 group">
             <div className="w-24 h-24 mx-auto relative">
               {/* Outer ring */}
-              <div className="absolute inset-0 rounded-full border-2 border-gradient-to-r from-violet-500 to-cyan-500 animate-spin"></div>
+              <div className="absolute inset-0 rounded-full border-2 border-gradient-to-r from-green-500 to-emerald-500 animate-spin"></div>
               {/* Inner logo */}
-              <div className="absolute inset-2 bg-gradient-to-br from-violet-600 via-purple-600 to-cyan-600 rounded-full flex items-center justify-center shadow-2xl">
+              <div className="absolute inset-2 bg-gradient-to-br from-green-600 via-emerald-600 to-lime-600 rounded-full flex items-center justify-center shadow-2xl">
                 <span className="text-2xl font-black text-white tracking-tighter">S</span>
               </div>
               {/* Pulse effect */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500/30 to-cyan-500/30 animate-ping"></div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-green-500/30 to-emerald-500/30 animate-ping"></div>
             </div>
           </div>
           
           {/* Loading text */}
           <div className="space-y-4">
             <h2 className="text-3xl font-black text-white tracking-tight">
-              Sav<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">R</span>
+              Sav<span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">R</span>
             </h2>
-            <p className="text-slate-400 font-medium">Initializing your financial ecosystem...</p>
+            <p className="text-green-300 font-medium">Initializing your financial ecosystem...</p>
             
             {/* Progress dots */}
             <div className="flex justify-center space-x-2 mt-6">
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}
-                  className="w-2 h-2 bg-gradient-to-r from-violet-500 to-cyan-500 rounded-full animate-pulse"
+                  className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full animate-pulse"
                   style={{ animationDelay: `${i * 0.3}s` }}
                 />
               ))}
@@ -187,24 +187,24 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
+    <div className="min-h-screen bg-gray-950 relative overflow-hidden">
       {/* Dynamic Background */}
       <div className="fixed inset-0 pointer-events-none">
         {/* Base gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-900/5 via-slate-900/10 to-cyan-900/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-green-900/5 via-gray-900/10 to-emerald-900/5"></div>
         
         {/* Animated mesh */}
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '3s'}}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-rose-500/10 to-pink-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '6s'}}></div>
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-lime-500/10 to-green-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '3s'}}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '6s'}}></div>
         </div>
 
         {/* Floating particles */}
         {[...Array(15)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full bg-gradient-to-r from-violet-400/10 to-cyan-400/10 animate-float"
+            className="absolute rounded-full bg-gradient-to-r from-green-400/10 to-emerald-400/10 animate-float"
             style={{
               width: Math.random() * 6 + 3 + 'px',
               height: Math.random() * 6 + 3 + 'px',
@@ -237,19 +237,19 @@ export default function Dashboard() {
         }
         
         ::-webkit-scrollbar-thumb {
-          background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+          background: linear-gradient(135deg, #22c55e, #16a34a);
           border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+          box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
         }
         
         ::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(135deg, #7c3aed, #0891b2);
+          background: linear-gradient(135deg, #16a34a, #15803d);
         }
 
         .glass-morphism {
-          background: rgba(15, 15, 24, 0.4);
+          background: rgba(10, 15, 10, 0.6);
           backdrop-filter: blur(20px);
-          border: 1px solid rgba(139, 92, 246, 0.1);
+          border: 1px solid rgba(34, 197, 94, 0.2);
           box-shadow: 
             0 8px 32px rgba(0, 0, 0, 0.4),
             inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -263,7 +263,7 @@ export default function Dashboard() {
           transform: translateY(-8px) scale(1.02);
           box-shadow: 
             0 20px 60px rgba(0, 0, 0, 0.4),
-            0 0 40px rgba(139, 92, 246, 0.15);
+            0 0 40px rgba(34, 197, 94, 0.15);
         }
 
         @keyframes float {
@@ -273,8 +273,8 @@ export default function Dashboard() {
         }
 
         @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
-          50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); }
+          0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+          50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.6); }
         }
 
         .animate-float {
@@ -286,14 +286,14 @@ export default function Dashboard() {
         }
 
         .text-gradient {
-          background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+          background: linear-gradient(135deg, #22c55e, #16a34a);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
 
         .border-gradient {
-          border-image: linear-gradient(135deg, #8b5cf6, #06b6d4) 1;
+          border-image: linear-gradient(135deg, #22c55e, #16a34a) 1;
         }
       `}</style>
 
@@ -304,10 +304,10 @@ export default function Dashboard() {
             <div className="flex items-center space-x-4">
               {/* Logo */}
               <div className="relative group">
-                <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <span className="text-xl font-black text-white">{user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
                 </div>
-                <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-cyan-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
               </div>
               
               {/* Greeting */}
@@ -315,7 +315,7 @@ export default function Dashboard() {
                 <h1 className="text-xl font-bold text-white tracking-tight">
                   {getGreeting()}, <span className="text-gradient">{user?.name}</span>
                 </h1>
-                <p className="text-sm text-slate-400 font-medium">
+                <p className="text-sm text-green-300 font-medium">
                   {currentTime.toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     month: 'short', 
@@ -329,7 +329,7 @@ export default function Dashboard() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowEmailModal(true)}
-                className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-violet-500/20 to-cyan-500/20 hover:from-violet-500/30 hover:to-cyan-500/30 border border-violet-500/30 hover:border-violet-400/50 text-violet-300 hover:text-white px-4 py-2 rounded-xl font-medium transition-all duration-300"
+                className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 border border-green-500/30 hover:border-green-400/50 text-green-300 hover:text-white px-4 py-2 rounded-xl font-medium transition-all duration-300"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -357,34 +357,34 @@ export default function Dashboard() {
       <main className="relative z-10 pt-32 pb-12 px-6">
         <div className="max-w-7xl mx-auto">
           {/* Featured Analytics Hub - Prime Position */}
-          <div className="glass-morphism rounded-3xl p-8 mb-8 card-hover relative overflow-hidden border-2 border-cyan-400/20">
+          <div className="glass-morphism rounded-3xl p-8 mb-8 card-hover relative overflow-hidden border-2 border-emerald-400/20">
             {/* Subtle Background Effects */}
-            <div className="absolute top-0 right-0 w-60 h-60 bg-gradient-to-br from-cyan-500/15 via-blue-500/10 to-violet-500/15 rounded-full blur-3xl opacity-70 animate-float"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-blue-500/10 to-cyan-500/20 rounded-full blur-2xl opacity-40 animate-float" style={{animationDelay: '2s'}}></div>
+            <div className="absolute top-0 right-0 w-60 h-60 bg-gradient-to-br from-emerald-500/15 via-green-500/10 to-lime-500/15 rounded-full blur-3xl opacity-70 animate-float"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-green-500/10 to-emerald-500/20 rounded-full blur-2xl opacity-40 animate-float" style={{animationDelay: '2s'}}></div>
             
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
-                  <div className="w-3 h-10 bg-gradient-to-b from-cyan-400 via-blue-500 to-violet-500 rounded-full animate-pulse-glow"></div>
+                  <div className="w-3 h-10 bg-gradient-to-b from-emerald-400 via-green-500 to-lime-500 rounded-full animate-pulse-glow"></div>
                   <div>
                     <div className="flex items-center space-x-3 mb-2">
                       <h3 className="text-2xl font-black text-white tracking-tight">
                         Analytics <span className="text-gradient">Hub</span>
                       </h3>
-                      <div className="bg-gradient-to-r from-cyan-500 to-violet-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                      <div className="bg-gradient-to-r from-emerald-500 to-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                         AI POWERED
                       </div>
                     </div>
-                    <p className="text-slate-300 font-medium">Your intelligent financial command center</p>
+                    <p className="text-green-200 font-medium">Your intelligent financial command center</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                    <div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                    <div className="w-2 h-2 bg-lime-400 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
                   </div>
-                  <span className="text-sm text-slate-400 bg-slate-800/30 px-3 py-1 rounded-full border border-slate-700/50">
+                  <span className="text-sm text-green-300 bg-gray-800/30 px-3 py-1 rounded-full border border-green-700/50">
                     Live Data
                   </span>
                 </div>
@@ -392,25 +392,25 @@ export default function Dashboard() {
 
               <button 
                 onClick={() => router.push('/analytics')}
-                className="group w-full relative overflow-hidden bg-gradient-to-br from-cyan-500/15 via-blue-500/10 to-violet-500/15 hover:from-cyan-500/25 hover:via-blue-500/20 hover:to-violet-500/25 border border-cyan-400/30 hover:border-cyan-300/50 text-white p-6 rounded-2xl transition-all duration-500 text-left"
+                className="group w-full relative overflow-hidden bg-gradient-to-br from-emerald-500/15 via-green-500/10 to-lime-500/15 hover:from-emerald-500/25 hover:via-green-500/20 hover:to-lime-500/25 border border-emerald-400/30 hover:border-emerald-300/50 text-white p-6 rounded-2xl transition-all duration-500 text-left"
               >
                 {/* Enhanced hover effects */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-blue-500/10 to-violet-500/0 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-400/20 to-violet-400/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-150"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-green-500/10 to-lime-500/0 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-lime-400/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-150"></div>
                 
                 <div className="relative z-10">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-4">
-                      <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 via-blue-500 to-violet-500 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+                      <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 via-green-500 to-lime-500 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
                         <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                       </div>
                       <div>
-                        <h4 className="text-xl font-bold text-white mb-1 group-hover:text-cyan-300 transition-colors">
+                        <h4 className="text-xl font-bold text-white mb-1 group-hover:text-emerald-300 transition-colors">
                           Deep Insights & Predictive Analysis
                         </h4>
-                        <p className="text-slate-300 font-medium">
+                        <p className="text-green-200 font-medium">
                           Unlock AI-driven financial forecasting and smart recommendations
                         </p>
                       </div>
@@ -419,7 +419,7 @@ export default function Dashboard() {
                       <div className="bg-gradient-to-r from-emerald-500 to-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                         FEATURED
                       </div>
-                      <svg className="w-5 h-5 text-cyan-400 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-emerald-400 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
                     </div>
@@ -427,44 +427,44 @@ export default function Dashboard() {
 
                   {/* Compact feature highlights */}
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-gradient-to-br from-cyan-500/15 to-cyan-600/25 border border-cyan-500/30 rounded-lg p-3 group-hover:border-cyan-400/50 transition-all duration-300">
+                    <div className="bg-gradient-to-br from-emerald-500/15 to-emerald-600/25 border border-emerald-500/30 rounded-lg p-3 group-hover:border-emerald-400/50 transition-all duration-300">
                       <div className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-cyan-500 rounded-md flex items-center justify-center">
+                        <div className="w-6 h-6 bg-emerald-500 rounded-md flex items-center justify-center">
                           <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                           </svg>
                         </div>
                         <div>
-                          <p className="text-cyan-300 font-bold text-xs">ML Predictions</p>
-                          <p className="text-slate-300 text-xs">Smart forecasts</p>
+                          <p className="text-emerald-300 font-bold text-xs">ML Predictions</p>
+                          <p className="text-green-200 text-xs">Smart forecasts</p>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-blue-500/15 to-blue-600/25 border border-blue-500/30 rounded-lg p-3 group-hover:border-blue-400/50 transition-all duration-300">
+                    <div className="bg-gradient-to-br from-green-500/15 to-green-600/25 border border-green-500/30 rounded-lg p-3 group-hover:border-green-400/50 transition-all duration-300">
                       <div className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-md flex items-center justify-center">
+                        <div className="w-6 h-6 bg-green-500 rounded-md flex items-center justify-center">
                           <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                         </div>
                         <div>
-                          <p className="text-blue-300 font-bold text-xs">Smart Insights</p>
-                          <p className="text-slate-300 text-xs">AI guidance</p>
+                          <p className="text-green-300 font-bold text-xs">Smart Insights</p>
+                          <p className="text-green-200 text-xs">AI guidance</p>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-violet-500/15 to-violet-600/25 border border-violet-500/30 rounded-lg p-3 group-hover:border-violet-400/50 transition-all duration-300">
+                    <div className="bg-gradient-to-br from-lime-500/15 to-lime-600/25 border border-lime-500/30 rounded-lg p-3 group-hover:border-lime-400/50 transition-all duration-300">
                       <div className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-violet-500 rounded-md flex items-center justify-center">
+                        <div className="w-6 h-6 bg-lime-500 rounded-md flex items-center justify-center">
                           <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                           </svg>
                         </div>
                         <div>
-                          <p className="text-violet-300 font-bold text-xs">Trend Analysis</p>
-                          <p className="text-slate-300 text-xs">Pattern detection</p>
+                          <p className="text-lime-300 font-bold text-xs">Trend Analysis</p>
+                          <p className="text-green-200 text-xs">Pattern detection</p>
                         </div>
                       </div>
                     </div>
@@ -477,23 +477,23 @@ export default function Dashboard() {
           {/* Welcome Hero */}
           <div className="glass-morphism rounded-3xl p-8 mb-12 card-hover">
             <div className="relative">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-violet-500/10 to-cyan-500/10 rounded-full blur-2xl"></div>
+              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full blur-2xl"></div>
               <div className="relative">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                        <div className="w-2 h-2 bg-rose-400 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
+                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                        <div className="w-2 h-2 bg-lime-400 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
                       </div>
-                      <span className="text-sm text-slate-400 font-medium uppercase tracking-wider">Financial Command Center</span>
+                      <span className="text-sm text-green-300 font-medium uppercase tracking-wider">Financial Command Center</span>
                     </div>
                     <h2 className="text-5xl font-black text-white mb-4 tracking-tight">
                       Your Money,<br />
                       <span className="text-gradient">Simplified</span>
                     </h2>
-                    <p className="text-xl text-slate-300 font-medium max-w-2xl leading-relaxed">
+                    <p className="text-xl text-green-200 font-medium max-w-2xl leading-relaxed">
                       Advanced analytics and intelligent insights to optimize your financial future
                     </p>
                   </div>
@@ -501,15 +501,15 @@ export default function Dashboard() {
                   {/* Floating Stats Preview */}
                   <div className="hidden lg:block relative">
                     <div className="space-y-4">
-                      <div className="bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-500/20 rounded-2xl p-4 backdrop-blur-sm">
+                      <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-4 backdrop-blur-sm">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-500 rounded-lg flex items-center justify-center">
+                          <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
                             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                             </svg>
                           </div>
                           <div>
-                            <p className="text-sm text-slate-400">Total Balance</p>
+                            <p className="text-sm text-green-300">Total Balance</p>
                             <p className="text-lg font-bold text-white">
                               {profile?.monthlyIncome ? formatCurrency(profile.monthlyIncome) : '₹0'}
                             </p>
@@ -517,15 +517,15 @@ export default function Dashboard() {
                         </div>
                       </div>
                       
-                      <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-2xl p-4 backdrop-blur-sm">
+                      <div className="bg-gradient-to-r from-emerald-500/10 to-lime-500/10 border border-emerald-500/20 rounded-2xl p-4 backdrop-blur-sm">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-lg flex items-center justify-center">
                             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                             </svg>
                           </div>
                           <div>
-                            <p className="text-sm text-slate-400">Active Goals</p>
+                            <p className="text-sm text-emerald-300">Active Goals</p>
                             <p className="text-lg font-bold text-white">{debts.length}</p>
                           </div>
                         </div>
@@ -608,16 +608,16 @@ export default function Dashboard() {
               <div className="glass-morphism rounded-2xl p-8 card-hover">
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center space-x-4">
-                    <div className="w-2 h-8 bg-gradient-to-b from-violet-500 to-purple-500 rounded-full"></div>
+                    <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full"></div>
                     <h3 className="text-2xl font-bold text-white">Debt Portfolio</h3>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="text-sm text-slate-400 bg-slate-800/30 px-3 py-1 rounded-full border border-slate-700/50">
+                    <div className="text-sm text-green-300 bg-gray-800/30 px-3 py-1 rounded-full border border-green-700/50">
                       {debts.length} {debts.length === 1 ? 'obligation' : 'obligations'}
                     </div>
                     <button 
                       onClick={() => router.push('/loans')}
-                      className="text-sm bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300"
+                      className="text-sm bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300"
                     >
                       Manage
                     </button>
@@ -803,22 +803,22 @@ export default function Dashboard() {
               {/* Add Transaction */}
               <button 
                 onClick={() => router.push('/transactions')}
-                className="group relative overflow-hidden bg-gradient-to-br from-violet-500/10 to-purple-500/10 hover:from-violet-500/20 hover:to-purple-500/20 border border-violet-500/30 hover:border-violet-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
+                className="group relative overflow-hidden bg-gradient-to-br from-green-500/10 to-emerald-500/10 hover:from-green-500/20 hover:to-emerald-500/20 border border-green-500/30 hover:border-green-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
               >
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
                     </div>
-                    <svg className="w-5 h-5 text-violet-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-green-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </div>
                   <h4 className="font-bold text-lg mb-2">Record Transaction</h4>
-                  <p className="text-sm text-slate-400 font-medium">Track income, expenses with smart categorization</p>
+                  <p className="text-sm text-green-300 font-medium">Track income, expenses with smart categorization</p>
                 </div>
               </button>
               
@@ -847,23 +847,23 @@ export default function Dashboard() {
               {/* Settings */}
               <button 
                 onClick={() => router.push('/settings')}
-                className="group relative overflow-hidden bg-gradient-to-br from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 border border-amber-500/30 hover:border-amber-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
+                className="group relative overflow-hidden bg-gradient-to-br from-lime-500/10 to-green-500/10 hover:from-lime-500/20 hover:to-green-500/20 border border-lime-500/30 hover:border-lime-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
               >
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-lime-500/20 to-green-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 bg-gradient-to-br from-lime-500 to-green-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                     </div>
-                    <svg className="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-lime-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </div>
                   <h4 className="font-bold text-lg mb-2">Preferences</h4>
-                  <p className="text-sm text-slate-400 font-medium">Customize goals and notification settings</p>
+                  <p className="text-sm text-green-300 font-medium">Customize goals and notification settings</p>
                 </div>
               </button>
             </div>

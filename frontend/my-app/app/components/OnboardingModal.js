@@ -216,7 +216,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
               <div className="text-sm text-gray-400">Step {step} of 3</div>
               <div className="w-24 bg-gray-700 rounded-full h-2 mt-1">
                 <div 
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${(step / 3) * 100}%` }}
                 ></div>
               </div>
@@ -244,7 +244,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     value={formData.ageGroup}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white"
                   >
                     <option value="">Select age group</option>
                     <option value="18-25">18-25 years</option>
@@ -263,7 +263,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     value={formData.familySize}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white"
                   >
                     <option value="">Select family size</option>
                     <option value="1">Just me</option>
@@ -285,7 +285,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     onChange={handleInputChange}
                     required
                     placeholder="e.g., 50000"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400"
                   />
                   {formData.monthlyIncome && (
                     <p className="text-xs text-gray-400 mt-1">
@@ -304,7 +304,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     value={formData.occupation}
                     onChange={handleInputChange}
                     placeholder="e.g., Software Engineer, Teacher"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400"
                   />
                 </div>
 
@@ -316,7 +316,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     name="primaryGoal"
                     value={formData.primaryGoal}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white"
                   >
                     <option value="">Select your main goal</option>
                     <option value="debt-payoff">Pay off debt</option>
@@ -336,7 +336,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     name="riskTolerance"
                     value={formData.riskTolerance}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white"
                   >
                     <option value="">Select risk level</option>
                     <option value="conservative">Conservative (Low risk)</option>
@@ -373,7 +373,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     value={formData.debtAmount}
                     onChange={handleInputChange}
                     placeholder="e.g., 200000 (Leave empty if no debt)"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400"
                   />
                 </div>
 
@@ -385,7 +385,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     name="loanType"
                     value={formData.loanType}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white"
                   >
                     <option value="">Select loan type</option>
                     <option value="Personal Loan">Personal Loan</option>
@@ -409,7 +409,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     value={formData.interestRate}
                     onChange={handleInputChange}
                     placeholder="e.g., 12.5"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400"
                   />
                 </div>
 
@@ -423,7 +423,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     value={formData.loanTenureMonths}
                     onChange={handleInputChange}
                     placeholder="e.g., 60"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400"
                   />
                 </div>
 
@@ -437,7 +437,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     value={formData.remainingTenureMonths}
                     onChange={handleInputChange}
                     placeholder="e.g., 36"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400"
                   />
                 </div>
 
@@ -451,15 +451,15 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     value={formData.monthlyEMI}
                     onChange={handleInputChange}
                     placeholder="e.g., 4500"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400"
                   />
                 </div>
               </div>
 
               {/* Debt Summary */}
               {formData.debtAmount && formData.monthlyEMI && (
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
-                  <h4 className="text-blue-400 font-medium mb-2">Debt Summary</h4>
+                <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
+                  <h4 className="text-green-400 font-medium mb-2">Debt Summary</h4>
                   <div className="text-sm text-gray-300 space-y-1">
                     <p>Total Debt: ₹{parseInt(formData.debtAmount).toLocaleString()}</p>
                     <p>Monthly Payment: ₹{parseInt(formData.monthlyEMI).toLocaleString()}</p>
@@ -481,8 +481,8 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
               </div>
 
               {/* Summary Section */}
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6 mb-6">
-                <h4 className="text-blue-400 font-semibold mb-4">📋 Profile Summary</h4>
+              <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6 mb-6">
+                <h4 className="text-green-400 font-semibold mb-4">📋 Profile Summary</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-400">Age Group:</span>
@@ -530,7 +530,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                         name="notificationPreferences.email"
                         checked={formData.notificationPreferences.email}
                         onChange={handleInputChange}
-                        className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500"
                       />
                     </div>
                     <div className="flex items-center justify-between">
@@ -543,7 +543,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                         name="notificationPreferences.push"
                         checked={formData.notificationPreferences.push}
                         onChange={handleInputChange}
-                        className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500"
                       />
                     </div>
                     <div className="flex items-center justify-between">
@@ -556,7 +556,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                         name="notificationPreferences.sms"
                         checked={formData.notificationPreferences.sms}
                         onChange={handleInputChange}
-                        className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500"
                       />
                     </div>
                   </div>
@@ -572,7 +572,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                       name="preferredCurrency"
                       value={formData.preferredCurrency}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white"
                     >
                       <option value="INR">Indian Rupee (₹)</option>
                       <option value="USD">US Dollar ($)</option>
@@ -591,7 +591,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                       value={formData.monthlyBudget}
                       onChange={handleInputChange}
                       placeholder="e.g., 30000"
-                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400"
                     />
                   </div>
 
@@ -605,7 +605,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                       value={formData.savingsTarget}
                       onChange={handleInputChange}
                       placeholder="e.g., 10000"
-                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400"
                     />
                   </div>
 
@@ -617,7 +617,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                       name="investmentExperience"
                       value={formData.investmentExperience}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white"
                     >
                       <option value="">Select experience level</option>
                       <option value="beginner">Beginner (0-1 years)</option>
@@ -635,7 +635,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                       name="hasExistingInvestments"
                       value={formData.hasExistingInvestments}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 text-white"
                     >
                       <option value="">Select an option</option>
                       <option value="yes">Yes, I have investments</option>
@@ -656,7 +656,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     name="darkMode"
                     checked={formData.darkMode}
                     onChange={handleInputChange}
-                    className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500"
                   />
                 </div>
               </div>

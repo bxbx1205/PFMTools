@@ -322,9 +322,9 @@ export default function Loans() {
   const getDebtTypeColor = (type) => {
     const colors = {
       'Credit Card': 'bg-red-500',
-      'Personal Loan': 'bg-blue-500',
+      'Personal Loan': 'bg-green-500',
       'Home Loan': 'bg-green-500',
-      'Car Loan': 'bg-purple-500',
+      'Car Loan': 'bg-emerald-500',
       'Student Loan': 'bg-yellow-500',
       'Business Loan': 'bg-indigo-500',
       'Other': 'bg-gray-500'
@@ -523,7 +523,7 @@ export default function Loans() {
                 setEditingLoan(null)
                 setShowAddModal(true)
               }}
-              className="group relative overflow-hidden bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl focus-outline"
+              className="group relative overflow-hidden bg-gradient-to-r from-green-500 to-emerald-500 hover:from-violet-600 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl focus-outline"
               aria-label="Add new debt"
             >
               <span className="relative z-10 flex items-center space-x-2">
@@ -602,7 +602,7 @@ export default function Loans() {
             <div className="glass-morphism rounded-2xl p-6 card-hover group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
@@ -612,7 +612,7 @@ export default function Loans() {
                     <p className="text-2xl font-black text-white">₹{calculateTotalMinPayments().toLocaleString()}</p>
                   </div>
                 </div>
-                <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
               </div>
             </div>
 
@@ -653,7 +653,7 @@ export default function Loans() {
                   setEditingLoan(null)
                   setShowAddModal(true)
                 }}
-                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl focus-outline"
+                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-violet-600 hover:to-purple-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl focus-outline"
               >
                 Calculate Your First EMI
               </button>
@@ -662,7 +662,7 @@ export default function Loans() {
             <div className="space-y-6">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-4">
-                  <div className="w-2 h-8 bg-gradient-to-b from-violet-500 to-purple-500 rounded-full"></div>
+                  <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full"></div>
                   <h2 className="text-2xl font-bold text-white">Saved Loan Plans</h2>
                 </div>
                 <div className="text-sm text-slate-400 bg-slate-800/30 px-3 py-1 rounded-full border border-slate-700/50">
@@ -683,7 +683,7 @@ export default function Loans() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleEdit(loan)}
-                          className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-400/10 rounded-xl transition-all duration-300 focus-outline"
+                          className="p-2 text-slate-400 hover:text-blue-400 hover:bg-green-400/10 rounded-xl transition-all duration-300 focus-outline"
                           aria-label={`Edit ${loan.creditorName} debt`}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -976,7 +976,7 @@ export default function Loans() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-6 py-4 bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl focus-outline disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-violet-600 hover:to-purple-600 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl focus-outline disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={submitting}
                 >
                   {submitting ? (
