@@ -704,126 +704,112 @@ app.delete('/api/user/delete', authenticateToken, async (req, res) => {
 });
 
 // ============================================
-// ML PREDICTION ROUTES
+// ML PREDICTION ROUTES (WEEKLY ONLY)
 // ============================================
 
-// ML Prediction Routes
-app.post('/api/predict/daily-expense', authenticateToken, async (req, res) => {
+// Test ML Service Connection (No auth required for testing)
+app.get('/api/test-ml', async (req, res) => {
   try {
-    const userId = req.user.id;
+    console.log('Testing ML service connection...');
     
-    // Get user profile and past expenses
-    const profile = await Profile.findOne({ user: userId }).lean();
-    const pastExpenses = await DailyExpense.find({ user: userId })
-      .sort({ date: -1 })
-      .limit(30)
-      .lean();
-
-    // Calculate past 7-day average
-    const recent7Days = pastExpenses.slice(0, 7);
-    const past7DayAvg = recent7Days.length > 0 
-      ? recent7Days.reduce((sum, exp) => sum + (exp.totalSpend || 0), 0) / recent7Days.length
-      : 1000; // default
-
-    // Prepare data for ML service
-    const mlData = {
-      age_group: profile?.ageGroup || '26-35',
-      family_size: parseInt(profile?.familySize) || 1,
-      daily_income: parseFloat(profile?.dailyIncome) || parseFloat(profile?.monthlyIncome) / 30 || 1000,
-      food: recent7Days.length > 0 ? recent7Days.reduce((sum, exp) => sum + (exp.food || 0), 0) / recent7Days.length : 300,
-      transport: recent7Days.length > 0 ? recent7Days.reduce((sum, exp) => sum + (exp.transport || 0), 0) / recent7Days.length : 200,
-      bills: recent7Days.length > 0 ? recent7Days.reduce((sum, exp) => sum + (exp.bills || 0), 0) / recent7Days.length : 400,
-      health: recent7Days.length > 0 ? recent7Days.reduce((sum, exp) => sum + (exp.health || 0), 0) / recent7Days.length : 100,
-      education: recent7Days.length > 0 ? recent7Days.reduce((sum, exp) => sum + (exp.education || 0), 0) / recent7Days.length : 50,
-      entertainment: recent7Days.length > 0 ? recent7Days.reduce((sum, exp) => sum + (exp.entertainment || 0), 0) / recent7Days.length : 200,
-      other: recent7Days.length > 0 ? recent7Days.reduce((sum, exp) => sum + (exp.other || 0), 0) / recent7Days.length : 150,
-      debt_amount: parseFloat(profile?.debtAmount) || 0,
-      monthly_emi: parseFloat(profile?.monthlyEMI) || 0,
-      loan_type: profile?.loanType || 'None',
-      interest_rate: parseFloat(profile?.interestRate) || 0,
-      past_7day_avg: past7DayAvg
-    };
-
-    // Call ML service
-    try {
-      const mlResponse = await fetch('http://localhost:8000/predict', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(mlData)
-      });
-
-      if (!mlResponse.ok) {
-        throw new Error('ML service unavailable');
-      }
-
-      const mlResult = await mlResponse.json();
-      
-      if (mlResult.success) {
-        res.json({
-          success: true,
-          prediction: {
-            predicted_spend: mlResult.predicted_spend,
-            model_accuracy: mlResult.model_accuracy,
-            confidence_level: 'High',
-            factors: {
-              historical_pattern: past7DayAvg,
-              income_ratio: ((mlResult.predicted_spend / (parseFloat(profile?.dailyIncome) || 1000)) * 100).toFixed(1),
-              debt_impact: parseFloat(profile?.monthlyEMI) > 0 ? 'High' : 'Low'
-            },
-            recommendations: generateRecommendations(mlResult.predicted_spend, mlData)
-          },
-          input_data: mlData,
-          historical_data: {
-            past_7day_avg: past7DayAvg,
-            past_30day_trend: pastExpenses.length > 0 ? 'Available' : 'Limited data'
-          }
-        });
-      } else {
-        throw new Error(mlResult.error || 'Prediction failed');
-      }
-    } catch (mlError) {
-      console.log('ML service error, using fallback prediction:', mlError.message);
-      
-      // Fallback prediction logic
-      const fallbackPrediction = calculateFallbackPrediction(mlData, pastExpenses);
-      
-      res.json({
-        success: true,
-        prediction: {
-          predicted_spend: fallbackPrediction.amount,
-          model_accuracy: 85.0,
-          confidence_level: 'Medium',
-          factors: {
-            historical_pattern: past7DayAvg,
-            income_ratio: ((fallbackPrediction.amount / (parseFloat(profile?.dailyIncome) || 1000)) * 100).toFixed(1),
-            debt_impact: parseFloat(profile?.monthlyEMI) > 0 ? 'High' : 'Low'
-          },
-          recommendations: generateRecommendations(fallbackPrediction.amount, mlData)
-        },
-        input_data: mlData,
-        historical_data: {
-          past_7day_avg: past7DayAvg,
-          past_30day_trend: pastExpenses.length > 0 ? 'Available' : 'Limited data'
-        },
-        fallback_used: true
+    // Test ML service health
+    const healthResponse = await fetch('http://localhost:8000/health');
+    console.log('Health response status:', healthResponse.status);
+    
+    if (!healthResponse.ok) {
+      return res.json({
+        status: 'ML service unreachable',
+        error: `Health check failed with status ${healthResponse.status}`
       });
     }
-
+    
+    const healthData = await healthResponse.json();
+    console.log('Health data:', healthData);
+    
+    // Test prediction with sample ACTUAL user data (not random)
+    const testData = {
+      age_group: '26-35',
+      family_size: 2,
+      daily_income: 2000,
+      past_7day_avg: 1500,
+      // Sample actual expense categories (not defaults)
+      food: 450,
+      transport: 250,
+      bills: 600,
+      health: 80,
+      education: 50,
+      entertainment: 120,
+      other: 100,
+      debt_amount: 50000,
+      monthly_emi: 5000,
+      loan_type: 'Personal',
+      interest_rate: 12.5
+    };
+    
+    console.log('Testing prediction with ACTUAL data:', testData);
+    
+    // Test the data reception endpoint first
+    const dataTestResponse = await fetch('http://localhost:8000/test-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(testData)
+    });
+    
+    let dataTestResult = null;
+    if (dataTestResponse.ok) {
+      dataTestResult = await dataTestResponse.json();
+      console.log('Data test result:', dataTestResult);
+    }
+    
+    // Test actual prediction
+    const predictionResponse = await fetch('http://localhost:8000/predict-weekly', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(testData)
+    });
+    
+    console.log('Prediction response status:', predictionResponse.status);
+    
+    if (!predictionResponse.ok) {
+      const errorText = await predictionResponse.text();
+      console.log('Prediction error:', errorText);
+      return res.json({
+        status: 'ML prediction failed',
+        health: healthData,
+        data_test: dataTestResult,
+        prediction_error: errorText
+      });
+    }
+    
+    const predictionData = await predictionResponse.json();
+    console.log('Prediction data received:', predictionData);
+    
+    res.json({
+      status: 'ML service working with real data',
+      health: healthData,
+      data_test: dataTestResult,
+      sample_prediction: predictionData,
+      test_data_sent: testData
+    });
+    
   } catch (error) {
-    console.error('Prediction error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to generate prediction',
+    console.error('ML test error:', error);
+    res.json({
+      status: 'ML service connection error',
       error: error.message
     });
   }
 });
 
+// ML Weekly Prediction Route
 app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
+    console.log('Prediction request for user:', userId);
     
     // Get user profile and past expenses
     const profile = await Profile.findOne({ user: userId }).lean();
@@ -832,37 +818,114 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
       .limit(30)
       .lean();
 
-    // Calculate past 7-day average
-    const recent7Days = pastExpenses.slice(0, 7);
-    const past7DayAvg = recent7Days.length > 0 
-      ? recent7Days.reduce((sum, exp) => sum + (exp.totalSpend || 0), 0) / recent7Days.length
-      : 1000;
+    console.log('Profile found:', !!profile);
+    console.log('Past expenses count:', pastExpenses.length);
 
-    // Prepare data for ML service
+    // Check if user has at least 7 days of expense data
+    if (pastExpenses.length < 7) {
+      return res.json({
+        success: false,
+        message: 'Insufficient data for predictions',
+        error: `Please track your expenses for at least 7 days to get AI predictions. You have tracked ${pastExpenses.length} days so far.`,
+        required_days: 7,
+        current_days: pastExpenses.length,
+        days_remaining: 7 - pastExpenses.length
+      });
+    }
+
+    // Calculate past 7-day average and category averages
+    const recent7Days = pastExpenses.slice(0, 7);
+    const past7DayAvg = recent7Days.reduce((sum, exp) => sum + (exp.totalSpend || 0), 0) / recent7Days.length;
+
+    // Calculate category averages from actual expenses (last 7 days)
+    const categoryAverages = {
+      food: recent7Days.reduce((sum, exp) => sum + (exp.food || 0), 0) / recent7Days.length,
+      transport: recent7Days.reduce((sum, exp) => sum + (exp.transport || 0), 0) / recent7Days.length,
+      bills: recent7Days.reduce((sum, exp) => sum + (exp.bills || 0), 0) / recent7Days.length,
+      health: recent7Days.reduce((sum, exp) => sum + (exp.health || 0), 0) / recent7Days.length,
+      education: recent7Days.reduce((sum, exp) => sum + (exp.education || 0), 0) / recent7Days.length,
+      entertainment: recent7Days.reduce((sum, exp) => sum + (exp.entertainment || 0), 0) / recent7Days.length,
+      other: recent7Days.reduce((sum, exp) => sum + (exp.other || 0), 0) / recent7Days.length
+    };
+
+    console.log('Past 7-day average:', past7DayAvg);
+    console.log('Category averages from actual expenses:', categoryAverages);
+
+    // Validate that user has actually entered meaningful expense data
+    const totalCategorySpend = Object.values(categoryAverages).reduce((sum, val) => sum + val, 0);
+    if (totalCategorySpend === 0) {
+      return res.json({
+        success: false,
+        message: 'No expense data found',
+        error: 'Please enter actual expense amounts in your daily tracking to get predictions.',
+        required_days: 7,
+        current_days: pastExpenses.length,
+        has_data: false
+      });
+    }
+
+    // Get user's debt information
+    const userDebts = await Debt.find({ user: userId }).lean();
+    const totalDebtAmount = userDebts.reduce((sum, debt) => sum + (debt.totalAmount || 0), 0);
+    const monthlyEMI = userDebts.reduce((sum, debt) => sum + (debt.monthlyEMI || 0), 0);
+    const primaryLoanType = userDebts.length > 0 ? userDebts[0].loanType || 'None' : 'None';
+    const avgInterestRate = userDebts.length > 0 
+      ? userDebts.reduce((sum, debt) => sum + (debt.interestRate || 0), 0) / userDebts.length 
+      : 0;
+
+    // Prepare comprehensive data for ML service
     const mlData = {
       age_group: profile?.ageGroup || '26-35',
       family_size: parseInt(profile?.familySize) || 1,
       daily_income: parseFloat(profile?.dailyIncome) || parseFloat(profile?.monthlyIncome) / 30 || 1000,
-      past_7day_avg: past7DayAvg
+      past_7day_avg: past7DayAvg,
+      // Category spending data from ACTUAL user expenses
+      food: categoryAverages.food,
+      transport: categoryAverages.transport,
+      bills: categoryAverages.bills,
+      health: categoryAverages.health,
+      education: categoryAverages.education,
+      entertainment: categoryAverages.entertainment,
+      other: categoryAverages.other,
+      // Debt information
+      debt_amount: totalDebtAmount,
+      monthly_emi: monthlyEMI,
+      loan_type: primaryLoanType,
+      interest_rate: avgInterestRate
     };
 
+    console.log('ML Data prepared:', mlData);
+
     try {
+      console.log('Calling ML service at http://localhost:8000/predict-weekly');
+      
+      // Add timeout to the fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const mlResponse = await fetch('http://localhost:8000/predict-weekly', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(mlData)
+        body: JSON.stringify(mlData),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+      console.log('ML Response status:', mlResponse.status, mlResponse.ok);
+
       if (!mlResponse.ok) {
-        throw new Error('ML service unavailable');
+        const errorText = await mlResponse.text();
+        console.log('ML Response error:', errorText);
+        throw new Error(`ML service unavailable - Status: ${mlResponse.status}`);
       }
 
       const mlResult = await mlResponse.json();
+      console.log('ML Result:', mlResult);
       
       if (mlResult.success) {
-        res.json({
+        const response = {
           success: true,
           weekly_predictions: mlResult.weekly_predictions,
           total_weekly_spend: mlResult.total_weekly_spend,
@@ -873,21 +936,23 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
             savings_opportunity: mlResult.total_weekly_spend * 0.1,
             budget_status: mlResult.total_weekly_spend > (parseFloat(profile?.monthlyBudget) || 10000) / 4 ? 'Over budget' : 'Within budget'
           }
-        });
+        };
+        console.log('Sending successful response:', response);
+        res.json(response);
       } else {
         throw new Error(mlResult.error || 'Weekly prediction failed');
       }
     } catch (mlError) {
       console.log('ML service error, using fallback weekly prediction:', mlError.message);
       
-      // Fallback weekly prediction
-      const weeklyPredictions = generateFallbackWeeklyPrediction(past7DayAvg);
+      // Fallback weekly prediction using actual category data
+      const weeklyPredictions = generateFallbackWeeklyPrediction(past7DayAvg, categoryAverages);
       
-      res.json({
+      const fallbackResponse = {
         success: true,
         weekly_predictions: weeklyPredictions.predictions,
         total_weekly_spend: weeklyPredictions.total,
-        model_accuracy: 85.0,
+        model_accuracy: 75.0,
         confidence_level: 'Medium',
         insights: {
           weekend_pattern: 'Higher spending expected on weekends',
@@ -895,11 +960,15 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
           budget_status: weeklyPredictions.total > (parseFloat(profile?.monthlyBudget) || 10000) / 4 ? 'Over budget' : 'Within budget'
         },
         fallback_used: true
-      });
+      };
+      
+      console.log('Sending fallback response:', fallbackResponse);
+      res.json(fallbackResponse);
     }
 
   } catch (error) {
     console.error('Weekly prediction error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: 'Failed to generate weekly prediction',
@@ -941,15 +1010,58 @@ function calculateFallbackPrediction(userData, pastExpenses) {
   };
 }
 
-function generateFallbackWeeklyPrediction(dailyAvg) {
+function generateFallbackWeeklyPrediction(dailyAvg, categoryAverages = null) {
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const weekendMultiplier = [1.0, 0.9, 0.85, 0.9, 1.1, 1.3, 1.2]; // Weekend higher
   
-  const predictions = daysOfWeek.map((day, index) => ({
-    date: new Date(Date.now() + (index + 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    day_of_week: day,
-    predicted_spend: Math.round(dailyAvg * weekendMultiplier[index])
-  }));
+  // Calculate start date for next week (next Monday)
+  const today = new Date();
+  const daysUntilMonday = (7 - today.getDay() + 1) % 7 || 7; // getDay() returns 0-6, Monday = 1
+  const nextMonday = new Date(today.getTime() + daysUntilMonday * 24 * 60 * 60 * 1000);
+  
+  const predictions = daysOfWeek.map((day, index) => {
+    let dayPrediction = dailyAvg;
+    
+    // If we have category data, use it for more accurate predictions
+    if (categoryAverages) {
+      const isWeekend = day === 'Saturday' || day === 'Sunday';
+      
+      // Adjust categories based on day type
+      if (isWeekend) {
+        // Weekend: more entertainment and food, less transport
+        dayPrediction = 
+          categoryAverages.food * 1.2 +
+          categoryAverages.transport * 0.7 +
+          categoryAverages.entertainment * 1.4 +
+          categoryAverages.bills +
+          categoryAverages.health +
+          categoryAverages.education +
+          categoryAverages.other * 1.1;
+      } else {
+        // Weekday: more transport, normal food, less entertainment
+        dayPrediction = 
+          categoryAverages.food * 1.0 +
+          categoryAverages.transport * 1.2 +
+          categoryAverages.entertainment * 0.8 +
+          categoryAverages.bills +
+          categoryAverages.health +
+          categoryAverages.education +
+          categoryAverages.other;
+      }
+    } else {
+      // Fallback to simple multiplier
+      const weekendMultiplier = [1.0, 0.9, 0.85, 0.9, 1.1, 1.3, 1.2]; // Weekend higher
+      dayPrediction = dailyAvg * weekendMultiplier[index];
+    }
+    
+    // Calculate the actual future date
+    const predictionDate = new Date(nextMonday.getTime() + index * 24 * 60 * 60 * 1000);
+    
+    return {
+      date: predictionDate.toISOString().split('T')[0],
+      day_of_week: day,
+      predicted_spend: Math.round(dayPrediction)
+    };
+  });
   
   const total = predictions.reduce((sum, p) => sum + p.predicted_spend, 0);
   

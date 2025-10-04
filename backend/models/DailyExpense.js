@@ -25,7 +25,7 @@ const dailyExpenseSchema = new mongoose.Schema(
     other: { type: Number, default: 0, min: 0 },
     
     // Auto-calculated (used by ML)
-    totalSpend: { type: Number, required: true },
+    totalSpend: { type: Number},
     
     // Optional fields (used by ML)
     savings: { type: Number, default: 0 },
