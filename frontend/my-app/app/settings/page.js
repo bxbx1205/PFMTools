@@ -647,24 +647,7 @@ export default function Settings() {
                     </select>
                   </div>
 
-                  <div className="flex items-center justify-between p-6 bg-slate-800/30 rounded-xl">
-                    <div>
-                      <h4 className="text-lg font-semibold text-white">Dark Mode</h4>
-                      <p className="text-slate-400">Toggle dark theme</p>
-                    </div>
-                    <button
-                      onClick={() => setProfileForm({...profileForm, darkMode: !profileForm.darkMode})}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                        profileForm.darkMode ? 'bg-purple-500' : 'bg-slate-600'
-                      }`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          profileForm.darkMode ? 'translate-x-6' : 'translate-x-1'
-                        }`}
-                      />
-                    </button>
-                  </div>
+                  
                 </div>
               </div>
             )}

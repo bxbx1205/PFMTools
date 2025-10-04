@@ -465,28 +465,27 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 // Debt Routes (MongoDB)
 app.post('/api/debts', authenticateToken, async (req, res) => {
   try {
-    const debts = req.body.debts || [];
-    // Remove existing debts for this user and insert new list
-    await Debt.deleteMany({ user: req.user.id });
-    const docs = debts.map(d => ({
+    // Handle single debt creation (for individual loan/debt addition)
+    const debtData = {
       user: req.user.id,
-      creditorName: d.creditorName,
-      debtType: d.debtType,
-      currentBalance: parseFloat(d.currentBalance) || 0,
-      minimumPayment: parseFloat(d.minimumPayment) || 0,
-      interestRate: parseFloat(d.interestRate) || 0,
-      dueDate: d.dueDate,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }));
-    let inserted = [];
-    if (docs.length) {
-      inserted = await Debt.insertMany(docs);
-    }
-    res.json({ message: 'Debts saved successfully', debts: inserted });
+      creditorName: req.body.creditorName,
+      debtType: req.body.debtType,
+      currentBalance: parseFloat(req.body.currentBalance) || 0,
+      minimumPayment: parseFloat(req.body.minimumPayment) || 0,
+      interestRate: parseFloat(req.body.interestRate) || 0,
+      dueDate: req.body.dueDate,
+    };
+
+    const newDebt = new Debt(debtData);
+    const savedDebt = await newDebt.save();
+    
+    res.json({ 
+      message: 'Debt added successfully', 
+      debt: savedDebt 
+    });
   } catch (error) {
-    console.error('Debts save error:', error);
-    res.status(500).json({ message: 'Server error saving debts' });
+    console.error('Debt creation error:', error);
+    res.status(500).json({ message: 'Server error adding debt' });
   }
 });
 
