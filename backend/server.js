@@ -6,10 +6,14 @@ const fs = require('fs').promises;
 const path = require('path');
 const mongoose = require('mongoose');
 const connectDB = require('./db');
+
+// Import all models (ONLY ONCE)
 const User = require('./models/User');
 const Profile = require('./models/Profile');
 const Debt = require('./models/Debt');
 const Transaction = require('./models/Transaction');
+const DailyExpense = require('./models/DailyExpense');
+
 require('dotenv').config();
 
 const app = express();
@@ -708,4 +712,212 @@ connectDB().then(async () => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+// ============================================
+// DAILY EXPENSES ROUTES
+// ============================================
+
+// Import DailyExpense model at the top with other models
+
+
+// Get all expenses for user (with limit)
+app.get('/api/daily-expenses', authenticateToken, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+    
+    const expenses = await DailyExpense.find({ user: req.user.id })
+      .sort({ date: -1 })
+      .limit(limit)
+      .lean();
+    
+    res.json({
+      success: true,
+      expenses
+    });
+  } catch (error) {
+    console.error('Error fetching expenses:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch expenses' 
+    });
+  }
+});
+
+// Get summary for period (week/month/year)
+app.get('/api/daily-expenses/summary', authenticateToken, async (req, res) => {
+  try {
+    const period = req.query.period || 'month';
+    const now = new Date();
+    let startDate;
+
+    // Calculate start date based on period
+    switch (period) {
+      case 'week':
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case 'month':
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        break;
+      case 'year':
+        startDate = new Date(now.getFullYear(), 0, 1);
+        break;
+      default:
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    }
+
+    const expenses = await DailyExpense.find({
+      user: req.user.id,
+      date: { $gte: startDate }
+    }).lean();
+
+    // Calculate summary
+    const totalSpend = expenses.reduce((sum, exp) => sum + (exp.totalSpend || 0), 0);
+    const totalSavings = expenses.reduce((sum, exp) => sum + (exp.savings || 0), 0);
+    const expenseCount = expenses.length;
+    const averageDaily = expenseCount > 0 ? totalSpend / expenseCount : 0;
+
+    // Category breakdown
+    const categoryBreakdown = {
+      food: 0,
+      transport: 0,
+      bills: 0,
+      health: 0,
+      education: 0,
+      entertainment: 0,
+      other: 0
+    };
+
+    expenses.forEach(exp => {
+      categoryBreakdown.food += exp.food || 0;
+      categoryBreakdown.transport += exp.transport || 0;
+      categoryBreakdown.bills += exp.bills || 0;
+      categoryBreakdown.health += exp.health || 0;
+      categoryBreakdown.education += exp.education || 0;
+      categoryBreakdown.entertainment += exp.entertainment || 0;
+      categoryBreakdown.other += exp.other || 0;
+    });
+
+    res.json({
+      success: true,
+      summary: {
+        totalSpend,
+        totalSavings,
+        averageDaily,
+        expenseCount,
+        categoryBreakdown,
+        period,
+        startDate,
+        endDate: now
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching summary:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch summary' 
+    });
+  }
+});
+
+// Add new expense
+app.post('/api/daily-expenses', authenticateToken, async (req, res) => {
+  try {
+    const expenseData = {
+      user: req.user.id,
+      date: req.body.date || new Date(),
+      food: parseFloat(req.body.food) || 0,
+      transport: parseFloat(req.body.transport) || 0,
+      bills: parseFloat(req.body.bills) || 0,
+      health: parseFloat(req.body.health) || 0,
+      education: parseFloat(req.body.education) || 0,
+      entertainment: parseFloat(req.body.entertainment) || 0,
+      other: parseFloat(req.body.other) || 0,
+      savings: parseFloat(req.body.savings) || 0,
+      cashBalance: parseFloat(req.body.cashBalance) || 0,
+      numTransactions: parseInt(req.body.numTransactions) || 1,
+      notes: req.body.notes || ''
+    };
+
+    const expense = await DailyExpense.create(expenseData);
+
+    res.status(201).json({
+      success: true,
+      message: 'Expense added successfully',
+      expense
+    });
+  } catch (error) {
+    console.error('Error adding expense:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to add expense' 
+    });
+  }
+});
+
+// Update expense
+app.put('/api/daily-expenses/:id', authenticateToken, async (req, res) => {
+  try {
+    const updateData = {
+      ...req.body,
+      updatedAt: new Date()
+    };
+
+    // Remove fields that shouldn't be updated
+    delete updateData.user;
+    delete updateData._id;
+
+    const expense = await DailyExpense.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.id },
+      { $set: updateData },
+      { new: true }
+    ).lean();
+
+    if (!expense) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Expense not found' 
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Expense updated successfully',
+      expense
+    });
+  } catch (error) {
+    console.error('Error updating expense:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update expense' 
+    });
+  }
+});
+
+// Delete expense
+app.delete('/api/daily-expenses/:id', authenticateToken, async (req, res) => {
+  try {
+    const result = await DailyExpense.deleteOne({
+      _id: req.params.id,
+      user: req.user.id
+    });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Expense not found' 
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Expense deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting expense:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete expense' 
+    });
+  }
 });
