@@ -13,6 +13,8 @@ const Profile = require('./models/Profile');
 const Debt = require('./models/Debt');
 const Transaction = require('./models/Transaction');
 const DailyExpense = require('./models/DailyExpense');
+const Otp = require('./models/Otp');
+const { sendOtpSms } = require('./services/sms');
 
 require('dotenv').config();
 
@@ -212,6 +214,22 @@ function authenticateToken(req, res, next) {
   });
 }
 
+// Phone helpers (normalize to Indian E.164: +91XXXXXXXXXX)
+function normalizeIndianPhone(raw) {
+  if (!raw) return null;
+  const digits = String(raw).replace(/\D/g, '');
+  if (digits.length === 10 && /^[6-9]\d{9}$/.test(digits)) return `+91${digits}`;
+  if (digits.length === 12 && digits.startsWith('91') && /^[6-9]\d{9}$/.test(digits.slice(2))) return `+${digits}`;
+  if (digits.length === 11 && digits.startsWith('0') && /^[6-9]\d{9}$/.test(digits.slice(1))) return `+91${digits.slice(1)}`;
+  if (raw.startsWith('+91') && /^[+]?91[6-9]\d{9}$/.test(raw.replace(/\s/g, ''))) return raw.replace(/\s/g, '');
+  return null; // invalid
+}
+
+function generateOtpCode() {
+  // 6-digit numeric OTP, leading zeros allowed
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
 // Routes
 
 // Health check
@@ -221,87 +239,108 @@ app.get('/', (req, res) => {
 
 // Signup
 app.post('/api/auth/signup', async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    // Validation
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({ message: 'Password must be at least 6 characters' });
-    }
-
-    // Check if user already exists (MongoDB)
-    const existingUser = await User.findOne({ email: email.toLowerCase() }).lean();
-    if (existingUser) {
-      return res.status(400).json({ message: 'User with this email already exists' });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user (MongoDB)
-    const created = await User.create({
-      name,
-      email: email.toLowerCase(),
-      password: hashedPassword,
-    });
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: created._id.toString(), email: created.email },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    res.status(201).json({
-      message: 'User created successfully',
-      token,
-      user: {
-        id: created._id.toString(),
-        name: created.name,
-        email: created.email,
-        pinEnabled: created.pinEnabled,
-        faceIDEnabled: created.faceIDEnabled
-      }
-    });
-
-  } catch (error) {
-    console.error('Signup error:', error);
-    res.status(500).json({ message: 'Server error during signup' });
-  }
+  return res.status(410).json({ message: 'Email/password signup is disabled. Use phone OTP login.' });
 });
 
 // Login
 app.post('/api/auth/login', async (req, res) => {
+  return res.status(410).json({ message: 'Email/password login is disabled. Use phone OTP login.' });
+});
+
+// PIN Login (separate endpoint)
+app.post('/api/auth/login-pin', async (req, res) => {
+  return res.status(410).json({ message: 'PIN login via email is disabled. Use phone OTP login.' });
+});
+
+// OTP-based auth routes
+app.post('/api/auth/otp/send', async (req, res) => {
   try {
-    const { email, password } = req.body;
-
-    // Validation
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
+    const { phone, name } = req.body || {};
+    const normalized = normalizeIndianPhone(phone);
+    if (!normalized) {
+      return res.status(400).json({ message: 'Enter a valid Indian mobile number' });
     }
 
-    // Find user (MongoDB)
-    const user = await User.findOne({ email: email.toLowerCase() });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+    // Throttle: prevent resend within 60 seconds
+    const last = await Otp.findOne({ phone: normalized }).sort({ createdAt: -1 }).lean();
+    if (last && Date.now() - new Date(last.createdAt).getTime() < 60 * 1000) {
+      return res.status(429).json({ message: 'Please wait before requesting another OTP' });
     }
 
-    // Check password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+    const code = generateOtpCode();
+    const codeHash = await bcrypt.hash(code, 8);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+    await Otp.create({ phone: normalized, codeHash, expiresAt });
+
+    // Optionally create a placeholder user name on first request (without saving yet)
+    // We will set name on verification if user is created.
+
+    // Send SMS via configured provider (mock in dev if SMS_PROVIDER unset)
+    await sendOtpSms(normalized, code);
+
+    const response = { message: 'OTP sent successfully' };
+    if (process.env.NODE_ENV !== 'production') {
+      response.devCode = code; // for local testing only
+    }
+    res.json(response);
+  } catch (error) {
+    console.error('OTP send error:', error);
+    res.status(500).json({ message: 'Failed to send OTP' });
+  }
+});
+
+app.post('/api/auth/otp/verify', async (req, res) => {
+  try {
+    console.log('OTP verify request:', req.body);
+    const { phone, code, name } = req.body || {};
+    const normalized = normalizeIndianPhone(phone);
+    console.log('Normalized phone:', normalized);
+    if (!normalized || !code) {
+      return res.status(400).json({ message: 'Phone and OTP code are required' });
     }
 
-    // Generate JWT token
+    // Fetch recent non-expired OTPs (e.g., last 3) to tolerate user entering prior code
+    const now = new Date();
+    const recent = await Otp.find({ phone: normalized, expiresAt: { $gte: now } })
+      .sort({ createdAt: -1 })
+      .limit(5);
+    console.log('Recent OTPs found:', recent.length);
+    if (!recent || recent.length === 0) {
+      return res.status(400).json({ message: 'OTP expired or not requested. Please request a new one.' });
+    }
+
+    let matched = null;
+    for (const doc of recent) {
+      const ok = await bcrypt.compare(String(code), doc.codeHash);
+      if (ok) { matched = doc; break; }
+    }
+    console.log('OTP matched:', !!matched);
+    if (!matched) {
+      // increment attempts on the latest doc
+      try { recent[0].attempts += 1; await recent[0].save(); } catch (_) {}
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // OTP valid: find or create user (atomic upsert to avoid duplicates on rapid clicks)
+    console.log('Creating/finding user for phone:', normalized);
+    let user = await User.findOneAndUpdate(
+      { phone: normalized },
+      { $setOnInsert: { name: name || 'User', phone: normalized } },
+      { new: true, upsert: true }
+    );
+    console.log('User found/created:', user._id);
+
+    // Cleanup OTPs for this phone
+    await Otp.deleteMany({ phone: normalized });
+    console.log('OTPs cleaned up');
+
     const token = jwt.sign(
-      { id: user._id.toString(), email: user.email },
+      { id: user._id.toString(), phone: user.phone },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
+    console.log('JWT signed');
 
     res.json({
       message: 'Login successful',
@@ -309,71 +348,60 @@ app.post('/api/auth/login', async (req, res) => {
       user: {
         id: user._id.toString(),
         name: user.name,
-        email: user.email,
+        phone: user.phone,
         pinEnabled: user.pinEnabled,
         faceIDEnabled: user.faceIDEnabled
       }
     });
-
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error during login' });
+    // Handle duplicate key race condition explicitly (shouldn't happen with upsert, but kept as safety)
+    if (error && error.code === 11000) {
+      try {
+        const existing = await User.findOne({ phone: (req.body?.phone && normalizeIndianPhone(req.body.phone)) || '' });
+        if (existing) {
+          const token = jwt.sign(
+            { id: existing._id.toString(), phone: existing.phone },
+            JWT_SECRET,
+            { expiresIn: '7d' }
+          );
+          return res.json({
+            message: 'Login successful',
+            token,
+            user: {
+              id: existing._id.toString(),
+              name: existing.name,
+              phone: existing.phone,
+              pinEnabled: existing.pinEnabled,
+              faceIDEnabled: existing.faceIDEnabled
+            }
+          });
+        }
+      } catch (_) {
+        // fall through to generic handler below
+      }
+    }
+    console.error('OTP verify error:', error?.stack || error?.message || error);
+    res.status(500).json({ message: 'Failed to verify OTP' });
   }
 });
 
-// PIN Login (separate endpoint)
-app.post('/api/auth/login-pin', async (req, res) => {
+// Current user route for auth check
+app.get('/api/auth/me', authenticateToken, async (req, res) => {
   try {
-    const { email, pin } = req.body;
-
-    // Validation
-    if (!email || !pin) {
-      return res.status(400).json({ message: 'Email and PIN are required' });
-    }
-
-    if (pin.length !== 4) {
-      return res.status(400).json({ message: 'PIN must be 4 digits' });
-    }
-
-    // Find user (MongoDB)
-    const user = await User.findOne({ email: email.toLowerCase() });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    // Check if PIN is enabled and exists
-    if (!user.pinEnabled || !user.pin) {
-      return res.status(400).json({ message: 'PIN not set for this user' });
-    }
-
-    // Verify PIN
-    const isValidPin = await bcrypt.compare(pin, user.pin);
-    if (!isValidPin) {
-      return res.status(400).json({ message: 'Invalid PIN' });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user._id.toString(), email: user.email },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
+    const user = await User.findById(req.user.id).lean();
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.json({
-      message: 'PIN login successful',
-      token,
       user: {
         id: user._id.toString(),
         name: user.name,
-        email: user.email,
+        phone: user.phone,
         pinEnabled: user.pinEnabled,
-        faceIDEnabled: user.faceIDEnabled
+        faceIDEnabled: user.faceIDEnabled,
+        createdAt: user.createdAt,
       }
     });
-
-  } catch (error) {
-    console.error('PIN login error:', error);
-    res.status(500).json({ message: 'Server error during PIN login' });
+  } catch (e) {
+    res.status(500).json({ message: 'Failed to fetch user' });
   }
 });
 
@@ -549,7 +577,7 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
       user: {
         id: user._id.toString(),
         name: user.name,
-        email: user.email,
+        phone: user.phone,
         pinEnabled: user.pinEnabled,
         faceIDEnabled: user.faceIDEnabled,
         createdAt: user.createdAt
@@ -632,28 +660,7 @@ app.put('/api/transactions/:id', authenticateToken, async (req, res) => {
 
 // Additional User Routes
 app.post('/api/user/change-password', authenticateToken, async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-    const user = await User.findById(req.user.id);
-    
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
-    if (!isValidPassword) {
-      return res.status(400).json({ message: 'Current password is incorrect' });
-    }
-    
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    await user.save();
-    
-    res.json({ message: 'Password changed successfully' });
-  } catch (error) {
-    console.error('Password change error:', error);
-    res.status(500).json({ message: 'Server error changing password' });
-  }
+  return res.status(410).json({ message: 'Password is not used. Login with phone OTP only.' });
 });
 
 app.post('/api/user/setup-pin', authenticateToken, async (req, res) => {
@@ -684,9 +691,9 @@ app.delete('/api/user/delete', authenticateToken, async (req, res) => {
     // Delete all user data
     await Promise.all([
       User.findByIdAndDelete(userId),
-      Profile.findOneAndDelete({ userId }),
-      Debt.deleteMany({ userId }),
-      Transaction.deleteMany({ userId })
+      Profile.findOneAndDelete({ user: userId }),
+      Debt.deleteMany({ user: userId }),
+      Transaction.deleteMany({ userId: userId })
     ]);
     
     res.json({ message: 'Account deleted successfully' });
@@ -704,8 +711,14 @@ app.use((err, req, res, next) => {
 
 // Initialize DB and data files on startup
 connectDB().then(async () => {
+  // Drop problematic unique index on email if exists
+  try {
+    await mongoose.connection.db.collection('users').dropIndex('email_1');
+    console.log('Dropped email_1 index');
+  } catch (e) {
+    console.log('Index drop failed or not exists:', e.message);
+  }
   await initializeDataFiles();
-  await migrateUsersFromJsonIfAny();
   await migrateProfilesAndDebtsFromJsonIfAny();
 });
 

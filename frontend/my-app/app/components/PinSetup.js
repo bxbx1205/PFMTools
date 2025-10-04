@@ -38,8 +38,8 @@ export default function PinSetup({ onPinSet, onClose }) {
       const data = await response.json()
 
       if (response.ok) {
-        const email = localStorage.getItem('lastEmail')
-        localStorage.setItem(`pinEnabled_${email}`, 'true')
+  const phone = localStorage.getItem('lastPhone')
+  if (phone) localStorage.setItem(`pinEnabled_${phone}`, 'true')
         onPinSet()
       } else {
         setError(data.message || 'Failed to set PIN')

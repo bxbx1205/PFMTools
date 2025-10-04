@@ -227,7 +227,7 @@ export default function Settings() {
 
       if (response.ok) {
         localStorage.removeItem('token')
-        localStorage.removeItem('lastEmail')
+        localStorage.removeItem('lastPhone')
         localStorage.removeItem('userName')
         router.push('/login')
       } else {

@@ -1,10 +1,11 @@
 # PFM Tools Backend
 
-A backend API for Personal Finance Management now using local MongoDB (works with MongoDB Compass). Users are stored in MongoDB with a Mongoose schema; profiles and debts continue using JSON files for now.
+A backend API for Personal Finance Management using MongoDB, now with phone OTP-only authentication. Users authenticate via Indian mobile number OTP; email/password is disabled.
 
 ## Features
 
-- 🔐 **User Authentication** (JWT + PIN Login)
+- 🔐 **User Authentication** (JWT + Phone OTP)
+- 📲 **SMS Gateway** integration (Twilio or MSG91) with mock mode for dev
 - 👤 **User Profile Management** 
 - 💳 **Debt Tracking & Management**
 - 📊 **Financial Health Dashboard**
@@ -18,6 +19,7 @@ A backend API for Personal Finance Management now using local MongoDB (works wit
 - JWT (Authentication)
 - bcryptjs (Password Hashing)
 - CORS
+ - axios (SMS provider calls)
 
 ## Quick Start
 
@@ -47,11 +49,12 @@ By default it listens on port 5000. You can override with the `PORT` env.
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/signup` - Create new account
-- `POST /api/auth/login` - Login with email/password
-- `POST /api/auth/login-pin` - Login with PIN
-- `GET /api/auth/me` - Get current user
-- `POST /api/auth/set-pin` - Set PIN for quick login
+- `POST /api/auth/otp/send` - Send OTP to Indian mobile (+91)
+- `POST /api/auth/otp/verify` - Verify OTP, sign-in and create account if new
+- `GET /api/auth/me` - Get current user (JWT)
+- `POST /api/auth/set-pin` - Set 4-digit PIN (optional quick unlock inside app)
+  
+Legacy endpoints `/api/auth/signup`, `/api/auth/login`, and `/api/auth/login-pin` return 410 (disabled).
 
 ### Profile Management
 - `POST /api/profile/save` - Save user profile data
@@ -106,6 +109,18 @@ MONGODB_URI=mongodb+srv://...  # MongoDB Atlas connection
 JWT_SECRET=your-secret-key     # JWT signing secret
 PORT=5000                      # Server port
 NODE_ENV=development           # Environment
+
+# SMS Gateway
+SMS_PROVIDER=mock              # mock | twilio | msg91
+
+# Twilio
+# TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# TWILIO_AUTH_TOKEN=your_auth_token
+# TWILIO_FROM=+1XXXXXXXXXX
+
+# MSG91
+# MSG91_AUTH_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# MSG91_TEMPLATE_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ### Database Collections
@@ -150,6 +165,5 @@ See `API_DOCUMENTATION.md` for complete endpoint documentation with request/resp
 
 This project is licensed under the MIT License.
 
-## Notes on migration from JSON
-- On first start, if the MongoDB users collection is empty and a `data/users.json` file exists, the server will import those users into MongoDB and rename the file to `users.json.bak`.
-- After migration, user creation/login only use MongoDB.
+## Notes
+- OTPs are logged to the console only in non-production when using mock provider or when NODE_ENV != production (devCode returned to client). In production, OTPs are not exposed in responses.
