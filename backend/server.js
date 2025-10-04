@@ -221,6 +221,65 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// PIN Login (separate endpoint)
+app.post('/api/auth/login-pin', async (req, res) => {
+  try {
+    const { email, pin } = req.body;
+
+    // Validation
+    if (!email || !pin) {
+      return res.status(400).json({ message: 'Email and PIN are required' });
+    }
+
+    if (pin.length !== 4) {
+      return res.status(400).json({ message: 'PIN must be 4 digits' });
+    }
+
+    // Read users
+    const users = await readDataFile(USERS_FILE);
+
+    // Find user
+    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Check if PIN is enabled and exists
+    if (!user.pinEnabled || !user.pin) {
+      return res.status(400).json({ message: 'PIN not set for this user' });
+    }
+
+    // Verify PIN
+    const isValidPin = await bcrypt.compare(pin, user.pin);
+    if (!isValidPin) {
+      return res.status(400).json({ message: 'Invalid PIN' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      message: 'PIN login successful',
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        pinEnabled: user.pinEnabled,
+        faceIDEnabled: user.faceIDEnabled
+      }
+    });
+
+  } catch (error) {
+    console.error('PIN login error:', error);
+    res.status(500).json({ message: 'Server error during PIN login' });
+  }
+});
+
 // PIN Routes
 app.post('/api/auth/set-pin', authenticateToken, async (req, res) => {
   try {
@@ -288,15 +347,7 @@ app.post('/api/auth/verify-pin', authenticateToken, async (req, res) => {
 // Profile Routes
 app.post('/api/profile', authenticateToken, async (req, res) => {
   try {
-    const {
-      dateOfBirth,
-      phoneNumber,
-      occupation,
-      monthlyIncome,
-      financialGoals,
-      riskTolerance,
-      preferredNotifications
-    } = req.body;
+    const profileData = req.body;
 
     // Read existing profiles
     const profiles = await readDataFile(PROFILES_FILE);
@@ -304,33 +355,27 @@ app.post('/api/profile', authenticateToken, async (req, res) => {
     // Check if profile already exists for this user
     const existingProfileIndex = profiles.findIndex(p => p.userId === req.user.id);
 
-    const profileData = {
+    const newProfileData = {
       userId: req.user.id,
-      dateOfBirth,
-      phoneNumber,
-      occupation,
-      monthlyIncome: parseFloat(monthlyIncome) || 0,
-      financialGoals: financialGoals || [],
-      riskTolerance,
-      preferredNotifications: preferredNotifications || [],
+      ...profileData,
       updatedAt: new Date().toISOString()
     };
 
     if (existingProfileIndex !== -1) {
       // Update existing profile
-      profiles[existingProfileIndex] = { ...profiles[existingProfileIndex], ...profileData };
+      profiles[existingProfileIndex] = { ...profiles[existingProfileIndex], ...newProfileData };
     } else {
       // Create new profile
-      profileData.id = generateId();
-      profileData.createdAt = new Date().toISOString();
-      profiles.push(profileData);
+      newProfileData.id = generateId();
+      newProfileData.createdAt = new Date().toISOString();
+      profiles.push(newProfileData);
     }
 
     await writeDataFile(PROFILES_FILE, profiles);
 
     res.json({
       message: 'Profile saved successfully',
-      profile: profileData
+      profile: newProfileData
     });
 
   } catch (error) {

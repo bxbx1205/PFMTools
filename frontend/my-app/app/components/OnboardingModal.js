@@ -58,857 +58,411 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
     }
   }
 
-  const nextStep = () => {
-    if (step < 3) setStep(step + 1)
+  const handleNext = () => {
+    if (step < 3) {
+      setStep(step + 1)
+    }
   }
 
-  const prevStep = () => {
-    if (step > 1) setStep(step - 1)
+  const handlePrevious = () => {
+    if (step > 1) {
+      setStep(step - 1)
+    }
   }
 
   const handleComplete = async () => {
     try {
       const token = localStorage.getItem('token')
       
-      if (token) {
-        // Save profile data to backend
-        const profileData = {
-          ageGroup: formData.ageGroup,
-          familySize: parseInt(formData.familySize) || null,
-          dailyIncome: parseFloat(formData.dailyIncome) || null,
-          monthlyIncome: parseFloat(formData.monthlyIncome) || null,
-          occupation: formData.occupation,
-          hasExistingInvestments: formData.hasExistingInvestments,
-          riskTolerance: formData.riskTolerance,
-          primaryGoal: formData.primaryGoal,
-          monthlyBudget: parseFloat(formData.monthlyBudget) || null,
-          savingsTarget: parseFloat(formData.savingsTarget) || null,
-          investmentExperience: formData.investmentExperience,
-          notificationPreferences: formData.notificationPreferences,
-          preferredCurrency: formData.preferredCurrency,
-          darkMode: formData.darkMode
+      if (!token) {
+        console.error('No token found')
+        return
+      }
+
+      // Save profile data
+      const profileResponse = await fetch('http://localhost:5000/api/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      })
+
+      if (!profileResponse.ok) {
+        throw new Error('Failed to save profile')
+      }
+
+      // Save debt data if provided
+      if (formData.debtAmount && parseFloat(formData.debtAmount) > 0) {
+        const debtData = {
+          debts: [{
+            creditorName: formData.loanType || 'Personal Loan',
+            debtType: formData.loanType || 'Personal Loan',
+            currentBalance: parseFloat(formData.debtAmount) || 0,
+            minimumPayment: parseFloat(formData.monthlyEMI) || 0,
+            interestRate: parseFloat(formData.interestRate) || 0,
+            dueDate: new Date(Date.now() + (parseInt(formData.remainingTenureMonths) || 12) * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+          }]
         }
 
-        // Save profile
-        await fetch('http://localhost:5000/api/profile/save', {
+        const debtResponse = await fetch('http://localhost:5000/api/debts', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(profileData)
+          body: JSON.stringify(debtData)
         })
 
-        // Save debt information if provided
-        if (formData.loanType && formData.loanType !== '') {
-          const debtData = {
-            loanType: formData.loanType,
-            debtAmount: parseFloat(formData.debtAmount) || 0,
-            interestRate: parseFloat(formData.interestRate) || 0,
-            loanTenureMonths: parseInt(formData.loanTenureMonths) || 0,
-            remainingTenureMonths: parseInt(formData.remainingTenureMonths) || 0,
-            monthlyEMI: parseFloat(formData.monthlyEMI) || 0
-          }
-
-          await fetch('http://localhost:5000/api/debt/save', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(debtData)
-          })
+        if (!debtResponse.ok) {
+          console.error('Failed to save debt data')
         }
-
-        // Mark onboarding as complete
-        await fetch('http://localhost:5000/api/profile/complete-onboarding', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        })
       }
+
+      onComplete()
     } catch (error) {
       console.error('Error saving onboarding data:', error)
+      // Still complete the onboarding even if save fails
+      onComplete()
     }
-
-    // Save locally as backup
-    localStorage.setItem('onboardingData', JSON.stringify(formData))
-    localStorage.setItem('onboardingCompleted', 'true')
-    localStorage.removeItem('isFirstTimeUser')
-    onComplete()
   }
 
   if (!isOpen) return null
 
   return (
-    <>
-      <style jsx>{`
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.85);
-          backdrop-filter: blur(12px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          padding: 2rem;
-          animation: modalFadeIn 0.4s ease-out;
-        }
-
-        @keyframes modalFadeIn {
-          from {
-            opacity: 0;
-            backdrop-filter: blur(0px);
-          }
-          to {
-            opacity: 1;
-            backdrop-filter: blur(12px);
-          }
-        }
-
-        .modal-container {
-          background: linear-gradient(135deg, rgba(20, 28, 45, 0.98) 0%, rgba(23, 28, 43, 0.98) 100%);
-          backdrop-filter: blur(28px);
-          border-radius: 28px;
-          padding: 4rem;
-          max-width: 800px;
-          width: 100%;
-          max-height: 90vh;
-          overflow-y: auto;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          box-shadow: 
-            0 32px 64px rgba(0, 0, 0, 0.5),
-            0 16px 48px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2),
-            0 0 0 1px rgba(255, 255, 255, 0.1);
-          position: relative;
-          animation: modalSlideIn 0.5s ease-out 0.1s both;
-        }
-
-        @keyframes modalSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(60px) scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        .modal-container::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 3px;
-          background: linear-gradient(90deg, transparent 0%, rgba(0, 200, 150, 0.8) 20%, rgba(0, 200, 150, 1) 50%, rgba(0, 200, 150, 0.8) 80%, transparent 100%);
-          border-radius: 28px 28px 0 0;
-          animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 1; }
-        }
-          padding: 3rem;
-          max-width: 600px;
-          width: 100%;
-          max-height: 90vh;
-          overflow-y: auto;
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          box-shadow: 
-            0 25px 50px rgba(0, 0, 0, 0.4),
-            0 12px 40px rgba(0, 0, 0, 0.25),
-            inset 0 1px 0 rgba(255, 255, 255, 0.15);
-          position: relative;
-        }
-
-        .modal-header {
-          text-align: center;
-          margin-bottom: 3rem;
-          position: relative;
-        }
-
-        .modal-header::after {
-          content: '';
-          position: absolute;
-          bottom: -1rem;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 100px;
-          height: 2px;
-          background: linear-gradient(90deg, transparent, #00C896, transparent);
-        }
-
-        .welcome-title {
-          font-size: 2.5rem;
-          font-weight: 800;
-          background: linear-gradient(135deg, #ffffff 0%, #00C896 30%, #e2e8f0 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          margin-bottom: 1rem;
-          letter-spacing: -0.02em;
-          text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
-          position: relative;
-        }
-
-        .welcome-subtitle {
-          color: #94a3b8;
-          font-size: 1.25rem;
-          font-weight: 400;
-          line-height: 1.5;
-          margin-bottom: 0.5rem;
-        }
-
-        .step-indicator {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          margin-bottom: 3rem;
-          gap: 1.5rem;
-          padding: 1.5rem;
-          background: rgba(0, 200, 150, 0.05);
-          border-radius: 20px;
-          border: 1px solid rgba(0, 200, 150, 0.1);
-        }
-
-        .step-dot {
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background: rgba(71, 85, 105, 0.5);
-          transition: all 0.4s ease;
-          position: relative;
-          cursor: pointer;
-        }
-
-        .step-dot.active {
-          background: linear-gradient(135deg, #00C896 0%, #00B87C 100%);
-          width: 40px;
-          border-radius: 20px;
-          box-shadow: 0 4px 20px rgba(0, 200, 150, 0.4);
-        }
-
-        .step-dot.active::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 8px;
-          height: 8px;
-          background: white;
-          border-radius: 50%;
-        }
-
-        .step-content {
-          margin-bottom: 3rem;
-        }
-
-        .step-title {
-          font-size: 1.75rem;
-          font-weight: 700;
-          color: #f1f5f9;
-          margin-bottom: 2rem;
-          text-align: center;
-          position: relative;
-          padding-bottom: 1rem;
-        }
-
-        .step-title::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 60px;
-          height: 2px;
-          background: linear-gradient(90deg, transparent, #00C896, transparent);
-        }
-
-        .form-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
-          margin-bottom: 2rem;
-        }
-
-        .form-group {
-          margin-bottom: 2rem;
-        }
-
-        .form-group.full-width {
-          grid-column: 1 / -1;
-        }
-
-        .form-label {
-          display: block;
-          margin-bottom: 0.5rem;
-          font-weight: 500;
-          color: #e2e8f0;
-          font-size: 0.95rem;
-        }
-
-        .form-input,
-        .form-select {
-          width: 100%;
-          padding: 1.25rem 1.5rem;
-          border: 1.5px solid rgba(71, 85, 105, 0.5);
-          border-radius: 16px;
-          font-size: 1rem;
-          box-sizing: border-box;
-          transition: all 0.3s ease;
-          background: rgba(30, 41, 59, 0.6);
-          backdrop-filter: blur(12px);
-          font-family: inherit;
-          color: #f8fafc;
-          min-height: 58px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-input:focus,
-        .form-select:focus {
-          outline: none;
-          border-color: #00C896;
-          box-shadow: 
-            0 0 0 3px rgba(0, 200, 150, 0.15),
-            0 4px 20px rgba(0, 200, 150, 0.1),
-            0 2px 8px rgba(0, 0, 0, 0.1);
-          background: rgba(30, 41, 59, 0.8);
-          transform: translateY(-1px);
-        }
-
-        .form-input::placeholder {
-          color: #64748b;
-        }
-
-        .checkbox-group {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .checkbox-item {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 1rem;
-          border: 1px solid rgba(71, 85, 105, 0.3);
-          border-radius: 12px;
-          background: rgba(30, 41, 59, 0.3);
-          transition: all 0.3s ease;
-        }
-
-        .checkbox-item:hover {
-          background: rgba(30, 41, 59, 0.5);
-          border-color: rgba(71, 85, 105, 0.5);
-        }
-
-        .checkbox-item input[type="checkbox"] {
-          width: 18px;
-          height: 18px;
-          accent-color: #00C896;
-        }
-
-        .checkbox-label {
-          color: #e2e8f0;
-          font-weight: 500;
-          cursor: pointer;
-        }
-
-        .radio-group {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 0.75rem;
-        }
-
-        .radio-item {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 1.25rem;
-          border: 1px solid rgba(71, 85, 105, 0.3);
-          border-radius: 16px;
-          background: rgba(30, 41, 59, 0.3);
-          transition: all 0.3s ease;
-          cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .radio-item:hover {
-          background: rgba(30, 41, 59, 0.5);
-          border-color: rgba(0, 200, 150, 0.4);
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .radio-item.selected {
-          background: rgba(0, 200, 150, 0.15);
-          border-color: #00C896;
-          box-shadow: 0 4px 20px rgba(0, 200, 150, 0.2);
-        }
-
-        .radio-item input[type="radio"] {
-          width: 18px;
-          height: 18px;
-          accent-color: #00C896;
-        }
-
-        .radio-label {
-          color: #e2e8f0;
-          font-weight: 500;
-          flex: 1;
-        }
-
-        .button-group {
-          display: flex;
-          gap: 1.5rem;
-          justify-content: space-between;
-          margin-top: 3rem;
-          padding-top: 2rem;
-          border-top: 1px solid rgba(71, 85, 105, 0.2);
-        }
-
-        .btn {
-          padding: 1.25rem 2.5rem;
-          border-radius: 16px;
-          font-size: 1.1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          border: none;
-          min-height: 60px;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .btn::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-          transition: left 0.6s ease;
-        }
-
-        .btn:hover::before {
-          left: 100%;
-        }
-
-        .btn-secondary {
-          background: rgba(71, 85, 105, 0.4);
-          color: #cbd5e1;
-          border: 1px solid rgba(71, 85, 105, 0.6);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-secondary:hover {
-          background: rgba(71, 85, 105, 0.6);
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-primary {
-          background: linear-gradient(135deg, #00C896 0%, #00B87C 100%);
-          color: white;
-          box-shadow: 0 6px 20px rgba(0, 200, 150, 0.3);
-        }
-
-        .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 12px 35px rgba(0, 200, 150, 0.4);
-        }
-
-        .btn-complete {
-          background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-          color: white;
-          box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
-        }
-
-        .btn-complete:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
-        }
-
-        .skip-link {
-          position: absolute;
-          top: 2rem;
-          right: 2rem;
-          color: #94a3b8;
-          text-decoration: none;
-          font-size: 0.95rem;
-          font-weight: 500;
-          padding: 0.75rem 1rem;
-          border-radius: 12px;
-          transition: all 0.2s ease;
-          background: rgba(71, 85, 105, 0.1);
-          border: 1px solid rgba(71, 85, 105, 0.2);
-        }
-
-        .skip-link:hover {
-          color: #cbd5e1;
-          background: rgba(71, 85, 105, 0.3);
-          border-color: rgba(71, 85, 105, 0.4);
-          transform: translateY(-1px);
-        }
-
-        @media (max-width: 768px) {
-          .modal-overlay {
-            padding: 1rem;
-          }
-
-          .modal-container {
-            padding: 2.5rem 2rem;
-            margin: 0.5rem;
-            max-height: 95vh;
-          }
-
-          .form-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-          }
-
-          .button-group {
-            flex-direction: column;
-            gap: 1rem;
-          }
-
-          .welcome-title {
-            font-size: 2rem;
-          }
-
-          .step-title {
-            font-size: 1.5rem;
-          }
-
-          .step-indicator {
-            padding: 1rem;
-            gap: 1rem;
-          }
-
-          .btn {
-            padding: 1rem 2rem;
-            font-size: 1rem;
-          }
-
-          .skip-link {
-            top: 1rem;
-            right: 1rem;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .modal-container {
-            padding: 2rem 1.5rem;
-            border-radius: 20px;
-          }
-
-          .welcome-title {
-            font-size: 1.75rem;
-          }
-
-          .step-indicator {
-            margin-bottom: 2rem;
-          }
-
-          .form-input,
-          .form-select {
-            padding: 1rem 1.25rem;
-            min-height: 52px;
-          }
-        }
-      `}</style>
-
-      <div className="modal-overlay">
-        <div className="modal-container">
-          <button className="skip-link" onClick={handleComplete}>
-            Skip for now →
-          </button>
-
-          <div className="modal-header">
-            <h1 className="welcome-title">Welcome, {userName}! 👋</h1>
-            <p className="welcome-subtitle">
-              Let's personalize your experience in just a few steps
-            </p>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-700">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2">
+                Welcome, {userName}! 👋
+              </h2>
+              <p className="text-gray-400">
+                Let's set up your financial profile to provide personalized recommendations
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-gray-400">Step {step} of 3</div>
+              <div className="w-24 bg-gray-700 rounded-full h-2 mt-1">
+                <div 
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${(step / 3) * 100}%` }}
+                ></div>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <div className="step-indicator">
-            <div className={`step-dot ${step >= 1 ? 'active' : ''}`}></div>
-            <div className={`step-dot ${step >= 2 ? 'active' : ''}`}></div>
-            <div className={`step-dot ${step >= 3 ? 'active' : ''}`}></div>
-          </div>
+        {/* Content */}
+        <div className="p-6">
+          {/* Step 1: User Profile */}
+          {step === 1 && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Personal Information</h3>
+                <p className="text-gray-400 mb-6">Tell us about yourself to help us understand your financial situation better.</p>
+              </div>
 
-          <div className="step-content">
-            {step === 1 && (
-              <>
-                <h2 className="step-title">User Profile</h2>
-                
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label">Age Group</label>
-                    <select
-                      name="ageGroup"
-                      value={formData.ageGroup}
-                      onChange={handleInputChange}
-                      className="form-select"
-                      required
-                    >
-                      <option value="">Select age group</option>
-                      <option value="18-25">18-25 years</option>
-                      <option value="26-35">26-35 years</option>
-                      <option value="36-45">36-45 years</option>
-                      <option value="46-60">46-60 years</option>
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Family Size</label>
-                    <input
-                      type="number"
-                      name="familySize"
-                      value={formData.familySize}
-                      onChange={handleInputChange}
-                      placeholder="Number of family members"
-                      className="form-input"
-                      min="1"
-                      max="20"
-                      required
-                    />
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Age Group
+                  </label>
+                  <select
+                    name="ageGroup"
+                    value={formData.ageGroup}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                  >
+                    <option value="">Select age group</option>
+                    <option value="18-25">18-25 years</option>
+                    <option value="26-35">26-35 years</option>
+                    <option value="36-45">36-45 years</option>
+                    <option value="46-55">46-55 years</option>
+                    <option value="56+">56+ years</option>
+                  </select>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Daily Income (₹)</label>
-                  <input
-                    type="number"
-                    name="dailyIncome"
-                    value={formData.dailyIncome}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Family Size
+                  </label>
+                  <select
+                    name="familySize"
+                    value={formData.familySize}
                     onChange={handleInputChange}
-                    placeholder="Your average daily income"
-                    className="form-input"
-                    min="0"
-                    step="0.01"
-                    required
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                  >
+                    <option value="">Select family size</option>
+                    <option value="1">Just me</option>
+                    <option value="2">2 people</option>
+                    <option value="3">3 people</option>
+                    <option value="4">4 people</option>
+                    <option value="5+">5+ people</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Occupation
+                  </label>
+                  <input
+                    type="text"
+                    name="occupation"
+                    value={formData.occupation}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Software Engineer, Teacher"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
                   />
                 </div>
-              </>
-            )}
 
-            {step === 2 && (
-              <>
-                <h2 className="step-title">Debt Information</h2>
-                
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label">Loan Type</label>
-                    <select
-                      name="loanType"
-                      value={formData.loanType}
-                      onChange={handleInputChange}
-                      className="form-select"
-                    >
-                      <option value="">Select loan type</option>
-                      <option value="None">No existing loan</option>
-                      <option value="Personal">Personal Loan</option>
-                      <option value="Home">Home Loan</option>
-                      <option value="Vehicle">Vehicle Loan</option>
-                      <option value="Education">Education Loan</option>
-                      <option value="Business">Business Loan</option>
-                      <option value="Gold">Gold Loan</option>
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Total Debt Amount (₹)</label>
-                    <input
-                      type="number"
-                      name="debtAmount"
-                      value={formData.debtAmount}
-                      onChange={handleInputChange}
-                      placeholder="Outstanding loan amount"
-                      className="form-input"
-                      min="0"
-                      step="0.01"
-                      disabled={formData.loanType === 'None'}
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Monthly Income (₹)
+                  </label>
+                  <input
+                    type="number"
+                    name="monthlyIncome"
+                    value={formData.monthlyIncome}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 50000"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                  />
                 </div>
 
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label">Interest Rate (%)</label>
-                    <input
-                      type="number"
-                      name="interestRate"
-                      value={formData.interestRate}
-                      onChange={handleInputChange}
-                      placeholder="Annual interest rate"
-                      className="form-input"
-                      min="0"
-                      max="50"
-                      step="0.01"
-                      disabled={formData.loanType === 'None'}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Monthly EMI (₹)</label>
-                    <input
-                      type="number"
-                      name="monthlyEMI"
-                      value={formData.monthlyEMI}
-                      onChange={handleInputChange}
-                      placeholder="Monthly EMI amount"
-                      className="form-input"
-                      min="0"
-                      step="0.01"
-                      disabled={formData.loanType === 'None'}
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Primary Financial Goal
+                  </label>
+                  <select
+                    name="primaryGoal"
+                    value={formData.primaryGoal}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                  >
+                    <option value="">Select your main goal</option>
+                    <option value="debt-payoff">Pay off debt</option>
+                    <option value="emergency-fund">Build emergency fund</option>
+                    <option value="saving">Save for future</option>
+                    <option value="investment">Investment growth</option>
+                    <option value="retirement">Retirement planning</option>
+                    <option value="home-buying">Buy a home</option>
+                  </select>
                 </div>
 
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label">Original Tenure (Months)</label>
-                    <input
-                      type="number"
-                      name="loanTenureMonths"
-                      value={formData.loanTenureMonths}
-                      onChange={handleInputChange}
-                      placeholder="Total loan period"
-                      className="form-input"
-                      min="1"
-                      max="360"
-                      disabled={formData.loanType === 'None'}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Remaining Tenure (Months)</label>
-                    <input
-                      type="number"
-                      name="remainingTenureMonths"
-                      value={formData.remainingTenureMonths}
-                      onChange={handleInputChange}
-                      placeholder="Months left to repay"
-                      className="form-input"
-                      min="0"
-                      max={formData.loanTenureMonths || 360}
-                      disabled={formData.loanType === 'None'}
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Risk Tolerance
+                  </label>
+                  <select
+                    name="riskTolerance"
+                    value={formData.riskTolerance}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                  >
+                    <option value="">Select risk level</option>
+                    <option value="conservative">Conservative (Low risk)</option>
+                    <option value="moderate">Moderate (Medium risk)</option>
+                    <option value="aggressive">Aggressive (High risk)</option>
+                  </select>
                 </div>
-              </>
-            )}
+              </div>
+            </div>
+          )}
 
-            {step === 3 && (
-              <>
-                <h2 className="step-title">Preferences & Additional Info</h2>
-                
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label">Occupation</label>
-                    <input
-                      type="text"
-                      name="occupation"
-                      value={formData.occupation}
-                      onChange={handleInputChange}
-                      placeholder="e.g., Software Engineer"
-                      className="form-input"
-                    />
-                  </div>
+          {/* Step 2: Debt Information */}
+          {step === 2 && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Debt Information</h3>
+                <p className="text-gray-400 mb-6">Help us understand your current debt situation to provide better financial advice.</p>
+              </div>
 
-                  <div className="form-group">
-                    <label className="form-label">Monthly Income (₹)</label>
-                    <input
-                      type="number"
-                      name="monthlyIncome"
-                      value={formData.monthlyIncome}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 80000"
-                      className="form-input"
-                    />
-                  </div>
+              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-6">
+                <p className="text-yellow-400 text-sm">
+                  💡 <strong>Optional:</strong> You can skip this section if you don't have any current debts. This information helps us provide personalized debt management strategies.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Total Debt Amount (₹)
+                  </label>
+                  <input
+                    type="number"
+                    name="debtAmount"
+                    value={formData.debtAmount}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 200000 (Leave empty if no debt)"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                  />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Primary Financial Goal</label>
-                  <div className="radio-group">
-                    {[
-                      'Build an emergency fund',
-                      'Save for a specific purchase',
-                      'Invest for retirement',
-                      'Pay off debt faster',
-                      'Generate passive income'
-                    ].map((goal) => (
-                      <label key={goal} className={`radio-item ${formData.primaryGoal === goal ? 'selected' : ''}`}>
-                        <input
-                          type="radio"
-                          name="primaryGoal"
-                          value={goal}
-                          checked={formData.primaryGoal === goal}
-                          onChange={handleInputChange}
-                        />
-                        <span className="radio-label">{goal}</span>
-                      </label>
-                    ))}
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Loan Type
+                  </label>
+                  <select
+                    name="loanType"
+                    value={formData.loanType}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                  >
+                    <option value="">Select loan type</option>
+                    <option value="Personal Loan">Personal Loan</option>
+                    <option value="Home Loan">Home Loan</option>
+                    <option value="Car Loan">Car Loan</option>
+                    <option value="Education Loan">Education Loan</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Business Loan">Business Loan</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Notification Preferences</label>
-                  <div className="checkbox-group">
-                    <label className="checkbox-item">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Interest Rate (% per annum)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    name="interestRate"
+                    value={formData.interestRate}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 12.5"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Original Loan Tenure (months)
+                  </label>
+                  <input
+                    type="number"
+                    name="loanTenureMonths"
+                    value={formData.loanTenureMonths}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 60"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Remaining Tenure (months)
+                  </label>
+                  <input
+                    type="number"
+                    name="remainingTenureMonths"
+                    value={formData.remainingTenureMonths}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 36"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Monthly EMI (₹)
+                  </label>
+                  <input
+                    type="number"
+                    name="monthlyEMI"
+                    value={formData.monthlyEMI}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 4500"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                  />
+                </div>
+              </div>
+
+              {/* Debt Summary */}
+              {formData.debtAmount && formData.monthlyEMI && (
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                  <h4 className="text-blue-400 font-medium mb-2">Debt Summary</h4>
+                  <div className="text-sm text-gray-300 space-y-1">
+                    <p>Total Debt: ₹{parseInt(formData.debtAmount).toLocaleString()}</p>
+                    <p>Monthly Payment: ₹{parseInt(formData.monthlyEMI).toLocaleString()}</p>
+                    {formData.monthlyIncome && (
+                      <p>Debt-to-Income Ratio: {((formData.monthlyEMI / formData.monthlyIncome) * 100).toFixed(1)}%</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step 3: Preferences */}
+          {step === 3 && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Preferences & Settings</h3>
+                <p className="text-gray-400 mb-6">Customize your experience and notification preferences.</p>
+              </div>
+
+              <div className="space-y-6">
+                {/* Notification Preferences */}
+                <div>
+                  <h4 className="text-lg font-medium text-white mb-4">Notification Preferences</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="text-gray-300 font-medium">Email Notifications</label>
+                        <p className="text-sm text-gray-400">Receive updates and reminders via email</p>
+                      </div>
                       <input
                         type="checkbox"
                         name="notificationPreferences.email"
                         checked={formData.notificationPreferences.email}
                         onChange={handleInputChange}
+                        className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
                       />
-                      <span className="checkbox-label">Email notifications</span>
-                    </label>
-                    <label className="checkbox-item">
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="text-gray-300 font-medium">Push Notifications</label>
+                        <p className="text-sm text-gray-400">Get instant alerts on your device</p>
+                      </div>
                       <input
                         type="checkbox"
                         name="notificationPreferences.push"
                         checked={formData.notificationPreferences.push}
                         onChange={handleInputChange}
+                        className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
                       />
-                      <span className="checkbox-label">Push notifications</span>
-                    </label>
-                    <label className="checkbox-item">
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="text-gray-300 font-medium">SMS Notifications</label>
+                        <p className="text-sm text-gray-400">Receive text messages for important updates</p>
+                      </div>
                       <input
                         type="checkbox"
                         name="notificationPreferences.sms"
                         checked={formData.notificationPreferences.sms}
                         onChange={handleInputChange}
+                        className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
                       />
-                      <span className="checkbox-label">SMS notifications</span>
-                    </label>
+                    </div>
                   </div>
                 </div>
 
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label">Preferred Currency</label>
+                {/* Additional Preferences */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Preferred Currency
+                    </label>
                     <select
                       name="preferredCurrency"
                       value={formData.preferredCurrency}
                       onChange={handleInputChange}
-                      className="form-select"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
                     >
                       <option value="INR">Indian Rupee (₹)</option>
                       <option value="USD">US Dollar ($)</option>
@@ -917,41 +471,99 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     </select>
                   </div>
 
-                  <div className="form-group">
-                    <label className="form-label">Monthly Budget (₹)</label>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Monthly Budget (₹)
+                    </label>
                     <input
                       type="number"
                       name="monthlyBudget"
                       value={formData.monthlyBudget}
                       onChange={handleInputChange}
-                      placeholder="e.g., 50000"
-                      className="form-input"
+                      placeholder="e.g., 30000"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
                     />
                   </div>
-                </div>
-              </>
-            )}
-          </div>
 
-          <div className="button-group">
-            {step > 1 && (
-              <button onClick={prevStep} className="btn btn-secondary">
-                ← Previous
-              </button>
-            )}
-            
-            {step < 3 ? (
-              <button onClick={nextStep} className="btn btn-primary" style={{marginLeft: 'auto'}}>
-                Continue →
-              </button>
-            ) : (
-              <button onClick={handleComplete} className="btn btn-complete" style={{marginLeft: 'auto'}}>
-                Complete Setup 🎉
-              </button>
-            )}
-          </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Monthly Savings Target (₹)
+                    </label>
+                    <input
+                      type="number"
+                      name="savingsTarget"
+                      value={formData.savingsTarget}
+                      onChange={handleInputChange}
+                      placeholder="e.g., 10000"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Investment Experience
+                    </label>
+                    <select
+                      name="investmentExperience"
+                      value={formData.investmentExperience}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
+                    >
+                      <option value="">Select experience level</option>
+                      <option value="beginner">Beginner (0-1 years)</option>
+                      <option value="intermediate">Intermediate (2-5 years)</option>
+                      <option value="experienced">Experienced (5+ years)</option>
+                      <option value="expert">Expert (10+ years)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Theme Preference */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-gray-300 font-medium">Dark Mode</label>
+                    <p className="text-sm text-gray-400">Use dark theme for better viewing experience</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    name="darkMode"
+                    checked={formData.darkMode}
+                    onChange={handleInputChange}
+                    className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 border-t border-gray-700 flex justify-between">
+          <button
+            onClick={handlePrevious}
+            disabled={step === 1}
+            className="px-6 py-2 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          
+          {step < 3 ? (
+            <button
+              onClick={handleNext}
+              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all"
+            >
+              Next Step
+            </button>
+          ) : (
+            <button
+              onClick={handleComplete}
+              className="px-8 py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 transition-all font-medium"
+            >
+              Complete Setup
+            </button>
+          )}
         </div>
       </div>
-    </>
+    </div>
   )
 }

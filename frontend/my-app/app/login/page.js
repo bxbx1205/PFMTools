@@ -66,6 +66,13 @@ export default function LoginPage() {
         return
       }
 
+      // Validate PIN format
+      if (isPinLogin && (!/^\d{4}$/.test(formData.pin))) {
+        setError('PIN must be exactly 4 digits')
+        setLoading(false)
+        return
+      }
+
       // Handle login flows
       if (isLogin || isPinLogin) {
         let endpoint = '/api/auth/login'
@@ -97,67 +104,30 @@ export default function LoginPage() {
               localStorage.setItem('rememberUser', 'true')
             }
             
-            setSuccess('Welcome back! Redirecting to dashboard...')
-            await new Promise(resolve => setTimeout(resolve, 1500))
-            router.push('/dashboard')
-          } else {
-            setError(data.message || 'Invalid credentials. Please try again.')
-          }
-        } catch (networkError) {
-          // Fallback for testing without backend
-          console.log('Backend not available, using client-side simulation')
-          
-          // Check if this email has been used for signup before
-          const storedUserData = localStorage.getItem('userData')
-          if (storedUserData) {
-            const userData = JSON.parse(storedUserData)
-            if (userData.email === formData.email) {
-              localStorage.setItem('token', 'demo-token-' + Date.now())
-              localStorage.setItem('lastEmail', formData.email)
-              localStorage.setItem('userName', userData.name)
-              
-              if (rememberMe) {
-                localStorage.setItem('rememberUser', 'true')
-              }
-              
-              setSuccess('Welcome back! Redirecting to dashboard...')
-              await new Promise(resolve => setTimeout(resolve, 1500))
+            setSuccess(isPinLogin ? 'PIN verified! Redirecting...' : 'Welcome back! Redirecting to dashboard...')
+            setTimeout(() => {
               router.push('/dashboard')
-              return
-            }
+            }, 1500)
+          } else {
+            setError(data.message || 'Login failed')
           }
-          
-          // If no matching user found
-          setError('User not found. Please sign up first.')
+        } catch (error) {
+          setError('Network error. Please check your connection.')
         }
       } 
-      // Handle signup flow
+      // Handle signup
       else {
-        // Check if email already exists in localStorage (for demo purposes)
-        const existingUserData = localStorage.getItem('userData')
-        if (existingUserData) {
-          const userData = JSON.parse(existingUserData)
-          if (userData.email === formData.email) {
-            setError('Email already exists. Please use a different email or try logging in.')
-            setLoading(false)
-            return
-          }
-        }
-        
-        const signupData = {
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          signupDate: new Date().toISOString()
-        }
-
         try {
-          const response = await fetch(`http://localhost:5000/api/auth/signup`, {
+          const response = await fetch('http://localhost:5000/api/auth/signup', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(signupData),
+            body: JSON.stringify({
+              name: formData.name,
+              email: formData.email,
+              password: formData.password,
+            }),
           })
 
           const data = await response.json()
@@ -167,1062 +137,405 @@ export default function LoginPage() {
             localStorage.setItem('lastEmail', data.user.email)
             localStorage.setItem(`pinEnabled_${data.user.email}`, data.user.pinEnabled.toString())
             localStorage.setItem('userName', data.user.name)
-            localStorage.setItem('isFirstTimeUser', 'true')
             
-            if (rememberMe) {
-              localStorage.setItem('rememberUser', 'true')
-            }
-            
-            setSuccess('Account created successfully! Welcome to PFM Tools! 🎉')
-            await new Promise(resolve => setTimeout(resolve, 2000))
-            router.push('/dashboard')
+            setSuccess('Account created successfully! Redirecting to dashboard...')
+            setTimeout(() => {
+              router.push('/dashboard')
+            }, 1500)
           } else {
-            setError(data.message || 'Something went wrong. Please try again.')
+            setError(data.message || 'Signup failed')
           }
-        } catch (networkError) {
-          // Fallback for testing without backend
-          console.log('Backend not available, using client-side simulation')
-          
-          localStorage.setItem('token', 'demo-token-' + Date.now())
-          localStorage.setItem('lastEmail', formData.email)
-          localStorage.setItem('pinEnabled_' + formData.email, 'false')
-          localStorage.setItem('userName', formData.name)
-          localStorage.setItem('userData', JSON.stringify(signupData))
-          localStorage.setItem('isFirstTimeUser', 'true')
-          
-          if (rememberMe) {
-            localStorage.setItem('rememberUser', 'true')
-          }
-          
-          setSuccess('Account created successfully! Welcome to PFM Tools! 🎉')
-          await new Promise(resolve => setTimeout(resolve, 2000))
-          router.push('/dashboard')
+        } catch (error) {
+          setError('Network error. Please check your connection.')
         }
       }
-    } catch (err) {
-      setError('Network error. Please check your connection and try again.')
+    } catch (error) {
+      setError('An unexpected error occurred')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
-    
-    // Clear errors when user starts typing
-    if (error) {
-      setError('')
-    }
-  }
-
-  const switchToFullLogin = () => {
-    setIsPinLogin(false)
-    setFormData(prev => ({ ...prev, pin: '', password: '' }))
-    setError('')
   }
 
   const switchToPinLogin = () => {
     setIsPinLogin(true)
-    setFormData(prev => ({ ...prev, password: '', pin: '' }))
-    setError('')
-  }
-
-  const switchToSignup = () => {
-    setIsLogin(false)
-    setIsPinLogin(false)
-    setFormData({ email: formData.email, password: '', name: '', pin: '' })
-    setError('')
-    setSuccess('')
-  }
-
-  const switchToLogin = () => {
     setIsLogin(true)
-    setIsPinLogin(false)
-    setFormData({ email: formData.email, password: '', name: '', pin: '' })
     setError('')
     setSuccess('')
+    setFormData(prev => ({ ...prev, password: '', pin: '' }))
   }
 
-  const handleForgotPassword = () => {
+  const switchToPasswordLogin = () => {
+    setIsPinLogin(false)
+    setIsLogin(true)
     setError('')
-    setSuccess('Password reset link will be sent to your email address.')
-    // TODO: Implement actual forgot password functionality
+    setSuccess('')
+    setFormData(prev => ({ ...prev, password: '', pin: '' }))
+  }
+
+  const toggleMode = () => {
+    setIsLogin(!isLogin)
+    setIsPinLogin(false)
+    setError('')
+    setSuccess('')
+    setFormData({
+      email: '',
+      password: '',
+      name: '',
+      pin: ''
+    })
+  }
+
+  const PinInput = ({ value, onChange, disabled, placeholder }) => {
+    const handlePinChange = (e) => {
+      const val = e.target.value.replace(/\D/g, '').slice(0, 4)
+      onChange({ target: { name: 'pin', value: val } })
+    }
+
+    return (
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-300">
+          Security PIN
+        </label>
+        <input
+          type="password"
+          name="pin"
+          value={value}
+          onChange={handlePinChange}
+          placeholder={placeholder || "Enter 4-digit PIN"}
+          disabled={disabled}
+          maxLength="4"
+          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 text-center text-2xl tracking-widest"
+          style={{ letterSpacing: '0.5em' }}
+        />
+      </div>
+    )
   }
 
   return (
-    <>
-      <style jsx>{`
-        /* Custom Scrollbar Styles */
-        :global(*) {
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center p-4">
+      {/* Custom Scrollbar Styles */}
+      <style jsx global>{`
+        /* Webkit browsers (Chrome, Safari, newer Edge) */
+        ::-webkit-scrollbar {
+          width: 12px;
+          height: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: rgba(30, 41, 59, 0.4);
+          border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+          border-radius: 10px;
+          border: 2px solid rgba(30, 41, 59, 0.4);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(45deg, #2563eb, #1e40af);
+          box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        
+        ::-webkit-scrollbar-corner {
+          background: rgba(30, 41, 59, 0.4);
+        }
+        
+        /* Firefox */
+        * {
           scrollbar-width: thin;
-          scrollbar-color: rgba(0, 200, 150, 0.6) rgba(30, 41, 59, 0.4);
+          scrollbar-color: #3b82f6 rgba(30, 41, 59, 0.4);
         }
-
-        :global(html) {
+        
+        /* Smooth scrolling for all elements */
+        * {
           scroll-behavior: smooth;
         }
-
-        :global(body) {
-          scroll-behavior: smooth;
-          overflow-x: hidden;
-        }
-
-        :global(*::-webkit-scrollbar) {
-          width: 8px;
-          height: 8px;
-        }
-
-        :global(*::-webkit-scrollbar-track) {
-          background: rgba(30, 41, 59, 0.4);
-          border-radius: 10px;
-          border: 1px solid rgba(71, 85, 105, 0.2);
-          box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-        }
-
-        :global(*::-webkit-scrollbar-thumb) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.8) 0%, rgba(0, 184, 124, 0.6) 100%);
-          border-radius: 10px;
-          border: 1px solid rgba(0, 200, 150, 0.3);
-          transition: all 0.3s ease;
-          box-shadow: 0 2px 6px rgba(0, 200, 150, 0.2);
-        }
-
-        :global(*::-webkit-scrollbar-thumb:hover) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 1) 0%, rgba(0, 184, 124, 0.8) 100%);
-          box-shadow: 0 0 12px rgba(0, 200, 150, 0.4), 0 2px 8px rgba(0, 200, 150, 0.3);
-          transform: scale(1.1);
-        }
-
-        :global(*::-webkit-scrollbar-thumb:active) {
-          background: linear-gradient(135deg, rgba(0, 184, 124, 1) 0%, rgba(5, 150, 105, 0.9) 100%);
-          box-shadow: 0 0 16px rgba(0, 200, 150, 0.5), 0 2px 10px rgba(0, 200, 150, 0.4);
-        }
-
-        :global(*::-webkit-scrollbar-corner) {
-          background: rgba(30, 41, 59, 0.4);
-          border-radius: 4px;
-        }
-
-        /* Enhanced scrollbar for containers */
-        :global(.auth-card::-webkit-scrollbar) {
-          width: 6px;
-        }
-
-        :global(.auth-card::-webkit-scrollbar-track) {
-          background: rgba(20, 28, 45, 0.6);
-          border-radius: 8px;
-          border: 1px solid rgba(71, 85, 105, 0.1);
-        }
-
-        :global(.auth-card::-webkit-scrollbar-thumb) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.7) 0%, rgba(0, 184, 124, 0.5) 100%);
-          border-radius: 8px;
-          border: 1px solid rgba(0, 200, 150, 0.2);
-          box-shadow: 0 1px 4px rgba(0, 200, 150, 0.1);
-        }
-
-        :global(.auth-card::-webkit-scrollbar-thumb:hover) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.9) 0%, rgba(0, 184, 124, 0.7) 100%);
-          box-shadow: 0 0 8px rgba(0, 200, 150, 0.3), 0 1px 6px rgba(0, 200, 150, 0.2);
-        }
-
-        /* Form input scrollbar for longer text */
-        :global(.form-input::-webkit-scrollbar) {
-          width: 4px;
-          height: 4px;
-        }
-
-        :global(.form-input::-webkit-scrollbar-track) {
-          background: rgba(30, 41, 59, 0.3);
-          border-radius: 6px;
-        }
-
-        :global(.form-input::-webkit-scrollbar-thumb) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.6) 0%, rgba(0, 184, 124, 0.4) 100%);
-          border-radius: 6px;
-        }
-
-        :global(.form-input::-webkit-scrollbar-thumb:hover) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.8) 0%, rgba(0, 184, 124, 0.6) 100%);
-        }
-
-        .login-container {
-          height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 30%, #0f1419 70%, #0a0e1a 100%);
-          font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          padding: 1rem;
-          position: relative;
-          overflow-y: auto;
-          overflow-x: hidden;
-          scroll-behavior: smooth;
-        }
-
-        .login-container::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: 
-            radial-gradient(circle at 25% 30%, rgba(0, 200, 150, 0.12) 0%, transparent 60%),
-            radial-gradient(circle at 75% 20%, rgba(0, 184, 124, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 20% 80%, rgba(14, 165, 233, 0.06) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.04) 0%, transparent 40%);
-          pointer-events: none;
-        }
-
-        .login-container::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><pattern id="grain" width="200" height="200" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="0.5" fill="white" opacity="0.03"/><circle cx="150" cy="150" r="0.3" fill="white" opacity="0.02"/><circle cx="100" cy="25" r="0.4" fill="white" opacity="0.025"/></pattern></defs><rect width="200" height="200" fill="url(%23grain)"/></svg>');
-          pointer-events: none;
-        }
-
-        .floating-orbs {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        .orb {
-          position: absolute;
-          border-radius: 50%;
-          opacity: 0.6;
-          animation: float 12s ease-in-out infinite;
-          filter: blur(1px);
-        }
-
-        .orb:nth-child(1) {
-          width: 140px;
-          height: 140px;
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.15), rgba(0, 184, 124, 0.08));
-          top: 15%;
-          left: 8%;
-          animation-delay: 0s;
-        }
-
-        .orb:nth-child(2) {
-          width: 100px;
-          height: 100px;
-          background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(59, 130, 246, 0.06));
-          top: 65%;
-          right: 12%;
-          animation-delay: 4s;
-        }
-
-        .orb:nth-child(3) {
-          width: 80px;
-          height: 80px;
-          background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.05));
-          top: 25%;
-          right: 20%;
-          animation-delay: 8s;
-        }
-
-        .orb:nth-child(4) {
-          width: 60px;
-          height: 60px;
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.08), rgba(34, 197, 94, 0.04));
-          top: 80%;
-          left: 25%;
-          animation-delay: 2s;
-        }
-
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0px) translateX(0px) scale(1) rotate(0deg);
-          }
-          25% {
-            transform: translateY(-20px) translateX(10px) scale(1.05) rotate(90deg);
-          }
-          50% {
-            transform: translateY(-40px) translateX(-5px) scale(1.1) rotate(180deg);
-          }
-          75% {
-            transform: translateY(-20px) translateX(-10px) scale(1.05) rotate(270deg);
-          }
-        }
-
-        .login-wrapper {
-          width: 100%;
-          max-width: 500px;
-          position: relative;
-          z-index: 2;
-        }
-
-        .logo-section {
-          text-align: center;
-          margin-bottom: 2rem;
-          animation: fadeInUp 0.8s ease-out;
-        }
-
-        .logo {
-          width: 64px;
-          height: 64px;
-          background: linear-gradient(135deg, #00C896 0%, #00B87C 100%);
-          border-radius: 18px;
-          margin: 0 auto 1rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          box-shadow: 
-            0 10px 40px rgba(0, 200, 150, 0.4),
-            0 0 80px rgba(0, 200, 150, 0.15),
-            inset 0 1px 0 rgba(255, 255, 255, 0.25);
-          border: 1px solid rgba(0, 200, 150, 0.4);
-          transition: all 0.3s ease;
-          animation: logoGlow 3s ease-in-out infinite;
-        }
-
-        .logo:hover {
-          transform: translateY(-2px) scale(1.05);
-          box-shadow: 
-            0 15px 50px rgba(0, 200, 150, 0.5),
-            0 0 100px rgba(0, 200, 150, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        @keyframes logoGlow {
-          0%, 100% {
-            box-shadow: 
-              0 10px 40px rgba(0, 200, 150, 0.4),
-              0 0 80px rgba(0, 200, 150, 0.15),
-              inset 0 1px 0 rgba(255, 255, 255, 0.25);
-          }
-          50% {
-            box-shadow: 
-              0 12px 45px rgba(0, 200, 150, 0.5),
-              0 0 90px rgba(0, 200, 150, 0.2),
-              inset 0 1px 0 rgba(255, 255, 255, 0.3);
-          }
-        }
-
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .logo::before {
-          content: '';
-          position: absolute;
-          width: 28px;
-          height: 28px;
-          background: rgba(255, 255, 255, 0.98);
-          border-radius: 8px;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .logo::after {
-          content: '📈';
-          position: absolute;
-          font-size: 16px;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 1;
-        }
-
-        .app-title {
-          font-size: 1.875rem;
-          font-weight: 700;
-          background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #cbd5e1 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          margin-bottom: 0.375rem;
-          letter-spacing: -0.025em;
-          text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
-          position: relative;
-        }
-
-        .app-title::after {
-          content: '';
-          position: absolute;
-          bottom: -4px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 60px;
-          height: 2px;
-          background: linear-gradient(90deg, transparent, #00C896, transparent);
-          border-radius: 1px;
-        }
-
-        .app-subtitle {
-          color: #94a3b8;
-          font-size: 0.9rem;
-          font-weight: 400;
-          margin-bottom: 0;
-          opacity: 0.9;
-        }
-
-        .auth-card {
-          background: rgba(20, 28, 45, 0.85);
-          backdrop-filter: blur(25px);
-          border-radius: 16px;
-          padding: 2.5rem;
-          box-shadow: 
-            0 25px 50px rgba(0, 0, 0, 0.4),
-            0 12px 40px rgba(0, 0, 0, 0.25),
-            inset 0 1px 0 rgba(255, 255, 255, 0.15),
-            0 0 0 1px rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          position: relative;
-          overflow-y: auto;
-          overflow-x: hidden;
-          height: fit-content;
-          max-height: calc(100vh - 4rem);
-          width: 100%;
-          animation: cardSlideIn 0.8s ease-out 0.2s both;
-          scroll-behavior: smooth;
-        }
-
-        .auth-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: linear-gradient(90deg, transparent 0%, rgba(0, 200, 150, 0.6) 20%, rgba(0, 200, 150, 0.8) 50%, rgba(0, 200, 150, 0.6) 80%, transparent 100%);
-          animation: shimmer 3s ease-in-out infinite;
-        }
-
-        .auth-card::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.02) 0%, transparent 50%, rgba(14, 165, 233, 0.02) 100%);
-          pointer-events: none;
-        }
-
-        @keyframes cardSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(40px) scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        @keyframes shimmer {
-          0%, 100% {
-            opacity: 0.5;
-          }
-          50% {
-            opacity: 1;
-          }
-        }
-
-        .auth-header {
-          margin-bottom: 2rem;
-          text-align: center;
-        }
-
-        .auth-title {
-          font-size: 1.875rem;
-          font-weight: 600;
-          color: #f8fafc;
-          margin-bottom: 0.5rem;
-          letter-spacing: -0.025em;
-        }
-
-        .auth-description {
-          color: #94a3b8;
-          font-size: 0.95rem;
-          line-height: 1.5;
-          margin-bottom: 0;
-        }
-
-        .notification-banner {
-          padding: 1.25rem;
-          border-radius: 12px;
-          margin-bottom: 1.5rem;
-          font-size: 0.875rem;
-          border: 1px solid;
-          font-weight: 500;
-          backdrop-filter: blur(10px);
-          text-align: center;
-        }
-
-        .notification-banner.info {
-          background: rgba(14, 165, 233, 0.1);
-          color: #38bdf8;
-          border-color: rgba(14, 165, 233, 0.3);
-        }
-
-        .notification-banner.neutral {
-          background: rgba(71, 85, 105, 0.2);
-          color: #cbd5e1;
-          border-color: rgba(71, 85, 105, 0.3);
-        }
-
-        .notification-banner.error {
-          background: rgba(239, 68, 68, 0.1);
-          color: #f87171;
-          border-color: rgba(239, 68, 68, 0.3);
-        }
-
-        .notification-banner.success {
-          background: rgba(34, 197, 94, 0.1);
-          color: #4ade80;
-          border-color: rgba(34, 197, 94, 0.3);
-        }
-
-        .form-group {
-          margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.5rem;
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: #e2e8f0;
-        }
-
-        .forgot-password-link {
-          background: none;
-          border: none;
-          color: #00C896;
-          font-size: 0.8rem;
-          cursor: pointer;
-          text-decoration: underline;
-          padding: 0;
-          transition: color 0.2s ease;
-        }
-
-        .forgot-password-link:hover {
-          color: #00B87C;
-        }
-
-        .form-input {
-          width: 100%;
-          padding: 1rem 1.25rem;
-          border: 1.5px solid rgba(71, 85, 105, 0.5);
-          border-radius: 12px;
-          font-size: 1rem;
-          box-sizing: border-box;
-          transition: all 0.3s ease;
-          background: rgba(30, 41, 59, 0.6);
-          backdrop-filter: blur(12px);
-          font-family: inherit;
-          color: #f8fafc;
-          min-height: 52px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-input:focus {
-          outline: none;
-          border-color: #00C896;
-          box-shadow: 
-            0 0 0 3px rgba(0, 200, 150, 0.1),
-            0 0 20px rgba(0, 200, 150, 0.1);
-          background: rgba(30, 41, 59, 0.8);
-        }
-
-        .form-input::placeholder {
-          color: #64748b;
-        }
-
-        .form-input.readonly {
-          background: rgba(51, 65, 85, 0.3);
-          border-color: rgba(71, 85, 105, 0.3);
-          cursor: not-allowed;
-          color: #94a3b8;
-        }
-
-        .pin-input {
-          text-align: center;
-          letter-spacing: 0.5rem;
-          font-size: 1.25rem;
-          font-weight: 600;
-        }
-
-        .password-input-container {
-          position: relative;
-        }
-
-        .password-toggle {
-          position: absolute;
-          right: 1rem;
-          top: 50%;
-          transform: translateY(-50%);
-          background: none;
-          border: none;
-          color: #64748b;
-          cursor: pointer;
-          font-size: 1.125rem;
-          transition: all 0.2s ease;
-          padding: 0.25rem;
-          border-radius: 4px;
-        }
-
-        .password-toggle:hover {
-          color: #94a3b8;
-          background: rgba(71, 85, 105, 0.2);
-        }
-
-        .checkbox-group {
-          margin-bottom: 2rem;
-        }
-
-        .checkbox-label {
-          display: flex;
-          align-items: center;
-          cursor: pointer;
-          font-size: 0.875rem;
-          color: #cbd5e1;
-          user-select: none;
-        }
-
-        .checkbox-input {
-          display: none;
-        }
-
-        .checkbox-custom {
-          width: 20px;
-          height: 20px;
-          border: 2px solid rgba(71, 85, 105, 0.5);
-          border-radius: 4px;
-          margin-right: 0.75rem;
-          position: relative;
-          background: rgba(30, 41, 59, 0.6);
-          transition: all 0.3s ease;
-          flex-shrink: 0;
-        }
-
-        .checkbox-input:checked + .checkbox-custom {
-          background: #00C896;
-          border-color: #00C896;
-        }
-
-        .checkbox-input:checked + .checkbox-custom::after {
-          content: '✓';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          color: white;
-          font-size: 12px;
-          font-weight: bold;
-        }
-
-        .checkbox-text {
-          line-height: 1.4;
-        }
-
-        .submit-button {
-          width: 100%;
-          background: linear-gradient(135deg, #00C896 0%, #00B87C 100%);
-          color: white;
-          padding: 1rem;
-          border: none;
-          border-radius: 12px;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          margin-bottom: 1.5rem;
-          position: relative;
-          overflow: hidden;
-          box-shadow: 
-            0 4px 20px rgba(0, 200, 150, 0.3),
-            0 0 40px rgba(0, 200, 150, 0.1);
-          min-height: 52px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .submit-button::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-          transition: left 0.6s ease;
-        }
-
-        .submit-button:hover:not(:disabled) {
-          background: linear-gradient(135deg, #00B87C 0%, #059669 100%);
-          transform: translateY(-2px);
-          box-shadow: 
-            0 8px 30px rgba(0, 200, 150, 0.4),
-            0 0 60px rgba(0, 200, 150, 0.2);
-        }
-
-        .submit-button:hover:not(:disabled)::before {
-          left: 100%;
-        }
-
-        .submit-button:disabled {
-          background: rgba(71, 85, 105, 0.5);
-          cursor: not-allowed;
-          transform: none;
-          box-shadow: none;
-        }
-
-        .loading-spinner {
-          display: inline-block;
-          width: 16px;
-          height: 16px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
-          border-top-color: #ffffff;
-          animation: spin 1s linear infinite;
-          margin-right: 0.5rem;
-        }
-
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        .quick-login-badge {
-          display: inline-flex;
-          align-items: center;
-          background: rgba(0, 200, 150, 0.15);
-          color: #00C896;
-          padding: 0.375rem 1rem;
-          border-radius: 20px;
-          font-size: 0.8rem;
-          font-weight: 600;
-          margin-bottom: 0.75rem;
-          border: 1px solid rgba(0, 200, 150, 0.25);
-          justify-content: center;
-        }
-
-        .quick-login-badge::before {
-          content: '⚡';
-          margin-right: 0.375rem;
-        }
-
-        .banner-text {
-          color: #94a3b8;
-          font-size: 0.875rem;
-          line-height: 1.4;
-          margin-bottom: 0.75rem;
-        }
-
-        .banner-action {
-          margin-top: 0.5rem;
-        }
-
-        .switch-link {
-          color: #00C896;
-          text-decoration: none;
-          border: none;
-          background: transparent;
-          cursor: pointer;
-          font-size: 0.875rem;
-          font-weight: 500;
-          transition: all 0.2s ease;
-          padding: 0.25rem 0.5rem;
-          border-radius: 6px;
-        }
-
-        .switch-link:hover {
-          color: #00B87C;
-          background: rgba(0, 200, 150, 0.1);
-        }
-
-        .auth-footer {
-          text-align: center;
-        }
-
-        .footer-text {
-          font-size: 0.875rem;
-          color: #94a3b8;
-          line-height: 1.5;
-        }
-
-        @media (max-width: 768px) {
-          .login-wrapper {
-            max-width: 100%;
-          }
-          
-          .auth-card {
-            padding: 2rem;
-            margin: 0 1rem;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .login-container {
-            padding: 0.5rem;
-          }
-          
-          .auth-card {
-            padding: 1.5rem;
-            margin: 0;
-          }
-          
-          .app-title {
-            font-size: 1.5rem;
-          }
-          
-          .auth-title {
-            font-size: 1.5rem;
-          }
-          
-          .form-input {
-            padding: 0.875rem 1rem;
-            min-height: 46px;
-          }
-          
-          .submit-button {
-            padding: 0.875rem;
-            font-size: 0.95rem;
-            min-height: 46px;
-          }
+        
+        /* Enhanced hover effects for scrollable content */
+        .scrollable-area:hover::-webkit-scrollbar-thumb {
+          background: linear-gradient(45deg, #2563eb, #1e40af);
+          box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
         }
       `}</style>
-
-      <div className="login-container">
-        <div className="floating-orbs">
-          <div className="orb"></div>
-          <div className="orb"></div>
-          <div className="orb"></div>
-          <div className="orb"></div>
+      
+      <div className="w-full max-w-md">
+        {/* Logo/Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4">
+            <span className="text-2xl font-bold text-white">PF</span>
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Personal Finance Manager
+          </h1>
+          <p className="text-gray-400">
+            {isLogin 
+              ? (isPinLogin ? 'Enter your PIN to continue' : 'Welcome back! Sign in to continue') 
+              : 'Create your account to get started'
+            }
+          </p>
         </div>
-        
-        <div className="login-wrapper">
 
+        {/* Main Form Card */}
+        <div className="bg-gray-800/20 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 shadow-2xl">
+          {/* Tab Switcher */}
+          <div className="flex bg-gray-800/30 rounded-xl p-1 mb-6">
+            <button
+              type="button"
+              onClick={() => { setIsLogin(true); setIsPinLogin(false); toggleMode() }}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
+                isLogin && !isPinLogin
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={toggleMode}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
+                !isLogin
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Sign Up
+            </button>
+          </div>
 
-          <div className="auth-card">
-            <div className="auth-header">
-              <h2 className="auth-title">
-                {isPinLogin ? 'Quick Access' : (
-                  isLogin ? 'Welcome back' : 'Create your account'
-                )}
-              </h2>
-              <p className="auth-description">
-                {isPinLogin 
-                  ? 'Enter your PIN to continue securely' 
-                  : (isLogin 
-                    ? 'Sign in to access your financial dashboard' 
-                    : 'Join thousands of users managing their finances smarter'
-                  )
-                }
-              </p>
+          {/* PIN/Password Toggle for Login */}
+          {isLogin && savedEmail && (
+            <div className="flex bg-gray-800/30 rounded-xl p-1 mb-6">
+              <button
+                type="button"
+                onClick={switchToPasswordLogin}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  !isPinLogin
+                    ? 'bg-purple-600 text-white shadow-lg'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                Password
+              </button>
+              <button
+                type="button"
+                onClick={switchToPinLogin}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  isPinLogin
+                    ? 'bg-purple-600 text-white shadow-lg'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                PIN
+              </button>
             </div>
+          )}
 
-            {savedEmail && !isPinLogin && isLogin && (
-              <div className="notification-banner info">
-                <div className="quick-login-badge">Quick Login Available</div>
-                <div className="banner-text">
-                  Welcome back! You can use your PIN for faster access.
-                </div>
-                <div className="banner-action">
-                  <button onClick={switchToPinLogin} className="switch-link">
-                    Use PIN instead →
-                  </button>
-                </div>
-              </div>
-            )}
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
 
-            {isPinLogin && (
-              <div className="notification-banner neutral">
-                <div className="banner-text">
-                  Quick and secure login with your 4-digit PIN
-                </div>
-                <div className="banner-action">
-                  <button onClick={switchToFullLogin} className="switch-link">
-                    ← Use password instead
-                  </button>
-                </div>
-              </div>
-            )}
+          {/* Success Message */}
+          {success && (
+            <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 mb-6">
+              <p className="text-green-400 text-sm">{success}</p>
+            </div>
+          )}
 
-            {error && (
-              <div className="notification-banner error">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="notification-banner success">
-                {success}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              {/* Name field for signup */}
-              {!isLogin && !isPinLogin && (
-                <div className="form-group">
-                  <label className="form-label">Full Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="form-input"
-                    placeholder="Enter your full name"
-                    autoComplete="name"
-                  />
-                </div>
-              )}
-
-              {/* Email field */}
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Name Field (Signup only) */}
+            {!isLogin && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300">
+                  Full Name
+                </label>
                 <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  readOnly={isPinLogin && savedEmail}
-                  className={`form-input ${(isPinLogin && savedEmail) ? 'readonly' : ''}`}
-                  placeholder="Enter your email address"
-                  autoComplete="email"
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Enter your full name"
+                  disabled={loading}
+                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                 />
               </div>
+            )}
 
-              {/* PIN or Password field */}
-              {isPinLogin ? (
-                <div className="form-group">
-                  <label className="form-label">Security PIN</label>
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Enter your email"
+                disabled={loading || (isLogin && savedEmail)}
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 disabled:opacity-50"
+              />
+            </div>
+
+            {/* Password Field */}
+            {(!isPinLogin) && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300">
+                  Password
+                </label>
+                <div className="relative">
                   <input
-                    type="password"
-                    name="pin"
-                    value={formData.pin}
-                    onChange={handleChange}
-                    required
-                    maxLength={4}
-                    pattern="\d{4}"
-                    className="form-input pin-input"
-                    placeholder="••••"
-                    autoComplete="current-password"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder={isLogin ? "Enter your password" : "Create a password (min 6 characters)"}
+                    disabled={loading}
+                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 pr-12"
                   />
-                </div>
-              ) : (
-                <div className="form-group">
-                  <label className="form-label">
-                    Password
-                    {isLogin && (
-                      <button
-                        type="button"
-                        onClick={handleForgotPassword}
-                        className="forgot-password-link"
-                      >
-                        Forgot password?
-                      </button>
-                    )}
-                  </label>
-                  <div className="password-input-container">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      className="form-input"
-                      placeholder={isLogin ? "Enter your password" : "Create a strong password (min 6 characters)"}
-                      autoComplete={isLogin ? "current-password" : "new-password"}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="password-toggle"
-                      tabIndex={-1}
-                    >
-                      {showPassword ? '🙈' : '👁️'}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Remember Me / Stay Signed In */}
-              {!isPinLogin && (
-                <div className="form-group checkbox-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="checkbox-input"
-                    />
-                    <span className="checkbox-custom"></span>
-                    <span className="checkbox-text">
-                      {isLogin ? 'Keep me signed in' : 'I agree to the Terms of Service and Privacy Policy'}
-                    </span>
-                  </label>
-                </div>
-              )}
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="submit-button"
-              >
-                {loading && <span className="loading-spinner"></span>}
-                {loading ? (
-                  isPinLogin ? 'Verifying...' : (
-                    isLogin ? 'Signing in...' : 'Creating account...'
-                  )
-                ) : (
-                  isPinLogin ? 'Continue with PIN' : (
-                    isLogin ? 'Sign in' : 'Create Account'
-                  )
-                )}
-              </button>
-            </form>
-
-            {/* Footer with switch options */}
-            {!isPinLogin && (
-              <div className="auth-footer">
-                <div className="footer-text">
-                  {isLogin ? "Don't have an account? " : "Already have an account? "}
                   <button
-                    onClick={isLogin ? switchToSignup : switchToLogin}
-                    className="switch-link"
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                   >
-                    {isLogin ? 'Sign up' : 'Sign in'}
+                    {showPassword ? (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    )}
                   </button>
                 </div>
               </div>
             )}
+
+            {/* PIN Field */}
+            {isPinLogin && (
+              <PinInput
+                value={formData.pin}
+                onChange={handleInputChange}
+                disabled={loading}
+                placeholder="Enter your 4-digit PIN"
+              />
+            )}
+
+            {/* Remember Me Checkbox */}
+            {isLogin && (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-300">
+                    Remember me
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-xl"
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  {isLogin ? (isPinLogin ? 'Verifying PIN...' : 'Signing In...') : 'Creating Account...'}
+                </div>
+              ) : (
+                isLogin ? (isPinLogin ? 'Verify PIN' : 'Sign In') : 'Create Account'
+              )}
+            </button>
+
+            {/* Alternative Actions */}
+            <div className="text-center space-y-3">
+              {/* Switch between Sign In and Sign Up */}
+              <p className="text-gray-400">
+                {isLogin ? "Don't have an account? " : "Already have an account? "}
+                <button
+                  type="button"
+                  onClick={toggleMode}
+                  className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                >
+                  {isLogin ? 'Sign up here' : 'Sign in here'}
+                </button>
+              </p>
+
+              {/* Social Login Options */}
+              <div className="flex items-center my-6">
+                <div className="flex-1 border-t border-gray-600"></div>
+                <span className="px-4 text-gray-400 text-sm">Or continue with</span>
+                <div className="flex-1 border-t border-gray-600"></div>
+              </div>
+
+              <div className="flex space-x-4">
+                <button
+                  type="button"
+                  className="flex-1 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-600 text-white py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center"
+                >
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  </svg>
+                  Google
+                </button>
+                <button
+                  type="button"
+                  className="flex-1 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-600 text-white py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                  Facebook
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-8 text-gray-400 text-sm">
+          <p>© 2025 Personal Finance Manager. All rights reserved.</p>
+          <div className="flex justify-center space-x-4 mt-2">
+            <button className="hover:text-white transition-colors">Privacy Policy</button>
+            <span>•</span>
+            <button className="hover:text-white transition-colors">Terms of Service</button>
+            <span>•</span>
+            <button className="hover:text-white transition-colors">Help</button>
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
