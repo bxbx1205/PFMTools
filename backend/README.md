@@ -1,8 +1,6 @@
-# PFM Backend
-
 # PFM Tools Backend
 
-A comprehensive backend API for Personal Finance Management with MongoDB Atlas integration.
+A backend API for Personal Finance Management now using local MongoDB (works with MongoDB Compass). Users are stored in MongoDB with a Mongoose schema; profiles and debts continue using JSON files for now.
 
 ## Features
 
@@ -15,44 +13,36 @@ A comprehensive backend API for Personal Finance Management with MongoDB Atlas i
 
 ## Tech Stack
 
-- **Node.js** + **Express.js**
-- **MongoDB Atlas** (Cloud Database)
-- **Mongoose** (ODM)
-- **JWT** (Authentication)
-- **bcryptjs** (Password Hashing)
-- **CORS** (Cross-Origin Support)
+- Node.js + Express.js
+- MongoDB (local) + Mongoose
+- JWT (Authentication)
+- bcryptjs (Password Hashing)
+- CORS
 
 ## Quick Start
 
-### 1. Install Dependencies
-```bash
+### 1) Install dependencies
+```powershell
 npm install
 ```
 
-### 2. Environment Setup
-```bash
-# Copy environment template
-cp .env.example .env
-
-# Edit .env with your MongoDB Atlas credentials
+### 2) Configure environment
+```powershell
+Copy-Item .env.example .env
+# Edit .env if needed; default is local MongoDB: mongodb://127.0.0.1:27017/pfmtools
 ```
 
-### 3. MongoDB Atlas Setup
-1. Create account at [MongoDB Atlas](https://www.mongodb.com/atlas)
-2. Create a free cluster
-3. Setup database user and network access
-4. Get connection string and update `.env`
+### 3) Start MongoDB locally
+- Install MongoDB Community Server if you don't have it.
+- Start the MongoDB service (Windows Services) or run mongod.
+- Open MongoDB Compass and connect to: `mongodb://127.0.0.1:27017`.
 
-### 4. Start Development Server
-```bash
-# Development with auto-reload
+### 4) Run the server
+```powershell
 npm run dev
-
-# Production
-npm start
 ```
 
-Server will run on `http://localhost:5000`
+By default it listens on port 5000. You can override with the `PORT` env.
 
 ## API Endpoints
 
@@ -119,9 +109,9 @@ NODE_ENV=development           # Environment
 ```
 
 ### Database Collections
-- **users** - User accounts and auth data
-- **userprofiles** - Personal and financial profile data  
-- **debtinfos** - Debt and loan information
+- users - User accounts and auth data (MongoDB)
+- profiles.json - Personal and financial profile data (file)
+- debts.json - Debt and loan information (file)
 
 ## Production Deployment
 
@@ -160,35 +150,6 @@ See `API_DOCUMENTATION.md` for complete endpoint documentation with request/resp
 
 This project is licensed under the MIT License.
 
-## Setup
-
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Make sure MongoDB is running on your local machine, or update the `MONGODB_URI` in `.env` file.
-
-3. Update the `.env` file with your configuration:
-```
-MONGODB_URI=mongodb://localhost:27017/pfm-auth
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-PORT=5000
-```
-
-4. Start the server:
-```bash
-npm run dev
-```
-
-## API Endpoints
-
-- `POST /api/auth/signup` - Create new user account
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user info (protected route)
-
-## Usage
-
-The server will run on `http://localhost:5000` by default.
-
-Make sure your frontend is configured to make requests to this URL.
+## Notes on migration from JSON
+- On first start, if the MongoDB users collection is empty and a `data/users.json` file exists, the server will import those users into MongoDB and rename the file to `users.json.bak`.
+- After migration, user creation/login only use MongoDB.

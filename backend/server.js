@@ -4,6 +4,11 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const fs = require('fs').promises;
 const path = require('path');
+const mongoose = require('mongoose');
+const connectDB = require('./db');
+const User = require('./models/User');
+const Profile = require('./models/Profile');
+const Debt = require('./models/Debt');
 require('dotenv').config();
 
 const app = express();
@@ -12,23 +17,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Data directory setup
+// Data directory setup (still used for profiles and debts for now)
 const DATA_DIR = path.join(__dirname, 'data');
-const USERS_FILE = path.join(DATA_DIR, 'users.json');
+const USERS_JSON_FILE = path.join(DATA_DIR, 'users.json');
 const PROFILES_FILE = path.join(DATA_DIR, 'profiles.json');
 const DEBTS_FILE = path.join(DATA_DIR, 'debts.json');
 
-// Initialize data directory and files
+// Initialize data directory and files (no longer creates users.json)
 async function initializeDataFiles() {
   try {
     await fs.mkdir(DATA_DIR, { recursive: true });
-    
-    // Initialize users file
-    try {
-      await fs.access(USERS_FILE);
-    } catch (error) {
-      await fs.writeFile(USERS_FILE, JSON.stringify([]));
-    }
     
     // Initialize profiles file
     try {
@@ -44,9 +42,122 @@ async function initializeDataFiles() {
       await fs.writeFile(DEBTS_FILE, JSON.stringify([]));
     }
     
-    console.log('Data files initialized successfully');
+    console.log('Data files (profiles, debts) initialized successfully');
   } catch (error) {
     console.error('Error initializing data files:', error);
+  }
+}
+// One-time migration: import users from JSON into MongoDB if collection is empty
+async function migrateUsersFromJsonIfAny() {
+  try {
+    const userCount = await User.estimatedDocumentCount();
+    if (userCount > 0) {
+      return; // already have users, skip migration
+    }
+
+    // Check if users.json exists and has content
+    await fs.access(USERS_JSON_FILE);
+    const raw = await fs.readFile(USERS_JSON_FILE, 'utf8');
+    const arr = JSON.parse(raw || '[]');
+    if (!Array.isArray(arr) || arr.length === 0) return;
+
+    // Map fields and insertMany
+    const docs = arr.map(u => ({
+      name: u.name,
+      email: (u.email || '').toLowerCase(),
+      password: u.password, // already hashed in old storage
+      pin: u.pin || null,
+      pinEnabled: !!u.pinEnabled,
+      faceIDEnabled: !!u.faceIDEnabled,
+      createdAt: u.createdAt ? new Date(u.createdAt) : undefined,
+      updatedAt: u.updatedAt ? new Date(u.updatedAt) : undefined,
+    }));
+
+    if (docs.length) {
+      await User.insertMany(docs, { ordered: false });
+      console.log(`Migrated ${docs.length} users from users.json to MongoDB`);
+      // Backup old file to avoid re-import on next start
+      try {
+        await fs.rename(USERS_JSON_FILE, path.join(DATA_DIR, 'users.json.bak'));
+      } catch (e) {
+        // ignore if cannot rename
+      }
+    }
+  } catch (e) {
+    // If file doesn't exist or any error, just log and continue
+    if (e && e.code !== 'ENOENT') {
+      console.warn('User migration skipped due to error:', e.message);
+    }
+  }
+}
+
+// One-time migration: import profiles and debts from JSON into MongoDB
+async function migrateProfilesAndDebtsFromJsonIfAny() {
+  // Build a mapping from legacy user id to Mongo ObjectId
+  let legacyUsers = [];
+  try {
+    const bak = await fs.readFile(path.join(DATA_DIR, 'users.json.bak'), 'utf8');
+    legacyUsers = JSON.parse(bak || '[]');
+  } catch (_) {
+    // ignore if no bak file
+  }
+
+  const emailToMongoId = new Map();
+  if (legacyUsers.length) {
+    // Fetch existing Mongo users by email
+    const emails = legacyUsers.map(u => (u.email || '').toLowerCase());
+    const mongoUsers = await User.find({ email: { $in: emails } }, { _id: 1, email: 1 }).lean();
+    const emailToId = new Map(mongoUsers.map(u => [u.email, u._id.toString()]));
+    for (const u of legacyUsers) {
+      const id = emailToId.get((u.email || '').toLowerCase());
+      if (id) emailToMongoId.set(u.id, id);
+    }
+  }
+
+  // Migrate profiles if collection empty
+  try {
+    const count = await Profile.estimatedDocumentCount();
+    if (count === 0) {
+      const profilesRaw = await fs.readFile(PROFILES_FILE, 'utf8');
+      const profiles = JSON.parse(profilesRaw || '[]');
+      const docs = [];
+      for (const p of profiles) {
+        const mongoUserId = emailToMongoId.get(p.userId);
+        if (!mongoUserId) continue;
+        const { id, userId, createdAt, updatedAt, ...rest } = p;
+        docs.push({ user: mongoose.Types.ObjectId(mongoUserId), ...rest, createdAt, updatedAt });
+      }
+      if (docs.length) {
+        await Profile.insertMany(docs, { ordered: false });
+        console.log(`Migrated ${docs.length} profiles from profiles.json to MongoDB`);
+        try { await fs.rename(PROFILES_FILE, path.join(DATA_DIR, 'profiles.json.bak')); } catch (_) {}
+      }
+    }
+  } catch (e) {
+    // ignore if file not found
+  }
+
+  // Migrate debts if collection empty
+  try {
+    const count = await Debt.estimatedDocumentCount();
+    if (count === 0) {
+      const debtsRaw = await fs.readFile(DEBTS_FILE, 'utf8');
+      const debts = JSON.parse(debtsRaw || '[]');
+      const docs = [];
+      for (const d of debts) {
+        const mongoUserId = emailToMongoId.get(d.userId);
+        if (!mongoUserId) continue;
+        const { id, userId, createdAt, updatedAt, ...rest } = d;
+        docs.push({ user: mongoose.Types.ObjectId(mongoUserId), ...rest, createdAt, updatedAt });
+      }
+      if (docs.length) {
+        await Debt.insertMany(docs, { ordered: false });
+        console.log(`Migrated ${docs.length} debts from debts.json to MongoDB`);
+        try { await fs.rename(DEBTS_FILE, path.join(DATA_DIR, 'debts.json.bak')); } catch (_) {}
+      }
+    }
+  } catch (e) {
+    // ignore if file not found
   }
 }
 
@@ -117,11 +228,8 @@ app.post('/api/auth/signup', async (req, res) => {
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
     }
 
-    // Read existing users
-    const users = await readDataFile(USERS_FILE);
-
-    // Check if user already exists
-    const existingUser = users.find(user => user.email.toLowerCase() === email.toLowerCase());
+    // Check if user already exists (MongoDB)
+    const existingUser = await User.findOne({ email: email.toLowerCase() }).lean();
     if (existingUser) {
       return res.status(400).json({ message: 'User with this email already exists' });
     }
@@ -129,26 +237,16 @@ app.post('/api/auth/signup', async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
-    const newUser = {
-      id: generateId(),
+    // Create new user (MongoDB)
+    const created = await User.create({
       name,
       email: email.toLowerCase(),
       password: hashedPassword,
-      pin: null,
-      pinEnabled: false,
-      faceIDEnabled: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    // Add user to array and save
-    users.push(newUser);
-    await writeDataFile(USERS_FILE, users);
+    });
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: newUser.id, email: newUser.email },
+      { id: created._id.toString(), email: created.email },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -157,11 +255,11 @@ app.post('/api/auth/signup', async (req, res) => {
       message: 'User created successfully',
       token,
       user: {
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email,
-        pinEnabled: newUser.pinEnabled,
-        faceIDEnabled: newUser.faceIDEnabled
+        id: created._id.toString(),
+        name: created.name,
+        email: created.email,
+        pinEnabled: created.pinEnabled,
+        faceIDEnabled: created.faceIDEnabled
       }
     });
 
@@ -181,11 +279,8 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    // Read users
-    const users = await readDataFile(USERS_FILE);
-
-    // Find user
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    // Find user (MongoDB)
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -198,7 +293,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user._id.toString(), email: user.email },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -207,7 +302,7 @@ app.post('/api/auth/login', async (req, res) => {
       message: 'Login successful',
       token,
       user: {
-        id: user.id,
+        id: user._id.toString(),
         name: user.name,
         email: user.email,
         pinEnabled: user.pinEnabled,
@@ -235,11 +330,8 @@ app.post('/api/auth/login-pin', async (req, res) => {
       return res.status(400).json({ message: 'PIN must be 4 digits' });
     }
 
-    // Read users
-    const users = await readDataFile(USERS_FILE);
-
-    // Find user
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    // Find user (MongoDB)
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -257,7 +349,7 @@ app.post('/api/auth/login-pin', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user._id.toString(), email: user.email },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -266,7 +358,7 @@ app.post('/api/auth/login-pin', async (req, res) => {
       message: 'PIN login successful',
       token,
       user: {
-        id: user.id,
+        id: user._id.toString(),
         name: user.name,
         email: user.email,
         pinEnabled: user.pinEnabled,
@@ -289,23 +381,18 @@ app.post('/api/auth/set-pin', authenticateToken, async (req, res) => {
       return res.status(400).json({ message: 'PIN must be exactly 4 digits' });
     }
 
-    // Read users
-    const users = await readDataFile(USERS_FILE);
-    
-    // Find and update user
-    const userIndex = users.findIndex(u => u.id === req.user.id);
-    if (userIndex === -1) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
     // Hash PIN
     const hashedPin = await bcrypt.hash(pin, 10);
-    
-    users[userIndex].pin = hashedPin;
-    users[userIndex].pinEnabled = true;
-    users[userIndex].updatedAt = new Date().toISOString();
-    
-    await writeDataFile(USERS_FILE, users);
+
+    // Update user in MongoDB
+    const result = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: { pin: hashedPin, pinEnabled: true } },
+      { new: true }
+    );
+    if (!result) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     res.json({ message: 'PIN set successfully' });
   } catch (error) {
@@ -322,11 +409,8 @@ app.post('/api/auth/verify-pin', authenticateToken, async (req, res) => {
       return res.status(400).json({ message: 'Invalid PIN format' });
     }
 
-    // Read users
-    const users = await readDataFile(USERS_FILE);
-    
-    // Find user
-    const user = users.find(u => u.id === req.user.id);
+    // Find user in MongoDB
+    const user = await User.findById(req.user.id);
     if (!user || !user.pinEnabled || !user.pin) {
       return res.status(400).json({ message: 'PIN not set for this user' });
     }
@@ -344,40 +428,20 @@ app.post('/api/auth/verify-pin', authenticateToken, async (req, res) => {
   }
 });
 
-// Profile Routes
+// Profile Routes (MongoDB)
 app.post('/api/profile', authenticateToken, async (req, res) => {
   try {
     const profileData = req.body;
-
-    // Read existing profiles
-    const profiles = await readDataFile(PROFILES_FILE);
-
-    // Check if profile already exists for this user
-    const existingProfileIndex = profiles.findIndex(p => p.userId === req.user.id);
-
-    const newProfileData = {
-      userId: req.user.id,
+    const update = {
       ...profileData,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date(),
     };
-
-    if (existingProfileIndex !== -1) {
-      // Update existing profile
-      profiles[existingProfileIndex] = { ...profiles[existingProfileIndex], ...newProfileData };
-    } else {
-      // Create new profile
-      newProfileData.id = generateId();
-      newProfileData.createdAt = new Date().toISOString();
-      profiles.push(newProfileData);
-    }
-
-    await writeDataFile(PROFILES_FILE, profiles);
-
-    res.json({
-      message: 'Profile saved successfully',
-      profile: newProfileData
-    });
-
+    const profile = await Profile.findOneAndUpdate(
+      { user: req.user.id },
+      { $set: update, $setOnInsert: { user: req.user.id, createdAt: new Date() } },
+      { new: true, upsert: true }
+    ).lean();
+    res.json({ message: 'Profile saved successfully', profile });
   } catch (error) {
     console.error('Profile save error:', error);
     res.status(500).json({ message: 'Server error saving profile' });
@@ -386,16 +450,10 @@ app.post('/api/profile', authenticateToken, async (req, res) => {
 
 app.get('/api/profile', authenticateToken, async (req, res) => {
   try {
-    // Read profiles
-    const profiles = await readDataFile(PROFILES_FILE);
-    
-    // Find user's profile
-    const profile = profiles.find(p => p.userId === req.user.id);
-    
+    const profile = await Profile.findOne({ user: req.user.id }).lean();
     if (!profile) {
       return res.status(404).json({ message: 'Profile not found' });
     }
-
     res.json({ profile });
   } catch (error) {
     console.error('Profile fetch error:', error);
@@ -403,39 +461,28 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// Debt Routes
+// Debt Routes (MongoDB)
 app.post('/api/debts', authenticateToken, async (req, res) => {
   try {
     const debts = req.body.debts || [];
-
-    // Read existing debts
-    const allDebts = await readDataFile(DEBTS_FILE);
-
-    // Remove existing debts for this user
-    const filteredDebts = allDebts.filter(debt => debt.userId !== req.user.id);
-
-    // Add new debts
-    const userDebts = debts.map(debt => ({
-      id: generateId(),
-      userId: req.user.id,
-      creditorName: debt.creditorName,
-      debtType: debt.debtType,
-      currentBalance: parseFloat(debt.currentBalance) || 0,
-      minimumPayment: parseFloat(debt.minimumPayment) || 0,
-      interestRate: parseFloat(debt.interestRate) || 0,
-      dueDate: debt.dueDate,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    // Remove existing debts for this user and insert new list
+    await Debt.deleteMany({ user: req.user.id });
+    const docs = debts.map(d => ({
+      user: req.user.id,
+      creditorName: d.creditorName,
+      debtType: d.debtType,
+      currentBalance: parseFloat(d.currentBalance) || 0,
+      minimumPayment: parseFloat(d.minimumPayment) || 0,
+      interestRate: parseFloat(d.interestRate) || 0,
+      dueDate: d.dueDate,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }));
-
-    const updatedDebts = [...filteredDebts, ...userDebts];
-    await writeDataFile(DEBTS_FILE, updatedDebts);
-
-    res.json({
-      message: 'Debts saved successfully',
-      debts: userDebts
-    });
-
+    let inserted = [];
+    if (docs.length) {
+      inserted = await Debt.insertMany(docs);
+    }
+    res.json({ message: 'Debts saved successfully', debts: inserted });
   } catch (error) {
     console.error('Debts save error:', error);
     res.status(500).json({ message: 'Server error saving debts' });
@@ -444,12 +491,7 @@ app.post('/api/debts', authenticateToken, async (req, res) => {
 
 app.get('/api/debts', authenticateToken, async (req, res) => {
   try {
-    // Read debts
-    const allDebts = await readDataFile(DEBTS_FILE);
-    
-    // Find user's debts
-    const userDebts = allDebts.filter(debt => debt.userId === req.user.id);
-    
+    const userDebts = await Debt.find({ user: req.user.id }).lean();
     res.json({ debts: userDebts });
   } catch (error) {
     console.error('Debts fetch error:', error);
@@ -461,30 +503,15 @@ app.put('/api/debts/:debtId', authenticateToken, async (req, res) => {
   try {
     const { debtId } = req.params;
     const updateData = req.body;
-
-    // Read debts
-    const allDebts = await readDataFile(DEBTS_FILE);
-    
-    // Find and update debt
-    const debtIndex = allDebts.findIndex(debt => debt.id === debtId && debt.userId === req.user.id);
-    
-    if (debtIndex === -1) {
+    const debt = await Debt.findOneAndUpdate(
+      { _id: debtId, user: req.user.id },
+      { $set: { ...updateData, updatedAt: new Date() } },
+      { new: true }
+    ).lean();
+    if (!debt) {
       return res.status(404).json({ message: 'Debt not found' });
     }
-
-    allDebts[debtIndex] = {
-      ...allDebts[debtIndex],
-      ...updateData,
-      updatedAt: new Date().toISOString()
-    };
-
-    await writeDataFile(DEBTS_FILE, allDebts);
-
-    res.json({
-      message: 'Debt updated successfully',
-      debt: allDebts[debtIndex]
-    });
-
+    res.json({ message: 'Debt updated successfully', debt });
   } catch (error) {
     console.error('Debt update error:', error);
     res.status(500).json({ message: 'Server error updating debt' });
@@ -494,23 +521,11 @@ app.put('/api/debts/:debtId', authenticateToken, async (req, res) => {
 app.delete('/api/debts/:debtId', authenticateToken, async (req, res) => {
   try {
     const { debtId } = req.params;
-
-    // Read debts
-    const allDebts = await readDataFile(DEBTS_FILE);
-    
-    // Find debt
-    const debtIndex = allDebts.findIndex(debt => debt.id === debtId && debt.userId === req.user.id);
-    
-    if (debtIndex === -1) {
+    const result = await Debt.deleteOne({ _id: debtId, user: req.user.id });
+    if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'Debt not found' });
     }
-
-    // Remove debt
-    allDebts.splice(debtIndex, 1);
-    await writeDataFile(DEBTS_FILE, allDebts);
-
     res.json({ message: 'Debt deleted successfully' });
-
   } catch (error) {
     console.error('Debt delete error:', error);
     res.status(500).json({ message: 'Server error deleting debt' });
@@ -520,18 +535,15 @@ app.delete('/api/debts/:debtId', authenticateToken, async (req, res) => {
 // User management routes
 app.get('/api/user/profile', authenticateToken, async (req, res) => {
   try {
-    // Read users
-    const users = await readDataFile(USERS_FILE);
-    
-    // Find user
-    const user = users.find(u => u.id === req.user.id);
+    // Find user in MongoDB
+    const user = await User.findById(req.user.id).lean();
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     res.json({
       user: {
-        id: user.id,
+        id: user._id.toString(),
         name: user.name,
         email: user.email,
         pinEnabled: user.pinEnabled,
@@ -551,8 +563,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-// Initialize data files on startup
-initializeDataFiles();
+// Initialize DB and data files on startup
+connectDB().then(async () => {
+  await initializeDataFiles();
+  await migrateUsersFromJsonIfAny();
+  await migrateProfilesAndDebtsFromJsonIfAny();
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

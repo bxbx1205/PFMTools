@@ -1,14 +1,1 @@
-[
-  {
-    "id": "1759574840801npa48w72s",
-    "userId": "1759574728753v0ou22c8z",
-    "creditorName": "Personal Loan",
-    "debtType": "Personal Loan",
-    "currentBalance": 50000,
-    "minimumPayment": 4499,
-    "interestRate": 20,
-    "dueDate": "2033-08-23",
-    "createdAt": "2025-10-04T10:47:20.801Z",
-    "updatedAt": "2025-10-04T10:47:20.801Z"
-  }
-]
+[]
