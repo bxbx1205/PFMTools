@@ -404,7 +404,12 @@ export default function Transactions() {
                   <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Transactions</p>
                   <p className="text-2xl font-black text-blue-400">{transactions.length}</p>
                   <div className="flex items-center mt-1">
-                    <span className="text-xs text-blue-500 font-medium">{currentTime}</span>
+                    <span className="text-xs text-blue-500 font-medium">
+                      {currentTime.toLocaleTimeString('en-IN', { 
+                        hour: '2-digit', 
+                        minute: '2-digit'
+                      })}
+                    </span>
                     <span className="text-xs text-slate-500 ml-2">updated</span>
                   </div>
                 </div>

@@ -13,14 +13,22 @@ export default function Loans() {
   const [submitting, setSubmitting] = useState(false)
   const router = useRouter()
 
-  // Form state for adding/editing loans - matches Debt model exactly
+  // EMI Calculator form state
   const [loanForm, setLoanForm] = useState({
     creditorName: '',
     debtType: '',
-    currentBalance: '',
-    minimumPayment: '',
+    loanAmount: '',
+    tenureMonths: '',
     interestRate: '',
     dueDate: ''
+  })
+
+  // EMI Calculation results
+  const [emiResults, setEmiResults] = useState({
+    emi: 0,
+    totalPayment: 0,
+    totalInterest: 0,
+    monthlyBreakdown: []
   })
 
   // Form errors state
@@ -96,13 +104,82 @@ export default function Loans() {
     setLoanForm({
       creditorName: '',
       debtType: '',
-      currentBalance: '',
-      minimumPayment: '',
+      loanAmount: '',
+      tenureMonths: '',
       interestRate: '',
       dueDate: ''
     })
     setFormErrors({})
+    setEmiResults({
+      emi: 0,
+      totalPayment: 0,
+      totalInterest: 0,
+      monthlyBreakdown: []
+    })
   }
+
+  const calculateEMI = () => {
+    const principal = parseFloat(loanForm.loanAmount) || 0
+    const annualRate = parseFloat(loanForm.interestRate) || 0
+    const months = parseInt(loanForm.tenureMonths) || 0
+
+    if (principal <= 0 || annualRate < 0 || months <= 0) {
+      setEmiResults({
+        emi: 0,
+        totalPayment: 0,
+        totalInterest: 0,
+        monthlyBreakdown: []
+      })
+      return
+    }
+
+    // Monthly interest rate
+    const monthlyRate = annualRate / 12 / 100
+
+    // EMI calculation using formula: P * r * (1 + r)^n / ((1 + r)^n - 1)
+    let emi = 0
+    if (monthlyRate > 0) {
+      const numerator = principal * monthlyRate * Math.pow(1 + monthlyRate, months)
+      const denominator = Math.pow(1 + monthlyRate, months) - 1
+      emi = numerator / denominator
+    } else {
+      // If interest rate is 0, simple division
+      emi = principal / months
+    }
+
+    const totalPayment = emi * months
+    const totalInterest = totalPayment - principal
+
+    // Generate monthly breakdown
+    const monthlyBreakdown = []
+    let remainingPrincipal = principal
+
+    for (let i = 1; i <= months; i++) {
+      const interestPayment = remainingPrincipal * monthlyRate
+      const principalPayment = emi - interestPayment
+      remainingPrincipal -= principalPayment
+
+      monthlyBreakdown.push({
+        month: i,
+        emi: emi,
+        principalPayment: principalPayment,
+        interestPayment: interestPayment,
+        remainingBalance: Math.max(0, remainingPrincipal)
+      })
+    }
+
+    setEmiResults({
+      emi,
+      totalPayment,
+      totalInterest,
+      monthlyBreakdown
+    })
+  }
+
+  // Calculate EMI when loan details change
+  useEffect(() => {
+    calculateEMI()
+  }, [loanForm.loanAmount, loanForm.tenureMonths, loanForm.interestRate])
 
   const validateForm = () => {
     const errors = {}
@@ -115,16 +192,16 @@ export default function Loans() {
       errors.debtType = 'Debt type is required'
     }
     
-    if (!loanForm.currentBalance || parseFloat(loanForm.currentBalance) < 0) {
-      errors.currentBalance = 'Valid current balance is required'
+    if (!loanForm.loanAmount || parseFloat(loanForm.loanAmount) <= 0) {
+      errors.loanAmount = 'Valid loan amount is required'
     }
     
-    if (loanForm.minimumPayment && parseFloat(loanForm.minimumPayment) < 0) {
-      errors.minimumPayment = 'Minimum payment cannot be negative'
+    if (!loanForm.tenureMonths || parseInt(loanForm.tenureMonths) <= 0) {
+      errors.tenureMonths = 'Valid tenure is required'
     }
     
-    if (loanForm.interestRate && (parseFloat(loanForm.interestRate) < 0 || parseFloat(loanForm.interestRate) > 100)) {
-      errors.interestRate = 'Interest rate must be between 0 and 100'
+    if (loanForm.interestRate && parseFloat(loanForm.interestRate) < 0) {
+      errors.interestRate = 'Interest rate cannot be negative'
     }
 
     setFormErrors(errors)
@@ -150,8 +227,8 @@ export default function Loans() {
       const requestBody = {
         creditorName: loanForm.creditorName.trim(),
         debtType: loanForm.debtType.trim(),
-        currentBalance: parseFloat(loanForm.currentBalance) || 0,
-        minimumPayment: parseFloat(loanForm.minimumPayment) || 0,
+        currentBalance: parseFloat(loanForm.loanAmount) || 0,
+        minimumPayment: emiResults.emi || 0,
         interestRate: parseFloat(loanForm.interestRate) || 0,
         dueDate: loanForm.dueDate.trim()
       }
@@ -195,8 +272,8 @@ export default function Loans() {
     setLoanForm({
       creditorName: loan.creditorName || '',
       debtType: loan.debtType || '',
-      currentBalance: loan.currentBalance?.toString() || '',
-      minimumPayment: loan.minimumPayment?.toString() || '',
+      loanAmount: loan.currentBalance?.toString() || '',
+      tenureMonths: '',
       interestRate: loan.interestRate?.toString() || '',
       dueDate: loan.dueDate || ''
     })
@@ -434,9 +511,9 @@ export default function Loans() {
               
               <div>
                 <h1 className="text-2xl font-bold text-white tracking-tight">
-                  Debt <span className="text-gradient">Portfolio</span>
+                  EMI <span className="text-gradient">Calculator</span>
                 </h1>
-                <p className="text-sm text-slate-400 font-medium">Smart debt management & optimization</p>
+                <p className="text-sm text-slate-400 font-medium">Smart loan planning & EMI calculation</p>
               </div>
             </div>
 
@@ -453,7 +530,7 @@ export default function Loans() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                <span>Add Debt</span>
+                <span>Calculate EMI</span>
               </span>
             </button>
           </div>
@@ -497,7 +574,7 @@ export default function Loans() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-400 font-medium uppercase tracking-wider">Active Debts</p>
+                    <p className="text-sm text-slate-400 font-medium uppercase tracking-wider">Active Loans</p>
                     <p className="text-2xl font-black text-white">{loans.length}</p>
                   </div>
                 </div>
@@ -510,11 +587,11 @@ export default function Loans() {
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-400 font-medium uppercase tracking-wider">Total Outstanding</p>
+                    <p className="text-sm text-slate-400 font-medium uppercase tracking-wider">Total Principal</p>
                     <p className="text-2xl font-black text-white">₹{calculateTotalDebt().toLocaleString()}</p>
                   </div>
                 </div>
@@ -527,11 +604,11 @@ export default function Loans() {
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-400 font-medium uppercase tracking-wider">Monthly Payments</p>
+                    <p className="text-sm text-slate-400 font-medium uppercase tracking-wider">Monthly EMIs</p>
                     <p className="text-2xl font-black text-white">₹{calculateTotalMinPayments().toLocaleString()}</p>
                   </div>
                 </div>
@@ -568,8 +645,8 @@ export default function Loans() {
                 </div>
                 <div className="absolute -inset-3 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full blur opacity-20 animate-pulse"></div>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Debt-Free Excellence! 🚀</h3>
-              <p className="text-slate-400 font-medium mb-8 max-w-md mx-auto">You're crushing it with zero debt obligations. Keep building that financial freedom!</p>
+              <h3 className="text-2xl font-bold text-white mb-3">Ready to Calculate EMI! 🧮</h3>
+              <p className="text-slate-400 font-medium mb-8 max-w-md mx-auto">Start planning your loan by calculating EMI, total interest, and payment schedule with our smart calculator.</p>
               <button
                 onClick={() => {
                   resetForm()
@@ -578,7 +655,7 @@ export default function Loans() {
                 }}
                 className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl focus-outline"
               >
-                Add First Debt
+                Calculate Your First EMI
               </button>
             </div>
           ) : (
@@ -586,10 +663,10 @@ export default function Loans() {
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-4">
                   <div className="w-2 h-8 bg-gradient-to-b from-violet-500 to-purple-500 rounded-full"></div>
-                  <h2 className="text-2xl font-bold text-white">Active Obligations</h2>
+                  <h2 className="text-2xl font-bold text-white">Saved Loan Plans</h2>
                 </div>
                 <div className="text-sm text-slate-400 bg-slate-800/30 px-3 py-1 rounded-full border border-slate-700/50">
-                  {loans.length} {loans.length === 1 ? 'debt' : 'debts'} tracked
+                  {loans.length} {loans.length === 1 ? 'plan' : 'plans'} saved
                 </div>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -627,23 +704,23 @@ export default function Loans() {
 
                     <div className="space-y-4">
                       <div className="flex justify-between items-center p-3 bg-slate-800/30 rounded-xl border border-slate-700/30">
-                        <span className="text-slate-400 font-medium">Outstanding Balance</span>
-                        <span className="text-red-400 font-bold text-lg">₹{(loan.currentBalance || 0).toLocaleString()}</span>
+                        <span className="text-slate-400 font-medium">Loan Amount</span>
+                        <span className="text-blue-400 font-bold text-lg">₹{(loan.currentBalance || 0).toLocaleString()}</span>
                       </div>
                       
                       <div className="flex justify-between items-center p-3 bg-slate-800/30 rounded-xl border border-slate-700/30">
-                        <span className="text-slate-400 font-medium">Monthly Payment</span>
-                        <span className="text-blue-400 font-bold">₹{(loan.minimumPayment || 0).toLocaleString()}</span>
+                        <span className="text-slate-400 font-medium">Monthly EMI</span>
+                        <span className="text-emerald-400 font-bold">₹{(loan.minimumPayment || 0).toLocaleString()}</span>
                       </div>
                       
                       <div className="flex justify-between items-center p-3 bg-slate-800/30 rounded-xl border border-slate-700/30">
                         <span className="text-slate-400 font-medium">Interest Rate</span>
-                        <span className="text-amber-400 font-bold">{loan.interestRate || 0}%</span>
+                        <span className="text-amber-400 font-bold">{loan.interestRate || 0}% p.a.</span>
                       </div>
                       
                       {loan.dueDate && (
                         <div className="flex justify-between items-center p-3 bg-slate-800/30 rounded-xl border border-slate-700/30">
-                          <span className="text-slate-400 font-medium">Due Date</span>
+                          <span className="text-slate-400 font-medium">EMI Due Date</span>
                           <span className="text-slate-300 font-medium">{loan.dueDate}</span>
                         </div>
                       )}
@@ -668,9 +745,9 @@ export default function Loans() {
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h3 id="modal-title" className="text-3xl font-bold text-white">
-                  {editingLoan ? 'Edit Debt' : 'Add New Debt'}
+                  {editingLoan ? 'Edit Loan' : 'EMI Calculator'}
                 </h3>
-                <p className="text-slate-400 font-medium mt-1">Manage your financial obligations</p>
+                <p className="text-slate-400 font-medium mt-1">Calculate your monthly EMI and payment schedule</p>
               </div>
               <button
                 onClick={() => {
@@ -690,7 +767,7 @@ export default function Loans() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="creditorName" className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">
-                  Creditor/Lender Name *
+                  Lender Name *
                 </label>
                 <input
                   id="creditorName"
@@ -711,7 +788,7 @@ export default function Loans() {
 
               <div>
                 <label htmlFor="debtType" className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">
-                  Debt Type *
+                  Loan Type *
                 </label>
                 <select
                   id="debtType"
@@ -723,13 +800,13 @@ export default function Loans() {
                   required
                   disabled={submitting}
                 >
-                  <option value="">Select debt type</option>
-                  <option value="Credit Card">Credit Card</option>
-                  <option value="Personal Loan">Personal Loan</option>
+                  <option value="">Select loan type</option>
                   <option value="Home Loan">Home Loan</option>
                   <option value="Car Loan">Car Loan</option>
-                  <option value="Student Loan">Student Loan</option>
+                  <option value="Personal Loan">Personal Loan</option>
                   <option value="Business Loan">Business Loan</option>
+                  <option value="Education Loan">Education Loan</option>
+                  <option value="Gold Loan">Gold Loan</option>
                   <option value="Other">Other</option>
                 </select>
                 {formErrors.debtType && (
@@ -737,86 +814,141 @@ export default function Loans() {
                 )}
               </div>
 
-              <div>
-                <label htmlFor="currentBalance" className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">
-                  Current Balance (₹) *
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-4 text-slate-400 font-bold text-lg">₹</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label htmlFor="loanAmount" className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">
+                    Loan Amount (₹) *
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-4 text-slate-400 font-bold text-lg">₹</span>
+                    <input
+                      id="loanAmount"
+                      type="number"
+                      value={loanForm.loanAmount}
+                      onChange={(e) => setLoanForm({...loanForm, loanAmount: e.target.value})}
+                      className={`w-full bg-slate-800/30 border text-white rounded-xl px-4 py-4 pl-10 text-lg font-semibold focus:ring-2 focus:ring-violet-400/50 focus:border-violet-400 transition-all duration-300 focus-outline ${
+                        formErrors.loanAmount ? 'border-red-500 input-error' : 'border-slate-600/50'
+                      }`}
+                      placeholder="5,00,000"
+                      min="1"
+                      step="1"
+                      required
+                      disabled={submitting}
+                    />
+                  </div>
+                  {formErrors.loanAmount && (
+                    <p className="text-red-400 text-sm mt-1">{formErrors.loanAmount}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="tenureMonths" className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">
+                    Tenure (Months) *
+                  </label>
                   <input
-                    id="currentBalance"
+                    id="tenureMonths"
                     type="number"
-                    value={loanForm.currentBalance}
-                    onChange={(e) => setLoanForm({...loanForm, currentBalance: e.target.value})}
-                    className={`w-full bg-slate-800/30 border text-white rounded-xl px-4 py-4 pl-10 text-lg font-semibold focus:ring-2 focus:ring-violet-400/50 focus:border-violet-400 transition-all duration-300 focus-outline ${
-                      formErrors.currentBalance ? 'border-red-500 input-error' : 'border-slate-600/50'
+                    value={loanForm.tenureMonths}
+                    onChange={(e) => setLoanForm({...loanForm, tenureMonths: e.target.value})}
+                    className={`w-full bg-slate-800/30 border text-white rounded-xl px-4 py-4 font-medium focus:ring-2 focus:ring-violet-400/50 focus:border-violet-400 transition-all duration-300 focus-outline ${
+                      formErrors.tenureMonths ? 'border-red-500 input-error' : 'border-slate-600/50'
                     }`}
-                    placeholder="Outstanding amount"
-                    min="0"
-                    step="0.01"
+                    placeholder="60"
+                    min="1"
+                    step="1"
                     required
                     disabled={submitting}
                   />
+                  {formErrors.tenureMonths && (
+                    <p className="text-red-400 text-sm mt-1">{formErrors.tenureMonths}</p>
+                  )}
                 </div>
-                {formErrors.currentBalance && (
-                  <p className="text-red-400 text-sm mt-1">{formErrors.currentBalance}</p>
-                )}
+
+                <div>
+                  <label htmlFor="interestRate" className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">
+                    Interest Rate (%) *
+                  </label>
+                  <div className="relative">
+                    <span className="absolute right-4 top-4 text-slate-400 font-bold text-lg">%</span>
+                    <input
+                      id="interestRate"
+                      type="number"
+                      value={loanForm.interestRate}
+                      onChange={(e) => setLoanForm({...loanForm, interestRate: e.target.value})}
+                      className={`w-full bg-slate-800/30 border text-white rounded-xl px-4 py-4 pr-10 font-medium focus:ring-2 focus:ring-violet-400/50 focus:border-violet-400 transition-all duration-300 focus-outline ${
+                        formErrors.interestRate ? 'border-red-500 input-error' : 'border-slate-600/50'
+                      }`}
+                      placeholder="8.5"
+                      min="0"
+                      max="50"
+                      step="0.1"
+                      required
+                      disabled={submitting}
+                    />
+                  </div>
+                  {formErrors.interestRate && (
+                    <p className="text-red-400 text-sm mt-1">{formErrors.interestRate}</p>
+                  )}
+                </div>
               </div>
 
-              <div>
-                <label htmlFor="minimumPayment" className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">
-                  Minimum Monthly Payment (₹)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-4 text-slate-400 font-bold text-lg">₹</span>
-                  <input
-                    id="minimumPayment"
-                    type="number"
-                    value={loanForm.minimumPayment}
-                    onChange={(e) => setLoanForm({...loanForm, minimumPayment: e.target.value})}
-                    className={`w-full bg-slate-800/30 border text-white rounded-xl px-4 py-4 pl-10 font-medium focus:ring-2 focus:ring-violet-400/50 focus:border-violet-400 transition-all duration-300 focus-outline ${
-                      formErrors.minimumPayment ? 'border-red-500 input-error' : 'border-slate-600/50'
-                    }`}
-                    placeholder="Monthly EMI"
-                    min="0"
-                    step="0.01"
-                    disabled={submitting}
-                  />
-                </div>
-                {formErrors.minimumPayment && (
-                  <p className="text-red-400 text-sm mt-1">{formErrors.minimumPayment}</p>
-                )}
-              </div>
+              {/* EMI Results Section */}
+              {emiResults.emi > 0 && (
+                <div className="bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-2xl p-6 border border-violet-500/20">
+                  <h4 className="text-xl font-bold text-white mb-4 flex items-center">
+                    <svg className="w-6 h-6 text-violet-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    EMI Calculation Results
+                  </h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
+                      <p className="text-slate-400 text-sm font-medium mb-1">Monthly EMI</p>
+                      <p className="text-2xl font-black text-emerald-400">₹{emiResults.emi.toLocaleString('en-IN', {maximumFractionDigits: 0})}</p>
+                    </div>
+                    <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
+                      <p className="text-slate-400 text-sm font-medium mb-1">Total Interest</p>
+                      <p className="text-2xl font-black text-red-400">₹{emiResults.totalInterest.toLocaleString('en-IN', {maximumFractionDigits: 0})}</p>
+                    </div>
+                    <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
+                      <p className="text-slate-400 text-sm font-medium mb-1">Total Payment</p>
+                      <p className="text-2xl font-black text-blue-400">₹{emiResults.totalPayment.toLocaleString('en-IN', {maximumFractionDigits: 0})}</p>
+                    </div>
+                  </div>
 
-              <div>
-                <label htmlFor="interestRate" className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">
-                  Interest Rate (%)
-                </label>
-                <div className="relative">
-                  <span className="absolute right-4 top-4 text-slate-400 font-bold text-lg">%</span>
-                  <input
-                    id="interestRate"
-                    type="number"
-                    value={loanForm.interestRate}
-                    onChange={(e) => setLoanForm({...loanForm, interestRate: e.target.value})}
-                    className={`w-full bg-slate-800/30 border text-white rounded-xl px-4 py-4 pr-10 font-medium focus:ring-2 focus:ring-violet-400/50 focus:border-violet-400 transition-all duration-300 focus-outline ${
-                      formErrors.interestRate ? 'border-red-500 input-error' : 'border-slate-600/50'
-                    }`}
-                    placeholder="Annual interest rate"
-                    min="0"
-                    max="100"
-                    step="0.01"
-                    disabled={submitting}
-                  />
+                  <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-slate-400 font-medium">Principal Amount</span>
+                      <span className="text-white font-bold">₹{parseFloat(loanForm.loanAmount || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-slate-400 font-medium">Interest Component</span>
+                      <span className="text-red-400 font-bold">₹{emiResults.totalInterest.toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
+                    </div>
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-slate-400 font-medium">Loan Tenure</span>
+                      <span className="text-white font-bold">{loanForm.tenureMonths} months ({Math.round(loanForm.tenureMonths / 12)} years)</span>
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    <div className="w-full bg-slate-700 rounded-full h-3">
+                      <div 
+                        className="bg-gradient-to-r from-emerald-500 to-blue-500 h-3 rounded-full transition-all duration-500"
+                        style={{width: `${(parseFloat(loanForm.loanAmount || 0) / emiResults.totalPayment) * 100}%`}}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-slate-400 mt-1">
+                      <span>Principal ({((parseFloat(loanForm.loanAmount || 0) / emiResults.totalPayment) * 100).toFixed(1)}%)</span>
+                      <span>Interest ({((emiResults.totalInterest / emiResults.totalPayment) * 100).toFixed(1)}%)</span>
+                    </div>
+                  </div>
                 </div>
-                {formErrors.interestRate && (
-                  <p className="text-red-400 text-sm mt-1">{formErrors.interestRate}</p>
-                )}
-              </div>
+              )}
 
               <div>
                 <label htmlFor="dueDate" className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">
-                  Due Date (optional)
+                  EMI Due Date (optional)
                 </label>
                 <input
                   id="dueDate"
@@ -824,7 +956,7 @@ export default function Loans() {
                   value={loanForm.dueDate}
                   onChange={(e) => setLoanForm({...loanForm, dueDate: e.target.value})}
                   className="w-full bg-slate-800/30 border border-slate-600/50 text-white rounded-xl px-4 py-4 font-medium focus:ring-2 focus:ring-violet-400/50 focus:border-violet-400 transition-all duration-300 focus-outline"
-                  placeholder="e.g., 15th of every month"
+                  placeholder="e.g., 5th of every month"
                   disabled={submitting}
                 />
               </div>
@@ -855,7 +987,7 @@ export default function Loans() {
                       <span>Processing...</span>
                     </span>
                   ) : (
-                    `${editingLoan ? 'Update' : 'Add'} Debt`
+                    `${editingLoan ? 'Update Loan' : 'Save EMI Plan'}`
                   )}
                 </button>
               </div>
@@ -879,9 +1011,9 @@ export default function Loans() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
               </div>
-              <h3 id="delete-modal-title" className="text-2xl font-bold text-white mb-3">Delete Debt</h3>
+              <h3 id="delete-modal-title" className="text-2xl font-bold text-white mb-3">Delete Loan Plan</h3>
               <p className="text-slate-400 font-medium mb-8">
-                Are you sure you want to remove this debt from your portfolio? This action cannot be undone.
+                Are you sure you want to remove this loan plan from your saved calculations? This action cannot be undone.
               </p>
               <div className="flex gap-4">
                 <button
