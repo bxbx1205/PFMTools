@@ -303,7 +303,7 @@ export default function Dashboard() {
               {/* Logo */}
               <div className="relative group">
                 <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl font-black text-white">S</span>
+                  <span className="text-xl font-black text-white">{user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
                 </div>
                 <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-cyan-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
               </div>

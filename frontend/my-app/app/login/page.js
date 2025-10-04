@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -198,15 +199,16 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Enhanced Logo/Header */}
           <div className="text-center mb-12">
-            <div className="relative inline-flex items-center justify-center w-20 h-20 mb-6">
-              <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-cyan-500 rounded-2xl animate-pulse-glow"></div>
-              <div className="relative w-16 h-16 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-2xl flex items-center justify-center">
-                <span className="text-2xl font-black text-white">PF</span>
-              </div>
+            <div className="mb-6">
+              <Image
+                src="/pfmlogo.png"
+                alt="PFM Tools logo"
+                width={120}
+                height={120}
+                className="h-16 w-auto mx-auto"
+                priority
+              />
             </div>
-            <h1 className="text-4xl font-black text-white mb-3 tracking-tight">
-              Personal Finance <span className="text-gradient">Manager</span>
-            </h1>
             <p className="text-slate-400 font-medium text-lg">
               Sign in with your mobile number using OTP
             </p>
@@ -314,7 +316,7 @@ export default function LoginPage() {
 
           {/* Enhanced Footer */}
           <div className="text-center mt-12 space-y-4">
-            <p className="text-slate-400 font-medium">© 2025 Personal Finance Manager. All rights reserved.</p>
+            <p className="text-slate-400 font-medium">© 2025 sav₹. All rights reserved.</p>
             <div className="flex justify-center space-x-6 text-sm">
               <button className="text-slate-500 hover:text-violet-400 transition-colors duration-300 font-medium">Privacy Policy</button>
               <span className="text-slate-600">•</span>
