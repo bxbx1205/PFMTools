@@ -651,8 +651,8 @@ export default function Loans() {
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </main>
 
