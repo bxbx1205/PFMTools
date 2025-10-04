@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import OnboardingModal from '../components/OnboardingModal'
+import EmailModal from '../components/EmailModal'
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
@@ -11,6 +12,7 @@ export default function Dashboard() {
   const [debts, setDebts] = useState([])
   const [loading, setLoading] = useState(true)
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [showEmailModal, setShowEmailModal] = useState(false)
   const router = useRouter()
 
   // Update time every minute
@@ -325,10 +327,15 @@ export default function Dashboard() {
 
             {/* Actions */}
             <div className="flex items-center space-x-4">
-              <div className="hidden md:flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sm text-slate-300 font-medium">All systems operational</span>
-              </div>
+              <button
+                onClick={() => setShowEmailModal(true)}
+                className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-violet-500/20 to-cyan-500/20 hover:from-violet-500/30 hover:to-cyan-500/30 border border-violet-500/30 hover:border-violet-400/50 text-violet-300 hover:text-white px-4 py-2 rounded-xl font-medium transition-all duration-300"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span>Send Weekly Report</span>
+              </button>
               
               <button
                 onClick={handleLogout}
@@ -349,6 +356,124 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="relative z-10 pt-32 pb-12 px-6">
         <div className="max-w-7xl mx-auto">
+          {/* Featured Analytics Hub - Prime Position */}
+          <div className="glass-morphism rounded-3xl p-8 mb-8 card-hover relative overflow-hidden border-2 border-cyan-400/20">
+            {/* Subtle Background Effects */}
+            <div className="absolute top-0 right-0 w-60 h-60 bg-gradient-to-br from-cyan-500/15 via-blue-500/10 to-violet-500/15 rounded-full blur-3xl opacity-70 animate-float"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-blue-500/10 to-cyan-500/20 rounded-full blur-2xl opacity-40 animate-float" style={{animationDelay: '2s'}}></div>
+            
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-3 h-10 bg-gradient-to-b from-cyan-400 via-blue-500 to-violet-500 rounded-full animate-pulse-glow"></div>
+                  <div>
+                    <div className="flex items-center space-x-3 mb-2">
+                      <h3 className="text-2xl font-black text-white tracking-tight">
+                        Analytics <span className="text-gradient">Hub</span>
+                      </h3>
+                      <div className="bg-gradient-to-r from-cyan-500 to-violet-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        AI POWERED
+                      </div>
+                    </div>
+                    <p className="text-slate-300 font-medium">Your intelligent financial command center</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                    <div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
+                  </div>
+                  <span className="text-sm text-slate-400 bg-slate-800/30 px-3 py-1 rounded-full border border-slate-700/50">
+                    Live Data
+                  </span>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => router.push('/analytics')}
+                className="group w-full relative overflow-hidden bg-gradient-to-br from-cyan-500/15 via-blue-500/10 to-violet-500/15 hover:from-cyan-500/25 hover:via-blue-500/20 hover:to-violet-500/25 border border-cyan-400/30 hover:border-cyan-300/50 text-white p-6 rounded-2xl transition-all duration-500 text-left"
+              >
+                {/* Enhanced hover effects */}
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-blue-500/10 to-violet-500/0 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-400/20 to-violet-400/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-150"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 via-blue-500 to-violet-500 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-bold text-white mb-1 group-hover:text-cyan-300 transition-colors">
+                          Deep Insights & Predictive Analysis
+                        </h4>
+                        <p className="text-slate-300 font-medium">
+                          Unlock AI-driven financial forecasting and smart recommendations
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="bg-gradient-to-r from-emerald-500 to-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        FEATURED
+                      </div>
+                      <svg className="w-5 h-5 text-cyan-400 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Compact feature highlights */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-gradient-to-br from-cyan-500/15 to-cyan-600/25 border border-cyan-500/30 rounded-lg p-3 group-hover:border-cyan-400/50 transition-all duration-300">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-6 h-6 bg-cyan-500 rounded-md flex items-center justify-center">
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-cyan-300 font-bold text-xs">ML Predictions</p>
+                          <p className="text-slate-300 text-xs">Smart forecasts</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-blue-500/15 to-blue-600/25 border border-blue-500/30 rounded-lg p-3 group-hover:border-blue-400/50 transition-all duration-300">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-md flex items-center justify-center">
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-blue-300 font-bold text-xs">Smart Insights</p>
+                          <p className="text-slate-300 text-xs">AI guidance</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-violet-500/15 to-violet-600/25 border border-violet-500/30 rounded-lg p-3 group-hover:border-violet-400/50 transition-all duration-300">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-6 h-6 bg-violet-500 rounded-md flex items-center justify-center">
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-violet-300 font-bold text-xs">Trend Analysis</p>
+                          <p className="text-slate-300 text-xs">Pattern detection</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
           {/* Welcome Hero */}
           <div className="glass-morphism rounded-3xl p-8 mb-12 card-hover">
             <div className="relative">
@@ -664,17 +789,17 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Action Hub */}
+          {/* Quick Actions */}
           <div className="glass-morphism rounded-2xl p-8 card-hover">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center space-x-4">
                 <div className="w-2 h-8 bg-gradient-to-b from-rose-500 to-pink-500 rounded-full"></div>
-                <h3 className="text-2xl font-bold text-white">Action Hub</h3>
+                <h3 className="text-2xl font-bold text-white">Quick Actions</h3>
               </div>
-              <div className="text-sm text-slate-400">Take charge of your finances</div>
+              <div className="text-sm text-slate-400">Essential financial tools</div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Add Transaction */}
               <button 
                 onClick={() => router.push('/transactions')}
@@ -719,28 +844,6 @@ export default function Dashboard() {
                 </div>
               </button>
               
-              {/* Analytics */}
-              <button 
-                onClick={() => router.push('/analytics')}
-                className="group relative overflow-hidden bg-gradient-to-br from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/20 hover:to-blue-500/20 border border-cyan-500/30 hover:border-cyan-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
-              >
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                    </div>
-                    <svg className="w-5 h-5 text-cyan-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </div>
-                  <h4 className="font-bold text-lg mb-2">Analytics Hub</h4>
-                  <p className="text-sm text-slate-400 font-medium">Deep insights and predictive analysis</p>
-                </div>
-              </button>
-              
               {/* Settings */}
               <button 
                 onClick={() => router.push('/settings')}
@@ -772,6 +875,13 @@ export default function Dashboard() {
       <OnboardingModal 
         isOpen={showOnboarding}
         onComplete={handleOnboardingComplete}
+        userName={user?.name || 'User'}
+      />
+
+      {/* Email Modal */}
+      <EmailModal
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
         userName={user?.name || 'User'}
       />
     </div>

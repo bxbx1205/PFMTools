@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Allow: /landing
+Allow: /login
+
+# Disallow private routes
+Disallow: /dashboard
+Disallow: /analytics
+Disallow: /transactions
+Disallow: /loans
+Disallow: /settings
+
+# SEO optimization
+Sitemap: https://pfmtools.app/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1

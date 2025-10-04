@@ -15,6 +15,7 @@ const Transaction = require('./models/Transaction');
 const DailyExpense = require('./models/DailyExpense');
 const Otp = require('./models/Otp');
 const { sendOtpSms } = require('./services/sms');
+const { sendWeeklyReport, testEmailConnection } = require('./services/email');
 
 require('dotenv').config();
 
@@ -1122,6 +1123,250 @@ function generateRecommendations(predictedSpend, userData) {
   }
   
   return recommendations;
+}
+
+// ============================================
+// EMAIL ROUTES
+// ============================================
+
+// Test email configuration (admin only or for testing)
+app.get('/api/email/test', async (req, res) => {
+  try {
+    const result = await testEmailConnection();
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Send weekly report email
+app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
+  try {
+    const { email } = req.body;
+    const userId = req.user.id;
+
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email address is required' 
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Please enter a valid email address' 
+      });
+    }
+
+    console.log('Weekly email report request for user:', userId, 'to email:', email);
+
+    // Get user profile
+    const user = await User.findById(userId).lean();
+    const profile = await Profile.findOne({ user: userId }).lean();
+
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+
+    // Get past week expenses
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const weeklyExpenses = await DailyExpense.find({
+      user: userId,
+      date: { $gte: oneWeekAgo }
+    }).sort({ date: -1 }).lean();
+
+    console.log('Found', weeklyExpenses.length, 'expenses from past week');
+
+    // Calculate totals and category breakdown
+    const totalSpent = weeklyExpenses.reduce((sum, exp) => sum + (exp.totalSpend || 0), 0);
+    
+    const categoryBreakdown = {
+      'Food & Dining': weeklyExpenses.reduce((sum, exp) => sum + (exp.food || 0), 0),
+      'Transportation': weeklyExpenses.reduce((sum, exp) => sum + (exp.transport || 0), 0),
+      'Bills & Utilities': weeklyExpenses.reduce((sum, exp) => sum + (exp.bills || 0), 0),
+      'Health & Medical': weeklyExpenses.reduce((sum, exp) => sum + (exp.health || 0), 0),
+      'Education': weeklyExpenses.reduce((sum, exp) => sum + (exp.education || 0), 0),
+      'Entertainment': weeklyExpenses.reduce((sum, exp) => sum + (exp.entertainment || 0), 0),
+      'Other': weeklyExpenses.reduce((sum, exp) => sum + (exp.other || 0), 0)
+    };
+
+    // Get predictions if available (call internal prediction API)
+    let weeklyPredictions = [];
+    let totalPredicted = 0;
+
+    try {
+      console.log('Calling prediction API for email report...');
+      
+      // Simulate internal API call for predictions
+      if (weeklyExpenses.length >= 7) {
+        const past7DayAvg = weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.totalSpend || 0), 0) / 7;
+        
+        // Calculate category averages
+        const categoryAverages = {
+          food: weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.food || 0), 0) / 7,
+          transport: weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.transport || 0), 0) / 7,
+          bills: weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.bills || 0), 0) / 7,
+          health: weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.health || 0), 0) / 7,
+          education: weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.education || 0), 0) / 7,
+          entertainment: weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.entertainment || 0), 0) / 7,
+          other: weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.other || 0), 0) / 7
+        };
+
+        // Generate fallback predictions for next week
+        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const today = new Date();
+        const daysUntilMonday = (7 - today.getDay() + 1) % 7 || 7;
+        const nextMonday = new Date(today.getTime() + daysUntilMonday * 24 * 60 * 60 * 1000);
+        
+        weeklyPredictions = daysOfWeek.map((day, index) => {
+          let dayPrediction = past7DayAvg;
+          const isWeekend = day === 'Saturday' || day === 'Sunday';
+          
+          if (isWeekend) {
+            dayPrediction = categoryAverages.food * 1.2 +
+                          categoryAverages.transport * 0.7 +
+                          categoryAverages.entertainment * 1.4 +
+                          categoryAverages.bills +
+                          categoryAverages.health +
+                          categoryAverages.education +
+                          categoryAverages.other * 1.1;
+          } else {
+            dayPrediction = categoryAverages.food * 1.0 +
+                          categoryAverages.transport * 1.2 +
+                          categoryAverages.entertainment * 0.8 +
+                          categoryAverages.bills +
+                          categoryAverages.health +
+                          categoryAverages.education +
+                          categoryAverages.other;
+          }
+          
+          const predictionDate = new Date(nextMonday.getTime() + index * 24 * 60 * 60 * 1000);
+          
+          return {
+            date: predictionDate.toISOString().split('T')[0],
+            day_of_week: day,
+            predicted_spend: Math.round(dayPrediction)
+          };
+        });
+
+        totalPredicted = weeklyPredictions.reduce((sum, p) => sum + p.predicted_spend, 0);
+        console.log('Generated predictions for', weeklyPredictions.length, 'days, total:', totalPredicted);
+      }
+    } catch (predictionError) {
+      console.error('Prediction error for email:', predictionError);
+      // Continue without predictions
+    }
+
+    // Generate insights
+    const insights = [];
+    
+    if (totalSpent > 0) {
+      const dailyAvg = totalSpent / Math.max(weeklyExpenses.length, 1);
+      const monthlyProjection = dailyAvg * 30;
+      
+      insights.push(`Your average daily spending this week was ${formatCurrency(dailyAvg)}`);
+      
+      if (profile?.monthlyIncome) {
+        const spendingRatio = (monthlyProjection / profile.monthlyIncome) * 100;
+        if (spendingRatio > 80) {
+          insights.push(`⚠️ Your projected monthly spending (${spendingRatio.toFixed(1)}%) is high relative to income`);
+        } else if (spendingRatio < 60) {
+          insights.push(`✅ Great job! Your spending is well within your income (${spendingRatio.toFixed(1)}% of monthly income)`);
+        }
+      }
+      
+      // Category insights
+      const topCategory = Object.entries(categoryBreakdown).reduce((a, b) => categoryBreakdown[a[0]] > categoryBreakdown[b[0]] ? a : b);
+      if (topCategory[1] > 0) {
+        insights.push(`Your highest expense category this week was ${topCategory[0]} (${formatCurrency(topCategory[1])})`);
+      }
+      
+      if (totalPredicted > totalSpent) {
+        insights.push(`📈 Next week's spending is predicted to be ${formatCurrency(totalPredicted - totalSpent)} higher`);
+      } else if (totalPredicted < totalSpent) {
+        insights.push(`📉 Next week's spending is predicted to be ${formatCurrency(totalSpent - totalPredicted)} lower`);
+      }
+    } else {
+      insights.push('Start tracking your daily expenses to get personalized insights and predictions!');
+    }
+
+    // Prepare email data
+    const emailData = {
+      userName: user.name,
+      weeklyExpenses: weeklyExpenses.map(exp => ({
+        date: exp.date,
+        amount: exp.totalSpend || 0
+      })),
+      weeklyPredictions,
+      totalSpent,
+      totalPredicted,
+      categoryBreakdown,
+      insights
+    };
+
+    console.log('Sending email with data:', {
+      userName: emailData.userName,
+      expenseCount: emailData.weeklyExpenses.length,
+      predictionCount: emailData.weeklyPredictions.length,
+      totalSpent: emailData.totalSpent,
+      totalPredicted: emailData.totalPredicted
+    });
+
+    // Send email
+    const emailResult = await sendWeeklyReport(email, emailData);
+
+    if (emailResult.success) {
+      let message = 'Weekly report sent successfully to your email!';
+      if (emailResult.simulation && emailResult.networkFallback) {
+        message = 'Weekly report generated successfully! (Network issue - check console for details)';
+      } else if (emailResult.simulation) {
+        message = 'Weekly report generated successfully! (Email simulation mode - check console)';
+      }
+      
+      res.json({
+        success: true,
+        message: message,
+        emailSent: !emailResult.simulation,
+        simulation: emailResult.simulation,
+        networkFallback: emailResult.networkFallback,
+        reportData: {
+          totalSpent,
+          totalPredicted,
+          expenseCount: weeklyExpenses.length,
+          predictionCount: weeklyPredictions.length,
+          simulation: emailResult.simulation
+        }
+      });
+    } else {
+      throw new Error(emailResult.error);
+    }
+
+  } catch (error) {
+    console.error('Weekly email report error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send weekly report',
+      error: error.message
+    });
+  }
+});
+
+// Helper function to format currency (moved here if not already available)
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount);
 }
 
 // Error handling middleware
