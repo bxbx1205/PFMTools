@@ -8,7 +8,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
     // User Profile (Step 1)
     ageGroup: '',
     familySize: '',
-    dailyIncome: '',
+    monthlyIncome: '',
     
     // Debt Information (Step 2)
     debtAmount: '',
@@ -18,7 +18,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
     remainingTenureMonths: '',
     monthlyEMI: '',
     
-    // Preferences (Step 3 - keeping same)
+    // Preferences (Step 3)
     notificationPreferences: {
       email: true,
       push: true,
@@ -27,9 +27,8 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
     preferredCurrency: 'INR',
     darkMode: true,
     
-    // Additional Info (keeping from old Step 2)
+    // Additional Info
     occupation: '',
-    monthlyIncome: '',
     hasExistingInvestments: '',
     riskTolerance: '',
     primaryGoal: '',
@@ -76,8 +75,50 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
       
       if (!token) {
         console.error('No token found')
+        alert('Session expired. Please log in again.')
         return
       }
+
+      // Calculate dailyIncome from monthlyIncome (required for ML model)
+      const monthlyIncome = parseFloat(formData.monthlyIncome) || 0
+      const dailyIncome = monthlyIncome > 0 ? Math.round(monthlyIncome / 30) : 0
+
+      // Prepare profile data with all fields
+      const profileData = {
+        // Core fields for ML model
+        ageGroup: formData.ageGroup,
+        familySize: parseInt(formData.familySize) || 1,
+        dailyIncome: dailyIncome,  // Calculated from monthly
+        monthlyIncome: monthlyIncome,
+        
+        // Debt information (stored in Profile model)
+        hasDebt: formData.debtAmount && parseFloat(formData.debtAmount) > 0,
+        debtAmount: parseFloat(formData.debtAmount) || 0,
+        loanType: formData.loanType || 'None',
+        interestRate: parseFloat(formData.interestRate) || 0,
+        loanTenureMonths: parseInt(formData.loanTenureMonths) || 0,
+        remainingTenureMonths: parseInt(formData.remainingTenureMonths) || 0,
+        monthlyEMI: parseFloat(formData.monthlyEMI) || 0,
+        
+        // Additional profile info
+        occupation: formData.occupation,
+        primaryGoal: formData.primaryGoal,
+        riskTolerance: formData.riskTolerance,
+        monthlyBudget: parseFloat(formData.monthlyBudget) || 0,
+        savingsTarget: parseFloat(formData.savingsTarget) || 0,
+        investmentExperience: formData.investmentExperience,
+        hasExistingInvestments: formData.hasExistingInvestments === 'yes',
+        
+        // Preferences
+        notificationPreferences: formData.notificationPreferences,
+        preferredCurrency: formData.preferredCurrency,
+        darkMode: formData.darkMode,
+        
+        // Profile completion flag
+        profileCompleted: true
+      }
+
+      console.log('Saving profile data:', profileData)
 
       // Save profile data
       const profileResponse = await fetch('http://localhost:5000/api/profile', {
@@ -86,14 +127,19 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(profileData)
       })
 
       if (!profileResponse.ok) {
-        throw new Error('Failed to save profile')
+        const error = await profileResponse.json()
+        console.error('Profile save error:', error)
+        throw new Error(error.message || 'Failed to save profile')
       }
 
-      // Save debt data if provided
+      const profileResult = await profileResponse.json()
+      console.log('✓ Profile saved:', profileResult)
+
+      // Save debt data separately if provided
       if (formData.debtAmount && parseFloat(formData.debtAmount) > 0) {
         const debtData = {
           debts: [{
@@ -106,6 +152,8 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
           }]
         }
 
+        console.log('Saving debt data:', debtData)
+
         const debtResponse = await fetch('http://localhost:5000/api/debts', {
           method: 'POST',
           headers: {
@@ -115,16 +163,22 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
           body: JSON.stringify(debtData)
         })
 
-        if (!debtResponse.ok) {
+        if (debtResponse.ok) {
+          const debtResult = await debtResponse.json()
+          console.log('✓ Debt saved:', debtResult)
+        } else {
           console.error('Failed to save debt data')
         }
       }
 
+      // Success! Complete onboarding
+      console.log('✓ Onboarding completed successfully')
       onComplete()
+
     } catch (error) {
       console.error('Error saving onboarding data:', error)
-      // Still complete the onboarding even if save fails
-      onComplete()
+      alert('Failed to save your information. Please try again.')
+      // Don't complete if there's an error - let user retry
     }
   }
 
@@ -169,31 +223,32 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Age Group
+                    Age Group <span className="text-red-400">*</span>
                   </label>
                   <select
                     name="ageGroup"
                     value={formData.ageGroup}
                     onChange={handleInputChange}
+                    required
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
                   >
                     <option value="">Select age group</option>
                     <option value="18-25">18-25 years</option>
                     <option value="26-35">26-35 years</option>
                     <option value="36-45">36-45 years</option>
-                    <option value="46-55">46-55 years</option>
-                    <option value="56+">56+ years</option>
+                    <option value="46-60">46-60 years</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Family Size
+                    Family Size <span className="text-red-400">*</span>
                   </label>
                   <select
                     name="familySize"
                     value={formData.familySize}
                     onChange={handleInputChange}
+                    required
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white"
                   >
                     <option value="">Select family size</option>
@@ -201,8 +256,28 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     <option value="2">2 people</option>
                     <option value="3">3 people</option>
                     <option value="4">4 people</option>
-                    <option value="5+">5+ people</option>
+                    <option value="5">5+ people</option>
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Monthly Income (₹) <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="monthlyIncome"
+                    value={formData.monthlyIncome}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="e.g., 50000"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
+                  />
+                  {formData.monthlyIncome && (
+                    <p className="text-xs text-gray-400 mt-1">
+                      Daily Income: ₹{Math.round(formData.monthlyIncome / 30).toLocaleString()}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -215,20 +290,6 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                     value={formData.occupation}
                     onChange={handleInputChange}
                     placeholder="e.g., Software Engineer, Teacher"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Monthly Income (₹)
-                  </label>
-                  <input
-                    type="number"
-                    name="monthlyIncome"
-                    value={formData.monthlyIncome}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 50000"
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
                   />
                 </div>
