@@ -9,6 +9,7 @@ const connectDB = require('./db');
 const User = require('./models/User');
 const Profile = require('./models/Profile');
 const Debt = require('./models/Debt');
+const Transaction = require('./models/Transaction');
 require('dotenv').config();
 
 const app = express();
@@ -554,6 +555,141 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('User profile fetch error:', error);
     res.status(500).json({ message: 'Server error fetching user profile' });
+  }
+});
+
+// Transaction Routes
+app.post('/api/transactions', authenticateToken, async (req, res) => {
+  try {
+    const transaction = new Transaction({
+      ...req.body,
+      userId: req.user.id
+    });
+    await transaction.save();
+    res.json({
+      message: 'Transaction added successfully',
+      transaction
+    });
+  } catch (error) {
+    console.error('Transaction creation error:', error);
+    res.status(500).json({ message: 'Server error adding transaction' });
+  }
+});
+
+app.get('/api/transactions', authenticateToken, async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ userId: req.user.id })
+      .sort({ date: -1, createdAt: -1 });
+    res.json({ transactions });
+  } catch (error) {
+    console.error('Transaction fetch error:', error);
+    res.status(500).json({ message: 'Server error fetching transactions' });
+  }
+});
+
+app.delete('/api/transactions/:id', authenticateToken, async (req, res) => {
+  try {
+    const transaction = await Transaction.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user.id
+    });
+    
+    if (!transaction) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+    
+    res.json({ message: 'Transaction deleted successfully' });
+  } catch (error) {
+    console.error('Transaction deletion error:', error);
+    res.status(500).json({ message: 'Server error deleting transaction' });
+  }
+});
+
+app.put('/api/transactions/:id', authenticateToken, async (req, res) => {
+  try {
+    const transaction = await Transaction.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.id },
+      { ...req.body },
+      { new: true, runValidators: true }
+    );
+    
+    if (!transaction) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+    
+    res.json({
+      message: 'Transaction updated successfully',
+      transaction
+    });
+  } catch (error) {
+    console.error('Transaction update error:', error);
+    res.status(500).json({ message: 'Server error updating transaction' });
+  }
+});
+
+// Additional User Routes
+app.post('/api/user/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+    
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+    
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Password change error:', error);
+    res.status(500).json({ message: 'Server error changing password' });
+  }
+});
+
+app.post('/api/user/setup-pin', authenticateToken, async (req, res) => {
+  try {
+    const { pin } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    const hashedPin = await bcrypt.hash(pin, 10);
+    user.pin = hashedPin;
+    user.pinEnabled = true;
+    await user.save();
+    
+    res.json({ message: 'PIN setup successfully' });
+  } catch (error) {
+    console.error('PIN setup error:', error);
+    res.status(500).json({ message: 'Server error setting up PIN' });
+  }
+});
+
+app.delete('/api/user/delete', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // Delete all user data
+    await Promise.all([
+      User.findByIdAndDelete(userId),
+      Profile.findOneAndDelete({ userId }),
+      Debt.deleteMany({ userId }),
+      Transaction.deleteMany({ userId })
+    ]);
+    
+    res.json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    console.error('Account deletion error:', error);
+    res.status(500).json({ message: 'Server error deleting account' });
   }
 });
 
