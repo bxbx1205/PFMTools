@@ -35,6 +35,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 6
+  },
+  pin: {
+    type: String,
+    length: 4
+  },
+  pinEnabled: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true
@@ -98,7 +106,8 @@ app.post('/api/auth/signup', async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        pinEnabled: user.pinEnabled
       }
     });
 
@@ -143,7 +152,8 @@ app.post('/api/auth/login', async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        pinEnabled: user.pinEnabled
       }
     });
 
@@ -176,6 +186,99 @@ app.get('/api/auth/me', verifyToken, async (req, res) => {
     const user = await User.findById(req.user.userId).select('-password');
     res.json(user);
   } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Set PIN
+app.post('/api/auth/set-pin', verifyToken, async (req, res) => {
+  try {
+    const { pin } = req.body;
+
+    // Validation
+    if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+      return res.status(400).json({ message: 'PIN must be exactly 4 digits' });
+    }
+
+    // Hash the PIN
+    const hashedPin = await bcrypt.hash(pin, 10);
+
+    // Update user with PIN
+    await User.findByIdAndUpdate(req.user.userId, {
+      pin: hashedPin,
+      pinEnabled: true
+    });
+
+    res.json({ message: 'PIN set successfully' });
+
+  } catch (error) {
+    console.error('Set PIN error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Login with PIN
+app.post('/api/auth/login-pin', async (req, res) => {
+  try {
+    const { email, pin } = req.body;
+
+    // Validation
+    if (!email || !pin) {
+      return res.status(400).json({ message: 'Email and PIN are required' });
+    }
+
+    if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+      return res.status(400).json({ message: 'PIN must be exactly 4 digits' });
+    }
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user || !user.pinEnabled) {
+      return res.status(400).json({ message: 'Invalid email or PIN not set' });
+    }
+
+    // Check PIN
+    const isPinValid = await bcrypt.compare(pin, user.pin);
+    if (!isPinValid) {
+      return res.status(400).json({ message: 'Invalid PIN' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      message: 'PIN login successful',
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        pinEnabled: user.pinEnabled
+      }
+    });
+
+  } catch (error) {
+    console.error('PIN login error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Disable PIN
+app.post('/api/auth/disable-pin', verifyToken, async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user.userId, {
+      pin: null,
+      pinEnabled: false
+    });
+
+    res.json({ message: 'PIN disabled successfully' });
+
+  } catch (error) {
+    console.error('Disable PIN error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
