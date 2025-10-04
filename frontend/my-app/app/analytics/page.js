@@ -760,7 +760,7 @@ export default function Analytics() {
                   <p className="text-slate-400">
                     {Math.max(netSavings, 0) >= profile.savingsTarget 
                       ? '🎉 Congratulations! You\'ve reached your savings goal!' 
-                      : 'Keep saving to reach your financial goal!'
+                      : 'Keep saving to reach your Financial goal!'
                     }
                   </p>
                 </div>
