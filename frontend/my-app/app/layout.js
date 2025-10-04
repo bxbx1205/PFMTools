@@ -151,6 +151,11 @@ export default function RootLayout({ children }) {
             }),
           }}
         />
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6381610882271883"
+          crossOrigin="anonymous"
+        ></script>
         <script type="text/javascript">
           {`
             function googleTranslateElementInit() {
