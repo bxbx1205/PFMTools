@@ -533,7 +533,7 @@ export default function Dashboard() {
             </h3>
             <div className="text-sm text-slate-400">Take control of your finances</div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <button 
               onClick={() => router.push('/transactions')}
               className="group relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white p-6 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 text-left"
@@ -547,6 +547,22 @@ export default function Dashboard() {
                 </div>
                 <h4 className="font-bold text-lg mb-2">Add Transaction</h4>
                 <p className="text-sm text-emerald-100 font-medium">Record income or expense with smart categorization</p>
+              </div>
+            </button>
+            
+            <button 
+              onClick={() => router.push('/loans')}
+              className="group relative overflow-hidden bg-gradient-to-br from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white p-6 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 text-left"
+            >
+              <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition-all duration-300"></div>
+              <div className="relative z-10">
+                <div className="bg-white/20 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                </div>
+                <h4 className="font-bold text-lg mb-2">Manage Loans</h4>
+                <p className="text-sm text-red-100 font-medium">Track multiple loans and debt payments</p>
               </div>
             </button>
             
