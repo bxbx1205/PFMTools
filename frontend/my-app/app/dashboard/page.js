@@ -4,10 +4,12 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import ProtectedRoute from '../components/ProtectedRoute'
 import PinSetup from '../components/PinSetup'
+import OnboardingModal from '../components/OnboardingModal'
 
 export default function DashboardPage() {
   const router = useRouter()
   const [showPinSetup, setShowPinSetup] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const [pinEnabled, setPinEnabled] = useState(false)
   const [userName, setUserName] = useState('')
 
@@ -15,9 +17,22 @@ export default function DashboardPage() {
     const email = localStorage.getItem('lastEmail')
     const hasPinEnabled = localStorage.getItem(`pinEnabled_${email}`) === 'true'
     const name = localStorage.getItem('userName') || 'User'
+    const isFirstTime = localStorage.getItem('isFirstTimeUser') === 'true'
+    const onboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true'
+    
     setPinEnabled(hasPinEnabled)
     setUserName(name)
+    
+    // Show onboarding modal for first-time users who haven't completed onboarding
+    if (isFirstTime && !onboardingCompleted) {
+      setShowOnboarding(true)
+    }
   }, [])
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false)
+    // You can add any additional logic here, like showing a welcome message
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -171,6 +186,13 @@ export default function DashboardPage() {
         </ul>
       </section>
     </main>
+
+    {/* Onboarding Modal for First-Time Users */}
+    <OnboardingModal 
+      isOpen={showOnboarding}
+      onComplete={handleOnboardingComplete}
+      userName={userName}
+    />
     </ProtectedRoute>
   )
 }

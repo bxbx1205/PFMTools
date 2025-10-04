@@ -256,100 +256,6 @@ export default function LoginPage() {
   return (
     <>
       <style jsx>{`
-        /* Custom Scrollbar Styles */
-        :global(*) {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(0, 200, 150, 0.6) rgba(30, 41, 59, 0.4);
-        }
-
-        :global(html) {
-          scroll-behavior: smooth;
-        }
-
-        :global(body) {
-          scroll-behavior: smooth;
-          overflow-x: hidden;
-        }
-
-        :global(*::-webkit-scrollbar) {
-          width: 8px;
-          height: 8px;
-        }
-
-        :global(*::-webkit-scrollbar-track) {
-          background: rgba(30, 41, 59, 0.4);
-          border-radius: 10px;
-          border: 1px solid rgba(71, 85, 105, 0.2);
-          box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-        }
-
-        :global(*::-webkit-scrollbar-thumb) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.8) 0%, rgba(0, 184, 124, 0.6) 100%);
-          border-radius: 10px;
-          border: 1px solid rgba(0, 200, 150, 0.3);
-          transition: all 0.3s ease;
-          box-shadow: 0 2px 6px rgba(0, 200, 150, 0.2);
-        }
-
-        :global(*::-webkit-scrollbar-thumb:hover) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 1) 0%, rgba(0, 184, 124, 0.8) 100%);
-          box-shadow: 0 0 12px rgba(0, 200, 150, 0.4), 0 2px 8px rgba(0, 200, 150, 0.3);
-          transform: scale(1.1);
-        }
-
-        :global(*::-webkit-scrollbar-thumb:active) {
-          background: linear-gradient(135deg, rgba(0, 184, 124, 1) 0%, rgba(5, 150, 105, 0.9) 100%);
-          box-shadow: 0 0 16px rgba(0, 200, 150, 0.5), 0 2px 10px rgba(0, 200, 150, 0.4);
-        }
-
-        :global(*::-webkit-scrollbar-corner) {
-          background: rgba(30, 41, 59, 0.4);
-          border-radius: 4px;
-        }
-
-        /* Enhanced scrollbar for containers */
-        :global(.auth-card::-webkit-scrollbar) {
-          width: 6px;
-        }
-
-        :global(.auth-card::-webkit-scrollbar-track) {
-          background: rgba(20, 28, 45, 0.6);
-          border-radius: 8px;
-          border: 1px solid rgba(71, 85, 105, 0.1);
-        }
-
-        :global(.auth-card::-webkit-scrollbar-thumb) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.7) 0%, rgba(0, 184, 124, 0.5) 100%);
-          border-radius: 8px;
-          border: 1px solid rgba(0, 200, 150, 0.2);
-          box-shadow: 0 1px 4px rgba(0, 200, 150, 0.1);
-        }
-
-        :global(.auth-card::-webkit-scrollbar-thumb:hover) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.9) 0%, rgba(0, 184, 124, 0.7) 100%);
-          box-shadow: 0 0 8px rgba(0, 200, 150, 0.3), 0 1px 6px rgba(0, 200, 150, 0.2);
-        }
-
-        /* Form input scrollbar for longer text */
-        :global(.form-input::-webkit-scrollbar) {
-          width: 4px;
-          height: 4px;
-        }
-
-        :global(.form-input::-webkit-scrollbar-track) {
-          background: rgba(30, 41, 59, 0.3);
-          border-radius: 6px;
-        }
-
-        :global(.form-input::-webkit-scrollbar-thumb) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.6) 0%, rgba(0, 184, 124, 0.4) 100%);
-          border-radius: 6px;
-        }
-
-        :global(.form-input::-webkit-scrollbar-thumb:hover) {
-          background: linear-gradient(135deg, rgba(0, 200, 150, 0.8) 0%, rgba(0, 184, 124, 0.6) 100%);
-        }
-
         .login-container {
           height: 100vh;
           display: flex;
@@ -359,9 +265,7 @@ export default function LoginPage() {
           font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           padding: 1rem;
           position: relative;
-          overflow-y: auto;
-          overflow-x: hidden;
-          scroll-behavior: smooth;
+          overflow: hidden;
         }
 
         .login-container::before {
@@ -406,6 +310,8 @@ export default function LoginPage() {
           animation: float 12s ease-in-out infinite;
           filter: blur(1px);
         }
+
+        // asjkdfsf
 
         .orb:nth-child(1) {
           width: 140px;
@@ -460,7 +366,7 @@ export default function LoginPage() {
 
         .login-wrapper {
           width: 100%;
-          max-width: 500px;
+          max-width: 600px;
           position: relative;
           z-index: 2;
         }
@@ -584,7 +490,7 @@ export default function LoginPage() {
           background: rgba(20, 28, 45, 0.85);
           backdrop-filter: blur(25px);
           border-radius: 16px;
-          padding: 2.5rem;
+          padding: 3rem 4rem;
           box-shadow: 
             0 25px 50px rgba(0, 0, 0, 0.4),
             0 12px 40px rgba(0, 0, 0, 0.25),
@@ -592,13 +498,11 @@ export default function LoginPage() {
             0 0 0 1px rgba(255, 255, 255, 0.08);
           border: 1px solid rgba(255, 255, 255, 0.12);
           position: relative;
-          overflow-y: auto;
-          overflow-x: hidden;
+          overflow: hidden;
           height: fit-content;
           max-height: calc(100vh - 4rem);
           width: 100%;
           animation: cardSlideIn 0.8s ease-out 0.2s both;
-          scroll-behavior: smooth;
         }
 
         .auth-card::before {
@@ -645,7 +549,6 @@ export default function LoginPage() {
 
         .auth-header {
           margin-bottom: 2rem;
-          text-align: center;
         }
 
         .auth-title {
@@ -653,19 +556,21 @@ export default function LoginPage() {
           font-weight: 600;
           color: #f8fafc;
           margin-bottom: 0.5rem;
+          text-align: center;
           letter-spacing: -0.025em;
         }
 
         .auth-description {
           color: #94a3b8;
           font-size: 0.95rem;
+          text-align: center;
           line-height: 1.5;
           margin-bottom: 0;
         }
 
         .notification-banner {
           padding: 1.25rem;
-          border-radius: 12px;
+          border-radius: 8px;
           margin-bottom: 1.5rem;
           font-size: 0.875rem;
           border: 1px solid;
@@ -698,38 +603,17 @@ export default function LoginPage() {
           border-color: rgba(34, 197, 94, 0.3);
         }
 
-        .form-group {
-          margin-bottom: 1.5rem;
-        }
-
         .form-label {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+          display: block;
           margin-bottom: 0.5rem;
           font-size: 0.875rem;
           font-weight: 500;
           color: #e2e8f0;
         }
 
-        .forgot-password-link {
-          background: none;
-          border: none;
-          color: #00C896;
-          font-size: 0.8rem;
-          cursor: pointer;
-          text-decoration: underline;
-          padding: 0;
-          transition: color 0.2s ease;
-        }
-
-        .forgot-password-link:hover {
-          color: #00B87C;
-        }
-
         .form-input {
           width: 100%;
-          padding: 1rem 1.25rem;
+          padding: 1.25rem 1.5rem;
           border: 1.5px solid rgba(71, 85, 105, 0.5);
           border-radius: 12px;
           font-size: 1rem;
@@ -739,7 +623,7 @@ export default function LoginPage() {
           backdrop-filter: blur(12px);
           font-family: inherit;
           color: #f8fafc;
-          min-height: 52px;
+          min-height: 56px;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
@@ -794,76 +678,24 @@ export default function LoginPage() {
           background: rgba(71, 85, 105, 0.2);
         }
 
-        .checkbox-group {
-          margin-bottom: 2rem;
-        }
-
-        .checkbox-label {
-          display: flex;
-          align-items: center;
-          cursor: pointer;
-          font-size: 0.875rem;
-          color: #cbd5e1;
-          user-select: none;
-        }
-
-        .checkbox-input {
-          display: none;
-        }
-
-        .checkbox-custom {
-          width: 20px;
-          height: 20px;
-          border: 2px solid rgba(71, 85, 105, 0.5);
-          border-radius: 4px;
-          margin-right: 0.75rem;
-          position: relative;
-          background: rgba(30, 41, 59, 0.6);
-          transition: all 0.3s ease;
-          flex-shrink: 0;
-        }
-
-        .checkbox-input:checked + .checkbox-custom {
-          background: #00C896;
-          border-color: #00C896;
-        }
-
-        .checkbox-input:checked + .checkbox-custom::after {
-          content: '✓';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          color: white;
-          font-size: 12px;
-          font-weight: bold;
-        }
-
-        .checkbox-text {
-          line-height: 1.4;
-        }
-
         .submit-button {
           width: 100%;
           background: linear-gradient(135deg, #00C896 0%, #00B87C 100%);
           color: white;
-          padding: 1rem;
+          padding: 1.25rem;
           border: none;
           border-radius: 12px;
-          font-size: 1rem;
+          font-size: 1.1rem;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
-          margin-bottom: 1.5rem;
+          margin-top: 1rem;
           position: relative;
           overflow: hidden;
           box-shadow: 
             0 4px 20px rgba(0, 200, 150, 0.3),
             0 0 40px rgba(0, 200, 150, 0.1);
-          min-height: 52px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          min-height: 56px;
         }
 
         .submit-button::before {
@@ -894,6 +726,32 @@ export default function LoginPage() {
           cursor: not-allowed;
           transform: none;
           box-shadow: none;
+        }
+
+        .switch-link {
+          color: #00C896;
+          text-decoration: none;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          font-size: 0.875rem;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          padding: 0.25rem 0.5rem;
+          border-radius: 6px;
+        }
+
+        .switch-link:hover {
+          color: #00B87C;
+          background: rgba(0, 200, 150, 0.1);
+        }
+
+        .footer-text {
+          text-align: center;
+          margin-top: 2rem;
+          font-size: 0.875rem;
+          color: #94a3b8;
+          line-height: 1.5;
         }
 
         .loading-spinner {
@@ -943,32 +801,160 @@ export default function LoginPage() {
           margin-top: 0.5rem;
         }
 
-        .switch-link {
-          color: #00C896;
-          text-decoration: none;
-          border: none;
-          background: transparent;
+        .step-indicator {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 2rem;
+          gap: 1rem;
+        }
+
+        .step {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background: rgba(71, 85, 105, 0.5);
+          transition: all 0.3s ease;
+          position: relative;
+        }
+
+        .step.active {
+          background: #00C896;
+          box-shadow: 0 0 20px rgba(0, 200, 150, 0.4);
+        }
+
+        .step.completed {
+          background: #00C896;
+        }
+
+        .step-connector {
+          width: 30px;
+          height: 2px;
+          background: rgba(71, 85, 105, 0.3);
+          transition: all 0.3s ease;
+        }
+
+        .step-connector.completed {
+          background: #00C896;
+        }
+
+        .form-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+          margin-bottom: 2rem;
+        }
+
+        .form-grid-three {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 2rem;
+          margin-bottom: 2rem;
+        }
+
+        .form-full-width {
+          grid-column: 1 / -1;
+        }
+
+        .form-group {
+          margin-bottom: 2rem;
+        }
+
+        .form-group.compact {
+          margin-bottom: 1.5rem;
+        }
+
+        .form-select {
+          width: 100%;
+          padding: 1.25rem 1.5rem;
+          border: 1.5px solid rgba(71, 85, 105, 0.5);
+          border-radius: 12px;
+          font-size: 1rem;
+          box-sizing: border-box;
+          transition: all 0.3s ease;
+          background: rgba(30, 41, 59, 0.6);
+          backdrop-filter: blur(12px);
+          font-family: inherit;
+          color: #f8fafc;
+          min-height: 56px;
           cursor: pointer;
-          font-size: 0.875rem;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-select:focus {
+          outline: none;
+          border-color: #00C896;
+          box-shadow: 
+            0 0 0 3px rgba(0, 200, 150, 0.1),
+            0 0 20px rgba(0, 200, 150, 0.1);
+          background: rgba(30, 41, 59, 0.8);
+        }
+
+        .form-select option {
+          background: #1e293b;
+          color: #f8fafc;
+          padding: 0.5rem;
+        }
+
+        .back-button {
+          background: rgba(71, 85, 105, 0.3);
+          color: #cbd5e1;
+          border: 1px solid rgba(71, 85, 105, 0.5);
+          padding: 1.25rem 2rem;
+          border-radius: 12px;
+          font-size: 1rem;
           font-weight: 500;
-          transition: all 0.2s ease;
-          padding: 0.25rem 0.5rem;
-          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          margin-right: 1rem;
+          min-height: 56px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .switch-link:hover {
-          color: #00B87C;
-          background: rgba(0, 200, 150, 0.1);
+        .back-button:hover {
+          background: rgba(71, 85, 105, 0.5);
+          border-color: rgba(71, 85, 105, 0.7);
         }
 
-        .auth-footer {
+        .button-group {
+          display: flex;
+          gap: 1rem;
+          margin-top: 1.5rem;
+        }
+
+        .form-section-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #f8fafc;
+          margin-bottom: 1.5rem;
           text-align: center;
+          padding-bottom: 0.75rem;
+          border-bottom: 1px solid rgba(71, 85, 105, 0.3);
         }
 
-        .footer-text {
+        .optional-label {
+          color: #94a3b8;
+          font-size: 0.75rem;
+          font-weight: 400;
+        }
+
+        .section-header {
+          margin-bottom: 1.5rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .section-title {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: #f1f5f9;
+          margin-bottom: 0.25rem;
+        }
+
+        .section-subtitle {
           font-size: 0.875rem;
           color: #94a3b8;
-          line-height: 1.5;
+          font-weight: 400;
         }
 
         @media (max-width: 768px) {
@@ -977,8 +963,16 @@ export default function LoginPage() {
           }
           
           .auth-card {
-            padding: 2rem;
+            padding: 2.5rem 2rem;
+            height: fit-content;
+            max-height: calc(100vh - 2rem);
             margin: 0 1rem;
+          }
+          
+          .form-grid,
+          .form-grid-three {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
           }
         }
 
@@ -987,8 +981,14 @@ export default function LoginPage() {
             padding: 0.5rem;
           }
           
+          .login-wrapper {
+            max-width: 100%;
+          }
+          
           .auth-card {
-            padding: 1.5rem;
+            padding: 2rem 1.5rem;
+            height: fit-content;
+            max-height: calc(100vh - 1rem);
             margin: 0;
           }
           
@@ -1000,15 +1000,23 @@ export default function LoginPage() {
             font-size: 1.5rem;
           }
           
-          .form-input {
+          .form-input,
+          .form-select {
             padding: 0.875rem 1rem;
             min-height: 46px;
           }
           
-          .submit-button {
-            padding: 0.875rem;
-            font-size: 0.95rem;
+          .submit-button,
+          .back-button {
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
             min-height: 46px;
+          }
+          
+          .form-grid,
+          .form-grid-three {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
           }
         }
       `}</style>
@@ -1020,23 +1028,29 @@ export default function LoginPage() {
           <div className="orb"></div>
           <div className="orb"></div>
         </div>
-        
         <div className="login-wrapper">
-
 
           <div className="auth-card">
             <div className="auth-header">
               <h2 className="auth-title">
                 {isPinLogin ? 'Quick Access' : (
-                  isLogin ? 'Welcome back' : 'Create your account'
+                  isLogin ? 'Welcome back' : (
+                    signupStep === 1 ? 'Get started' :
+                    signupStep === 2 ? 'Profile Information' :
+                    'Debt Information'
+                  )
                 )}
               </h2>
               <p className="auth-description">
                 {isPinLogin 
-                  ? 'Enter your PIN to continue securely' 
+                  ? 'Enter your PIN to continue' 
                   : (isLogin 
-                    ? 'Sign in to access your financial dashboard' 
-                    : 'Join thousands of users managing their finances smarter'
+                    ? 'Enter your details to access your account' 
+                    : (
+                      signupStep === 1 ? 'Create your account to start growing your wealth' :
+                      signupStep === 2 ? 'Tell us about yourself to personalize your experience' :
+                      'Help us understand your financial situation (optional)'
+                    )
                   )
                 }
               </p>
@@ -1046,7 +1060,7 @@ export default function LoginPage() {
               <div className="notification-banner info">
                 <div className="quick-login-badge">Quick Login Available</div>
                 <div className="banner-text">
-                  Welcome back! You can use your PIN for faster access.
+                  You can use your PIN for faster access.
                 </div>
                 <div className="banner-action">
                   <button onClick={switchToPinLogin} className="switch-link">
@@ -1059,7 +1073,7 @@ export default function LoginPage() {
             {isPinLogin && (
               <div className="notification-banner neutral">
                 <div className="banner-text">
-                  Quick and secure login with your 4-digit PIN
+                  Quick login with your secure 4-digit PIN
                 </div>
                 <div className="banner-action">
                   <button onClick={switchToFullLogin} className="switch-link">
@@ -1082,142 +1096,308 @@ export default function LoginPage() {
             )}
 
             <form onSubmit={handleSubmit}>
-              {/* Name field for signup */}
-              {!isLogin && !isPinLogin && (
-                <div className="form-group">
-                  <label className="form-label">Full Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="form-input"
-                    placeholder="Enter your full name"
-                    autoComplete="name"
-                  />
-                </div>
-              )}
+              {/* Basic Information (Login/Signup) */}
+              {(isLogin || isPinLogin || !isLogin) && (
+                <>
+                  {!isLogin && !isPinLogin && (
+                    <div className="form-group">
+                      <label className="form-label">Full Name</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField('name')}
+                        onBlur={() => setFocusedField('')}
+                        required={!isLogin && !isPinLogin}
+                        className="form-input"
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+                  )}
 
-              {/* Email field */}
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  readOnly={isPinLogin && savedEmail}
-                  className={`form-input ${(isPinLogin && savedEmail) ? 'readonly' : ''}`}
-                  placeholder="Enter your email address"
-                  autoComplete="email"
-                />
-              </div>
-
-              {/* PIN or Password field */}
-              {isPinLogin ? (
-                <div className="form-group">
-                  <label className="form-label">Security PIN</label>
-                  <input
-                    type="password"
-                    name="pin"
-                    value={formData.pin}
-                    onChange={handleChange}
-                    required
-                    maxLength={4}
-                    pattern="\d{4}"
-                    className="form-input pin-input"
-                    placeholder="••••"
-                    autoComplete="current-password"
-                  />
-                </div>
-              ) : (
-                <div className="form-group">
-                  <label className="form-label">
-                    Password
-                    {isLogin && (
-                      <button
-                        type="button"
-                        onClick={handleForgotPassword}
-                        className="forgot-password-link"
-                      >
-                        Forgot password?
-                      </button>
-                    )}
-                  </label>
-                  <div className="password-input-container">
+                  <div className="form-group">
+                    <label className="form-label">Email</label>
                     <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
+                      type="email"
+                      name="email"
+                      value={formData.email}
                       onChange={handleChange}
+                      onFocus={() => setFocusedField('email')}
+                      onBlur={() => setFocusedField('')}
                       required
-                      className="form-input"
-                      placeholder={isLogin ? "Enter your password" : "Create a strong password (min 6 characters)"}
-                      autoComplete={isLogin ? "current-password" : "new-password"}
+                      readOnly={isPinLogin && savedEmail}
+                      className={`form-input ${(isPinLogin && savedEmail) ? 'readonly' : ''}`}
+                      placeholder="Enter your email"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="password-toggle"
-                      tabIndex={-1}
-                    >
-                      {showPassword ? '🙈' : '👁️'}
-                    </button>
                   </div>
-                </div>
+
+                  {isPinLogin ? (
+                    <div className="form-group">
+                      <label className="form-label">PIN</label>
+                      <input
+                        type="password"
+                        name="pin"
+                        value={formData.pin}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField('pin')}
+                        onBlur={() => setFocusedField('')}
+                        required
+                        maxLength={4}
+                        pattern="\d{4}"
+                        className="form-input pin-input"
+                        placeholder="••••"
+                      />
+                    </div>
+                  ) : (
+                    <div className="form-group">
+                      <label className="form-label">Password</label>
+                      <div className="password-input-container">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          name="password"
+                          value={formData.password}
+                          onChange={handleChange}
+                          onFocus={() => setFocusedField('password')}
+                          onBlur={() => setFocusedField('')}
+                          required
+                          className="form-input"
+                          placeholder="Enter your password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="password-toggle"
+                          tabIndex={-1}
+                        >
+                          {showPassword ? '🙈' : '👁️'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
-              {/* Remember Me / Stay Signed In */}
-              {!isPinLogin && (
-                <div className="form-group checkbox-group">
-                  <label className="checkbox-label">
+              {/* Step 2: Profile Information */}
+              {!isLogin && !isPinLogin && signupStep === 2 && (
+                <>
+                  <div className="form-section-title">Profile Information</div>
+                  <div className="form-grid-three">
+                    <div className="form-group compact">
+                      <label className="form-label">Age Group</label>
+                      <select
+                        name="ageGroup"
+                        value={profileData.ageGroup}
+                        onChange={handleProfileChange}
+                        required
+                        className="form-select"
+                      >
+                        <option value="">Select age group</option>
+                        <option value="18-25">18-25</option>
+                        <option value="26-35">26-35</option>
+                        <option value="36-45">36-45</option>
+                        <option value="46-60">46-60</option>
+                        <option value="60+">60+</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group compact">
+                      <label className="form-label">Family Size</label>
+                      <input
+                        type="number"
+                        name="familySize"
+                        value={profileData.familySize}
+                        onChange={handleProfileChange}
+                        required
+                        min="1"
+                        max="20"
+                        className="form-input"
+                        placeholder="Number of members"
+                      />
+                    </div>
+
+                    <div className="form-group compact">
+                      <label className="form-label">Daily Income (₹)</label>
+                      <input
+                        type="number"
+                        name="dailyIncome"
+                        value={profileData.dailyIncome}
+                        onChange={handleProfileChange}
+                        required
+                        min="0"
+                        step="0.01"
+                        className="form-input"
+                        placeholder="Average daily income"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Step 3: Debt Information */}
+              {!isLogin && !isPinLogin && signupStep === 3 && (
+                <>
+                  <div className="form-section-title">
+                    Debt Information <span className="optional-label">(Optional)</span>
+                  </div>
+                  
+                  {/* Basic Loan Information */}
+                  <div className="section-header">
+                    <div className="section-title">Loan Details</div>
+                    <div className="section-subtitle">Basic information about your loan</div>
+                  </div>
+                  
+                  <div className="form-grid">
+                    <div className="form-group compact">
+                      <label className="form-label">Loan Type</label>
+                      <select
+                        name="loanType"
+                        value={debtData.loanType}
+                        onChange={handleDebtChange}
+                        className="form-select"
+                      >
+                        <option value="">Select loan type</option>
+                        <option value="None">No Loan</option>
+                        <option value="Personal">Personal Loan</option>
+                        <option value="Home">Home Loan</option>
+                        <option value="Vehicle">Vehicle Loan</option>
+                        <option value="Education">Education Loan</option>
+                        <option value="Business">Business Loan</option>
+                        <option value="Gold">Gold Loan</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group compact">
+                      <label className="form-label">Total Debt Amount (₹)</label>
+                      <input
+                        type="number"
+                        name="debtAmount"
+                        value={debtData.debtAmount}
+                        onChange={handleDebtChange}
+                        min="0"
+                        step="0.01"
+                        className="form-input"
+                        placeholder="Outstanding amount"
+                        disabled={debtData.loanType === 'None'}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Loan Terms & Payment Details */}
+                  <div className="section-header">
+                    <div className="section-title">Loan Terms & Payment</div>
+                    <div className="section-subtitle">Interest rate, tenure, and monthly payment information</div>
+                  </div>
+
+                  <div className="form-grid-three">
+                    <div className="form-group compact">
+                      <label className="form-label">Interest Rate (%)</label>
+                      <input
+                        type="number"
+                        name="interestRate"
+                        value={debtData.interestRate}
+                        onChange={handleDebtChange}
+                        min="0"
+                        max="50"
+                        step="0.01"
+                        className="form-input"
+                        placeholder="Annual rate"
+                        disabled={debtData.loanType === 'None'}
+                      />
+                    </div>
+
+                    <div className="form-group compact">
+                      <label className="form-label">Original Tenure (Months)</label>
+                      <input
+                        type="number"
+                        name="loanTenureMonths"
+                        value={debtData.loanTenureMonths}
+                        onChange={handleDebtChange}
+                        min="1"
+                        max="360"
+                        className="form-input"
+                        placeholder="Total months"
+                        disabled={debtData.loanType === 'None'}
+                      />
+                    </div>
+
+                    <div className="form-group compact">
+                      <label className="form-label">Remaining Tenure (Months)</label>
+                      <input
+                        type="number"
+                        name="remainingTenureMonths"
+                        value={debtData.remainingTenureMonths}
+                        onChange={handleDebtChange}
+                        min="0"
+                        max={debtData.loanTenureMonths || 360}
+                        className="form-input"
+                        placeholder="Months left"
+                        disabled={debtData.loanType === 'None'}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Monthly Payment */}
+                  <div className="section-header">
+                    <div className="section-title">Monthly Payment</div>
+                    <div className="section-subtitle">Your current EMI amount</div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Monthly EMI (₹)</label>
                     <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="checkbox-input"
+                      type="number"
+                      name="monthlyEMI"
+                      value={debtData.monthlyEMI}
+                      onChange={handleDebtChange}
+                      min="0"
+                      step="0.01"
+                      className="form-input"
+                      placeholder="EMI amount"
+                      disabled={debtData.loanType === 'None'}
                     />
-                    <span className="checkbox-custom"></span>
-                    <span className="checkbox-text">
-                      {isLogin ? 'Keep me signed in' : 'I agree to the Terms of Service and Privacy Policy'}
-                    </span>
-                  </label>
-                </div>
+                  </div>
+                </>
               )}
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="submit-button"
-              >
-                {loading && <span className="loading-spinner"></span>}
-                {loading ? (
-                  isPinLogin ? 'Verifying...' : (
-                    isLogin ? 'Signing in...' : 'Creating account...'
-                  )
-                ) : (
-                  isPinLogin ? 'Continue with PIN' : (
-                    isLogin ? 'Sign in' : 'Create Account'
-                  )
+              <div className="button-group">
+                {!isLogin && !isPinLogin && signupStep > 1 && (
+                  <button
+                    type="button"
+                    onClick={goBackStep}
+                    className="back-button"
+                  >
+                    ← Back
+                  </button>
                 )}
-              </button>
+                
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="submit-button"
+                  style={{ flex: (!isLogin && !isPinLogin && signupStep > 1) ? 1 : 'auto' }}
+                >
+                  {loading && <span className="loading-spinner"></span>}
+                  {loading ? (
+                    !isLogin ? 'Creating your account...' : 'Please wait...'
+                  ) : (
+                    isPinLogin ? 'Continue with PIN' : (
+                      isLogin ? 'Sign in' : 'Create Account 🎉'
+                    )
+                  )}
+                </button>
+              </div>
             </form>
 
-            {/* Footer with switch options */}
             {!isPinLogin && (
-              <div className="auth-footer">
-                <div className="footer-text">
-                  {isLogin ? "Don't have an account? " : "Already have an account? "}
-                  <button
-                    onClick={isLogin ? switchToSignup : switchToLogin}
-                    className="switch-link"
-                  >
-                    {isLogin ? 'Sign up' : 'Sign in'}
-                  </button>
-                </div>
+              <div className="footer-text">
+                {isLogin ? "Don't have an account? " : "Already have an account? "}
+                <button
+                  onClick={isLogin ? switchToSignup : switchToLogin}
+                  className="switch-link"
+                >
+                  {isLogin ? 'Sign up' : 'Sign in'}
+                </button>
               </div>
             )}
           </div>
