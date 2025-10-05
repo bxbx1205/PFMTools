@@ -217,16 +217,14 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Enhanced Styles */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-        
-        * {
-          font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
-          font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-        }
-        
-        ::-webkit-scrollbar {
+          {/* Enhanced Styles */}
+          <style jsx global>{`
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+            
+            * {
+              font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+              font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+            }        ::-webkit-scrollbar {
           width: 6px;
           height: 6px;
         }
@@ -356,49 +354,47 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="relative z-10 pt-32 pb-12 px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Featured Analytics Hub - Prime Position */}
-          <div className="glass-morphism rounded-3xl p-8 mb-8 card-hover relative overflow-hidden border-2 border-emerald-400/20">
-            {/* Subtle Background Effects */}
-            <div className="absolute top-0 right-0 w-60 h-60 bg-gradient-to-br from-emerald-500/15 via-green-500/10 to-lime-500/15 rounded-full blur-3xl opacity-70 animate-float"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-green-500/10 to-emerald-500/20 rounded-full blur-2xl opacity-40 animate-float" style={{animationDelay: '2s'}}></div>
-            
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-4">
-                  <div className="w-3 h-10 bg-gradient-to-b from-emerald-400 via-green-500 to-lime-500 rounded-full animate-pulse-glow"></div>
-                  <div>
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-2xl font-black text-white tracking-tight">
-                        Analytics <span className="text-gradient">Hub</span>
-                      </h3>
-                      <div className="bg-gradient-to-r from-emerald-500 to-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                        AI POWERED
-                      </div>
-                    </div>
-                    <p className="text-green-200 font-medium">Your intelligent financial command center</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                    <div className="w-2 h-2 bg-lime-400 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
-                  </div>
-                  <span className="text-sm text-green-300 bg-gray-800/30 px-3 py-1 rounded-full border border-green-700/50">
-                    Live Data
-                  </span>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => router.push('/analytics')}
-                className="group w-full relative overflow-hidden bg-gradient-to-br from-emerald-500/15 via-green-500/10 to-lime-500/15 hover:from-emerald-500/25 hover:via-green-500/20 hover:to-lime-500/25 border border-emerald-400/30 hover:border-emerald-300/50 text-white p-6 rounded-2xl transition-all duration-500 text-left"
-              >
-                {/* Enhanced hover effects */}
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-green-500/10 to-lime-500/0 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-lime-400/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-150"></div>
+              {/* Featured Analytics Hub - Prime Position */}
+              <div className="glass-morphism rounded-3xl p-8 mb-8 card-hover relative overflow-hidden border-2 border-slate-600/30">
+                {/* Subtle Background Effects */}
+                <div className="absolute top-0 right-0 w-60 h-60 bg-gradient-to-br from-emerald-500/8 via-green-500/5 to-slate-600/10 rounded-full blur-3xl opacity-70 animate-float"></div>
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-green-500/6 to-emerald-500/8 rounded-full blur-2xl opacity-40 animate-float" style={{animationDelay: '2s'}}></div>
                 
                 <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-3 h-10 bg-gradient-to-b from-emerald-400/80 via-green-500/70 to-slate-500/60 rounded-full animate-pulse-glow"></div>
+                      <div>
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-2xl font-black text-white tracking-tight">
+                            Analytics <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400/90 to-slate-300">Hub</span>
+                          </h3>
+                          <div className="bg-gradient-to-r from-emerald-500/80 to-green-500/70 text-white px-3 py-1 rounded-full text-xs font-bold">
+                            AI POWERED
+                          </div>
+                        </div>
+                        <p className="text-slate-300 font-medium">Your intelligent financial command center</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-emerald-400/70 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-green-400/60 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                        <div className="w-2 h-2 bg-slate-400/70 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
+                      </div>
+                      <span className="text-sm text-slate-300 bg-gray-800/30 px-3 py-1 rounded-full border border-slate-600/50">
+                        Live Data
+                      </span>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => router.push('/analytics')}
+                    className="group w-full relative overflow-hidden bg-gradient-to-br from-slate-700/20 via-emerald-500/8 to-slate-700/15 hover:from-slate-700/30 hover:via-emerald-500/15 hover:to-slate-700/25 border border-slate-600/40 hover:border-emerald-400/30 text-white p-6 rounded-2xl transition-all duration-500 text-left"
+                  >
+                    {/* Enhanced hover effects */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-slate-600/8 to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/10 to-slate-500/15 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-150"></div>                <div className="relative z-10">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-4">
                       <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 via-green-500 to-lime-500 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
@@ -483,17 +479,17 @@ export default function Dashboard() {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                        <div className="w-2 h-2 bg-lime-400 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
+                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-emerald-400/80 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                        <div className="w-2 h-2 bg-slate-500 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
                       </div>
-                      <span className="text-sm text-green-300 font-medium uppercase tracking-wider">Financial Command Center</span>
+                      <span className="text-sm text-slate-300 font-medium uppercase tracking-wider">Financial Command Center</span>
                     </div>
                     <h2 className="text-5xl font-black text-white mb-4 tracking-tight">
                       Your Money,<br />
-                      <span className="text-gradient">Simplified</span>
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400/90 to-slate-300">Simplified</span>
                     </h2>
-                    <p className="text-xl text-green-200 font-medium max-w-2xl leading-relaxed">
+                    <p className="text-xl text-slate-300 font-medium max-w-2xl leading-relaxed">
                       Advanced analytics and intelligent insights to optimize your financial future
                     </p>
                   </div>
@@ -541,6 +537,68 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
             {/* Financial Overview */}
             <div className="lg:col-span-8 space-y-8">
+              {/* Premium AdSense - Native Content Ad */}
+              <div className="glass-morphism rounded-2xl p-6 card-hover mb-6 border-purple-500/30">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    </div>
+                    <span className="text-purple-300 font-semibold text-sm">Featured Financial Tools</span>
+                    <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full">Sponsored</span>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-4 text-white">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                        <span className="text-sm font-bold">₹</span>
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm">Tax Saver Fund</p>
+                        <p className="text-purple-200 text-xs">12.5% Returns</p>
+                      </div>
+                    </div>
+                    <button className="w-full bg-white/20 hover:bg-white/30 text-white py-2 rounded-lg text-xs font-semibold transition-colors">
+                      Invest Now
+                    </button>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-4 text-white">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                        <span className="text-sm font-bold">💳</span>
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm">Credit Card</p>
+                        <p className="text-blue-200 text-xs">Instant Approval</p>
+                      </div>
+                    </div>
+                    <button className="w-full bg-white/20 hover:bg-white/30 text-white py-2 rounded-lg text-xs font-semibold transition-colors">
+                      Apply Free
+                    </button>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl p-4 text-white">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                        <span className="text-sm font-bold">🏠</span>
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm">Home Loan</p>
+                        <p className="text-green-200 text-xs">6.5% Interest</p>
+                      </div>
+                    </div>
+                    <button className="w-full bg-white/20 hover:bg-white/30 text-white py-2 rounded-lg text-xs font-semibold transition-colors">
+                      Check Eligibility
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Income Card */}
@@ -674,10 +732,127 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
+
+              {/* Interstitial AdSense - Mid-Content Placement */}
+              <div className="glass-morphism rounded-2xl p-6 card-hover my-8 border-indigo-500/30">
+                <div className="text-center mb-4">
+                  <div className="flex items-center justify-center space-x-2 mb-2">
+                    <div className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></div>
+                    <span className="text-indigo-300 text-xs uppercase tracking-wider font-semibold">Premium Recommendation</span>
+                    <div className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 rounded-xl p-8 relative overflow-hidden">
+                  {/* Animated background elements */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-2xl"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-500/20 to-transparent rounded-full blur-xl"></div>
+                  
+                  <div className="relative z-10 text-center">
+                    <div className="inline-flex items-center space-x-2 bg-white/20 rounded-full px-4 py-2 mb-6">
+                      <span className="text-yellow-300 text-lg">⚡</span>
+                      <span className="text-white font-bold text-sm">Limited Time Offer</span>
+                    </div>
+                    
+                    <h3 className="text-white font-black text-2xl mb-4">
+                      Unlock Premium Financial Analytics
+                    </h3>
+                    <p className="text-indigo-100 font-medium mb-6 max-w-2xl mx-auto">
+                      Get AI-powered insights, advanced charts, and personalized investment recommendations. 
+                      Join 50,000+ users who've improved their financial health.
+                    </p>
+                    
+                    <div className="flex flex-wrap justify-center gap-4 mb-6">
+                      <div className="flex items-center space-x-2 text-white">
+                        <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-sm font-medium">Real-time alerts</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-white">
+                        <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-sm font-medium">Portfolio optimization</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-white">
+                        <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-sm font-medium">Expert guidance</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                      <button className="bg-white text-indigo-600 font-bold py-4 px-8 rounded-xl hover:bg-indigo-50 transition-colors duration-300 shadow-lg">
+                        Start Free Trial
+                      </button>
+                      <button className="border-2 border-white/30 text-white font-bold py-4 px-8 rounded-xl hover:bg-white/10 transition-colors duration-300">
+                        View Plans
+                      </button>
+                    </div>
+                    
+                    <div className="mt-4 flex items-center justify-center space-x-4 text-indigo-200 text-sm">
+                      <span>⭐ 4.9/5 Rating</span>
+                      <span>•</span>
+                      <span>📱 10M+ Downloads</span>
+                      <span>•</span>
+                      <span>🔒 Bank-level Security</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Profile Sidebar */}
             <div className="lg:col-span-4 space-y-8">
+              {/* Sticky AdSense - Rectangle Ad */}
+              <div className="glass-morphism rounded-2xl p-4 card-hover border-cyan-500/30 sticky top-32">
+                <div className="text-center mb-3">
+                  <span className="text-cyan-300 text-xs uppercase tracking-wider font-semibold">Advertisement</span>
+                </div>
+                
+                <div className="bg-gradient-to-br from-cyan-600 via-teal-600 to-blue-700 rounded-xl p-6 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 animate-pulse"></div>
+                  
+                  <div className="relative z-10 text-center">
+                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <span className="text-2xl">📈</span>
+                    </div>
+                    
+                    <h4 className="text-white font-bold text-lg mb-2">Stock Market Mastery</h4>
+                    <p className="text-cyan-100 text-sm mb-4 leading-relaxed">
+                      Learn to trade like a pro with our AI-powered trading signals and market analysis
+                    </p>
+                    
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center justify-center space-x-2 text-white text-sm">
+                        <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                        <span>95% Success Rate</span>
+                      </div>
+                      <div className="flex items-center justify-center space-x-2 text-white text-sm">
+                        <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                        <span>Real-time Alerts</span>
+                      </div>
+                    </div>
+                    
+                    <button className="w-full bg-white text-cyan-600 font-bold py-3 px-4 rounded-lg hover:bg-cyan-50 transition-colors duration-300 shadow-lg">
+                      Get Free Signals
+                    </button>
+                    
+                    <div className="mt-3 text-cyan-200 text-xs">
+                      ⚡ Limited: First 100 users only
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-center mt-2 space-x-2 text-xs text-gray-400">
+                  <span>Google AdSense</span>
+                  <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                  <span>High RPM</span>
+                </div>
+              </div>
+
               {/* Profile Card */}
               <div className="glass-morphism rounded-2xl p-6 card-hover">
                 <div className="flex items-center justify-between mb-6">
@@ -786,6 +961,49 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+
+              {/* Demo AdSense Sidebar Ad */}
+              <div className="glass-morphism rounded-2xl p-6 card-hover border-blue-500/30">
+                <div className="text-center">
+                  <div className="text-xs text-blue-300 uppercase tracking-wider font-semibold mb-3">Advertisement</div>
+                  
+                  {/* Demo Ad Content */}
+                  <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 rounded-xl p-6 relative overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 opacity-20">
+                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent"></div>
+                    </div>
+                    
+                    <div className="relative z-10">
+                      <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                      </div>
+                      
+                      <h4 className="text-white font-bold text-lg mb-2">Credit Score Boost</h4>
+                      <p className="text-blue-100 text-sm mb-4 leading-relaxed">
+                        Improve your credit score by 100+ points with our AI-powered financial tools
+                      </p>
+                      
+                      <button className="w-full bg-white text-blue-600 font-bold py-3 px-4 rounded-lg hover:bg-blue-50 transition-colors duration-300">
+                        Get Started Free
+                      </button>
+                      
+                      <div className="mt-3 flex items-center justify-center space-x-1 text-blue-200 text-xs">
+                        <span>⭐⭐⭐⭐⭐</span>
+                        <span>4.9/5 Rating</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-center mt-3 space-x-2 text-xs text-gray-400">
+                    <span>Ads by Google</span>
+                    <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                    <span>Why this ad?</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -803,24 +1021,49 @@ export default function Dashboard() {
               {/* Add Transaction */}
               <button 
                 onClick={() => router.push('/transactions')}
-                className="group relative overflow-hidden bg-gradient-to-br from-green-500/10 to-emerald-500/10 hover:from-green-500/20 hover:to-emerald-500/20 border border-green-500/30 hover:border-green-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
+                className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/8 to-slate-700/15 hover:from-emerald-500/15 hover:to-slate-700/25 border border-emerald-500/20 hover:border-emerald-400/40 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
               >
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-500/10 to-slate-600/15 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/80 to-slate-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
                     </div>
-                    <svg className="w-5 h-5 text-green-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-emerald-400/80 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </div>
                   <h4 className="font-bold text-lg mb-2">Record Transaction</h4>
-                  <p className="text-sm text-green-300 font-medium">Track income, expenses with smart categorization</p>
+                  <p className="text-sm text-slate-300 font-medium">Track income, expenses with smart categorization</p>
                 </div>
               </button>
+
+              {/* In-Feed AdSense - Blended with Actions */}
+              <div className="group relative overflow-hidden bg-gradient-to-br from-orange-500/10 to-amber-500/10 hover:from-orange-500/20 hover:to-amber-500/20 border border-orange-500/30 hover:border-orange-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover">
+                <div className="absolute top-2 right-2">
+                  <span className="text-orange-300 text-xs bg-orange-500/20 px-2 py-1 rounded-full">Ad</span>
+                </div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-xl">💰</span>
+                    </div>
+                    <svg className="w-5 h-5 text-orange-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Earn ₹5000 Monthly</h4>
+                  <p className="text-sm text-orange-300 font-medium">Start freelancing with top-rated projects</p>
+                  <div className="mt-3 flex items-center space-x-2 text-xs text-orange-200">
+                    <span>⭐ 4.8 Rating</span>
+                    <span>•</span>
+                    <span>🚀 Quick Setup</span>
+                  </div>
+                </div>
+              </div>
               
               {/* Manage Debts */}
               <button 
@@ -843,29 +1086,125 @@ export default function Dashboard() {
                   <p className="text-sm text-slate-400 font-medium">Optimize payment strategies and track progress</p>
                 </div>
               </button>
-              
+            </div>
+
+            {/* Second Row of Actions with More Ads */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
               {/* Settings */}
               <button 
                 onClick={() => router.push('/settings')}
-                className="group relative overflow-hidden bg-gradient-to-br from-lime-500/10 to-green-500/10 hover:from-lime-500/20 hover:to-green-500/20 border border-lime-500/30 hover:border-lime-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
+                className="group relative overflow-hidden bg-gradient-to-br from-slate-600/15 to-emerald-500/8 hover:from-slate-600/25 hover:to-emerald-500/15 border border-slate-500/30 hover:border-emerald-400/40 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
               >
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-lime-500/20 to-green-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-slate-600/15 to-emerald-500/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-lime-500 to-green-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 bg-gradient-to-br from-slate-600 to-emerald-500/80 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                     </div>
-                    <svg className="w-5 h-5 text-lime-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-emerald-400/80 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </div>
                   <h4 className="font-bold text-lg mb-2">Preferences</h4>
-                  <p className="text-sm text-green-300 font-medium">Customize goals and notification settings</p>
+                  <p className="text-sm text-slate-300 font-medium">Customize goals and notification settings</p>
                 </div>
               </button>
+
+              {/* Mobile App Ad */}
+              <div className="group relative overflow-hidden bg-gradient-to-br from-violet-500/10 to-purple-500/10 hover:from-violet-500/20 hover:to-purple-500/20 border border-violet-500/30 hover:border-violet-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover">
+                <div className="absolute top-2 right-2">
+                  <span className="text-violet-300 text-xs bg-violet-500/20 px-2 py-1 rounded-full">Sponsored</span>
+                </div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-xl">📱</span>
+                    </div>
+                    <svg className="w-5 h-5 text-violet-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Trading App</h4>
+                  <p className="text-sm text-violet-300 font-medium">Zero brokerage • Free demat account</p>
+                  <div className="mt-3 flex items-center space-x-2 text-xs text-violet-200">
+                    <span>🎁 ₹1000 Bonus</span>
+                    <span>•</span>
+                    <span>📈 Live Charts</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Insurance Ad */}
+              <div className="group relative overflow-hidden bg-gradient-to-br from-teal-500/10 to-cyan-500/10 hover:from-teal-500/20 hover:to-cyan-500/20 border border-teal-500/30 hover:border-teal-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover">
+                <div className="absolute top-2 right-2">
+                  <span className="text-teal-300 text-xs bg-teal-500/20 px-2 py-1 rounded-full">Ad</span>
+                </div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-xl">🛡️</span>
+                    </div>
+                    <svg className="w-5 h-5 text-teal-400 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                  <h4 className="font-bold text-lg mb-2">Life Insurance</h4>
+                  <p className="text-sm text-teal-300 font-medium">₹1 Crore cover from ₹490/month</p>
+                  <div className="mt-3 flex items-center space-x-2 text-xs text-teal-200">
+                    <span>⚡ 2 Min Quote</span>
+                    <span>•</span>
+                    <span>🏆 #1 Rated</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Demo AdSense Footer Banner */}
+          <div className="glass-morphism rounded-2xl p-6 card-hover mt-8 border-yellow-500/30">
+            <div className="text-center mb-4">
+              <div className="text-xs text-yellow-300 uppercase tracking-wider font-semibold">Sponsored Content</div>
+            </div>
+            
+            <div className="bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 rounded-xl p-6 relative overflow-hidden">
+              {/* Animated background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-red-500/20 animate-pulse"></div>
+              
+              <div className="relative z-10 flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center">
+                    <svg className="w-10 h-10 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </div>
+                  <div className="text-left">
+                    <h4 className="text-white font-black text-xl mb-1">🚀 Investment Opportunity</h4>
+                    <p className="text-yellow-100 font-medium">Start investing with just ₹100 • Zero commission • AI-powered portfolio</p>
+                  </div>
+                </div>
+                
+                <div className="text-right">
+                  <button className="bg-white text-orange-600 font-bold py-3 px-6 rounded-lg hover:bg-yellow-50 transition-colors duration-300 shadow-lg">
+                    Start Investing
+                  </button>
+                  <div className="mt-2 text-yellow-200 text-sm">
+                    💰 Limited time: Get ₹500 bonus
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-center mt-3 space-x-2 text-xs text-gray-400">
+              <span>AdSense Demo</span>
+              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+              <span>Revenue Active</span>
+              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+              <span>Click Performance: 2.8% CTR</span>
             </div>
           </div>
         </div>
@@ -884,6 +1223,29 @@ export default function Dashboard() {
         onClose={() => setShowEmailModal(false)}
         userName={user?.name || 'User'}
       />
+
+      {/* Mobile Sticky Banner - Bottom of Screen */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden">
+        <div className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 p-4 shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3 flex-1">
+              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                <span className="text-lg">💳</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-white font-bold text-sm">Get Credit Card</p>
+                <p className="text-emerald-100 text-xs">Instant approval • ₹5L limit</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button className="bg-white text-emerald-600 font-bold py-2 px-4 rounded-lg text-sm">
+                Apply
+              </button>
+              <button className="text-white text-lg">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
