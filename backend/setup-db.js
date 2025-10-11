@@ -18,24 +18,19 @@ async function setupDatabase() {
     console.log('📊 Database:', mongoose.connection.name);
     console.log('🔗 Host:', mongoose.connection.host + ':' + mongoose.connection.port);
 
-    // Create indexes for better performance
     const db = mongoose.connection.db;
     
     console.log('🔄 Creating database indexes...');
-    
-    // Users collection indexes
+
     await db.collection('users').createIndex({ email: 1 }, { unique: true });
     console.log('✅ Created unique index on users.email');
-    
-    // Profiles collection indexes
+
     await db.collection('profiles').createIndex({ userId: 1 }, { unique: true });
     console.log('✅ Created unique index on profiles.userId');
-    
-    // Debts collection indexes
+
     await db.collection('debts').createIndex({ userId: 1 });
     console.log('✅ Created index on debts.userId');
-    
-    // Transactions collection indexes (for future use)
+
     await db.collection('transactions').createIndex({ userId: 1 });
     await db.collection('transactions').createIndex({ date: -1 });
     await db.collection('transactions').createIndex({ type: 1 });

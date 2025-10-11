@@ -24,13 +24,12 @@ export default function LanguageSelector() {
   const translateElementRef = useRef(null)
 
   useEffect(() => {
-    // Check if Google Translate is already loaded
+    
     if (window.google && window.google.translate) {
       setIsLoaded(true)
       return
     }
 
-    // Load Google Translate script
     const script = document.createElement('script')
     script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'
     script.async = true
@@ -47,13 +46,11 @@ export default function LanguageSelector() {
         'google_translate_element'
       )
 
-      // Wait for the element to be ready
       setTimeout(() => {
         setIsLoaded(true)
       }, 1000)
     }
 
-    // Cleanup
     return () => {
       if (script.parentNode) {
         script.parentNode.removeChild(script)
@@ -67,7 +64,6 @@ export default function LanguageSelector() {
     setCurrentLang(langCode)
     setIsOpen(false)
 
-    // Try to change the language using Google Translate's select
     const attemptChange = () => {
       const select = document.querySelector('.goog-te-combo')
       if (select) {
@@ -78,9 +74,8 @@ export default function LanguageSelector() {
       return false
     }
 
-    // Try immediately
     if (!attemptChange()) {
-      // If not ready, try again after a short delay
+      
       setTimeout(attemptChange, 500)
     }
   }
@@ -89,10 +84,10 @@ export default function LanguageSelector() {
 
   return (
     <>
-      {/* Hidden Google Translate Element */}
+      {}
       <div ref={translateElementRef} id="google_translate_element" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}></div>
 
-      {/* Custom Language Selector */}
+      {}
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -113,13 +108,13 @@ export default function LanguageSelector() {
 
         {isOpen && (
           <>
-            {/* Backdrop */}
+            {}
             <div
               className="fixed inset-0 z-40"
               onClick={() => setIsOpen(false)}
             ></div>
 
-            {/* Dropdown */}
+            {}
             <div className="absolute right-0 top-full mt-2 w-48 glass-morphism rounded-2xl p-2 z-50 border border-violet-500/20 shadow-2xl">
               <div className="max-h-64 overflow-y-auto">
                 {languages.map((lang) => (

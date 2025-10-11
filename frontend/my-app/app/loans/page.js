@@ -13,7 +13,6 @@ export default function Loans() {
   const [submitting, setSubmitting] = useState(false)
   const router = useRouter()
 
-  // EMI Calculator form state
   const [loanForm, setLoanForm] = useState({
     creditorName: '',
     debtType: '',
@@ -23,7 +22,6 @@ export default function Loans() {
     dueDate: ''
   })
 
-  // EMI Calculation results
   const [emiResults, setEmiResults] = useState({
     emi: 0,
     totalPayment: 0,
@@ -31,7 +29,6 @@ export default function Loans() {
     monthlyBreakdown: []
   })
 
-  // Form errors state
   const [formErrors, setFormErrors] = useState({})
 
   useEffect(() => {
@@ -39,7 +36,6 @@ export default function Loans() {
     loadLoans()
   }, [])
 
-  // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
@@ -133,24 +129,21 @@ export default function Loans() {
       return
     }
 
-    // Monthly interest rate
     const monthlyRate = annualRate / 12 / 100
 
-    // EMI calculation using formula: P * r * (1 + r)^n / ((1 + r)^n - 1)
     let emi = 0
     if (monthlyRate > 0) {
       const numerator = principal * monthlyRate * Math.pow(1 + monthlyRate, months)
       const denominator = Math.pow(1 + monthlyRate, months) - 1
       emi = numerator / denominator
     } else {
-      // If interest rate is 0, simple division
+      
       emi = principal / months
     }
 
     const totalPayment = emi * months
     const totalInterest = totalPayment - principal
 
-    // Generate monthly breakdown
     const monthlyBreakdown = []
     let remainingPrincipal = principal
 
@@ -176,7 +169,6 @@ export default function Loans() {
     })
   }
 
-  // Calculate EMI when loan details change
   useEffect(() => {
     calculateEMI()
   }, [loanForm.loanAmount, loanForm.tenureMonths, loanForm.interestRate])
@@ -223,7 +215,6 @@ export default function Loans() {
       
       const method = editingLoan ? 'PUT' : 'POST'
 
-      // Prepare data exactly as Debt model expects
       const requestBody = {
         creditorName: loanForm.creditorName.trim(),
         debtType: loanForm.debtType.trim(),
@@ -253,7 +244,7 @@ export default function Loans() {
         setShowAddModal(false)
         setEditingLoan(null)
         resetForm()
-        // Note: Using alert is not ideal for production, consider using a toast notification
+        
       } else {
         const errorText = await response.text()
         console.error('Error response:', errorText)
@@ -335,10 +326,10 @@ export default function Loans() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden">
-        {/* Neural Network Background */}
+        {}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-violet-900/10 via-transparent to-cyan-900/10"></div>
-          {/* Floating particles */}
+          {}
           {[...Array(15)].map((_, i) => (
             <div
               key={i}
@@ -373,7 +364,7 @@ export default function Loans() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] relative">
-      {/* Enhanced Styles with proper animations */}
+      {}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
         
@@ -471,7 +462,7 @@ export default function Loans() {
         }
       `}</style>
 
-      {/* Dynamic Background */}
+      {}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-900/5 via-slate-900/10 to-cyan-900/5"></div>
         <div className="absolute inset-0 opacity-30">
@@ -494,7 +485,7 @@ export default function Loans() {
         ))}
       </div>
 
-      {/* Fixed Header with proper z-index */}
+      {}
       <header className="fixed top-0 left-0 right-0 z-40 p-6">
         <div className="glass-morphism rounded-2xl px-6 py-4">
           <div className="flex justify-between items-center">
@@ -537,7 +528,7 @@ export default function Loans() {
         </div>
       </header>
 
-      {/* Error Banner */}
+      {}
       {error && (
         <div className="fixed top-24 left-6 right-6 z-30 glass-morphism rounded-xl p-4 border-l-4 border-red-500">
           <div className="flex justify-between items-center">
@@ -560,10 +551,10 @@ export default function Loans() {
         </div>
       )}
 
-      {/* Main Content with proper top margin */}
+      {}
       <main className="relative z-10 pt-32 pb-12 px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Summary Cards */}
+          {}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             <div className="glass-morphism rounded-2xl p-6 card-hover group">
               <div className="flex items-center justify-between">
@@ -634,7 +625,7 @@ export default function Loans() {
             </div>
           </div>
 
-          {/* Debt Portfolio */}
+          {}
           {loans.length === 0 ? (
             <div className="glass-morphism rounded-2xl p-16 text-center card-hover">
               <div className="relative mb-8">
@@ -733,7 +724,7 @@ export default function Loans() {
         </div>
       </main>
 
-      {/* Enhanced Add/Edit Loan Modal with accessibility */}
+      {}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-lg flex items-center justify-center p-4 z-50">
           <div 
@@ -892,7 +883,7 @@ export default function Loans() {
                 </div>
               </div>
 
-              {/* EMI Results Section */}
+              {}
               {emiResults.emi > 0 && (
                 <div className="bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-2xl p-6 border border-violet-500/20">
                   <h4 className="text-xl font-bold text-white mb-4 flex items-center">
@@ -931,7 +922,7 @@ export default function Loans() {
                       <span className="text-white font-bold">{loanForm.tenureMonths} months ({Math.round(loanForm.tenureMonths / 12)} years)</span>
                     </div>
                     
-                    {/* Progress Bar */}
+                    {}
                     <div className="w-full bg-slate-700 rounded-full h-3">
                       <div 
                         className="bg-gradient-to-r from-emerald-500 to-blue-500 h-3 rounded-full transition-all duration-500"
@@ -996,7 +987,7 @@ export default function Loans() {
         </div>
       )}
 
-      {/* Enhanced Delete Confirmation Modal with accessibility */}
+      {}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-lg flex items-center justify-center p-4 z-50">
           <div 

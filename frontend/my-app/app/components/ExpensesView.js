@@ -189,7 +189,7 @@ export default function ExpensesView() {
         }
       `}</style>
 
-      {/* Summary Cards */}
+      {}
       {summary && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="glass-morphism rounded-2xl p-6">
@@ -258,7 +258,7 @@ export default function ExpensesView() {
         </div>
       )}
 
-      {/* Category Breakdown */}
+      {}
       {summary?.categoryBreakdown && (
         <div className="glass-morphism rounded-2xl p-8">
           <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
@@ -303,7 +303,7 @@ export default function ExpensesView() {
         </div>
       )}
 
-      {/* Add/Edit Form */}
+      {}
       {showAddForm && (
         <div className="glass-morphism rounded-2xl p-8">
           <div className="flex items-center justify-between mb-6">
@@ -432,7 +432,7 @@ export default function ExpensesView() {
         </div>
       )}
 
-      {/* Action Button */}
+      {}
       {!showAddForm && (
         <div className="text-center">
           <button
@@ -447,7 +447,7 @@ export default function ExpensesView() {
         </div>
       )}
 
-      {/* Expense List */}
+      {}
       <div className="glass-morphism rounded-2xl p-8">
         <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
           <svg className="w-6 h-6 text-cyan-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

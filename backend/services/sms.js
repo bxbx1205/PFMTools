@@ -9,8 +9,8 @@ function assertEnv(name, value) {
 async function sendWithTwilio(phone, code) {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const from = process.env.TWILIO_FROM; // e.g., a verified Twilio number
-  const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID; // optional
+  const from = process.env.TWILIO_FROM; 
+  const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID; 
   assertEnv('TWILIO_ACCOUNT_SID', accountSid);
   assertEnv('TWILIO_AUTH_TOKEN', authToken);
   if (!messagingServiceSid) assertEnv('TWILIO_FROM', from);
@@ -33,10 +33,10 @@ async function sendWithTwilio(phone, code) {
 }
 
 async function sendWithMsg91(phone, code) {
-  // MSG91 OTP API expects mobile as digits with country code, e.g., 919876543210
+  
   const mobile = phone.replace(/\+/g, '');
-  const authkey = process.env.MSG91_AUTH_KEY; // renamed: commonly "authkey"
-  const templateId = process.env.MSG91_TEMPLATE_ID; // DLT approved template ID for OTP
+  const authkey = process.env.MSG91_AUTH_KEY; 
+  const templateId = process.env.MSG91_TEMPLATE_ID; 
   assertEnv('MSG91_AUTH_KEY', authkey);
   assertEnv('MSG91_TEMPLATE_ID', templateId);
 
@@ -63,10 +63,10 @@ async function sendOtpSms(phone, code) {
   try {
     if (provider === 'twilio') return await sendWithTwilio(phone, code);
     if (provider === 'msg91') return await sendWithMsg91(phone, code);
-    // Default: mock (dev)
+    
     return await sendWithMock(phone, code);
   } catch (err) {
-    // Log and rethrow to let caller decide response
+    
     console.error('SMS send error:', err.response?.data || err.message);
     throw err;
   }

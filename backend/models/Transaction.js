@@ -53,7 +53,6 @@ const transactionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Add index for better query performance
 transactionSchema.index({ userId: 1, date: -1 });
 transactionSchema.index({ userId: 1, category: 1 });
 transactionSchema.index({ userId: 1, type: 1 });

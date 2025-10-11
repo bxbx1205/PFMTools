@@ -16,7 +16,6 @@ export default function ProtectedRoute({ children }) {
       return
     }
 
-    // Verify token with backend
     fetch('http://localhost:5000/api/auth/me', {
       headers: {
         'Authorization': `Bearer ${token}`

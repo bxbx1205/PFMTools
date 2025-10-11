@@ -17,8 +17,7 @@ async function checkMongoDB() {
     console.log('✅ MongoDB is running and accessible!');
     console.log('📊 Database:', mongoose.connection.name);
     console.log('🔗 Host:', mongoose.connection.host + ':' + mongoose.connection.port);
-    
-    // Check existing collections
+
     const collections = await mongoose.connection.db.listCollections().toArray();
     console.log('📁 Existing collections:', collections.length);
     

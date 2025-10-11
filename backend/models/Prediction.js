@@ -14,8 +14,7 @@ const predictionSchema = new mongoose.Schema(
       default: Date.now,
       index: true
     },
-    
-    // Array of 7 days predictions (output from ML model)
+
     weeklyPredictions: [{
       date: { type: Date, required: true },
       dayOfWeek: { 
@@ -25,16 +24,13 @@ const predictionSchema = new mongoose.Schema(
       },
       predictedSpend: { type: Number, required: true, min: 0 }
     }],
-    
-    // Summary (calculated from predictions)
+
     totalWeeklySpend: { type: Number, default: 0, min: 0 },
     averageDailySpend: { type: Number, default: 0, min: 0 },
-    
-    // ML Model metadata
+
     modelAccuracy: { type: Number, default: 97.0, min: 0, max: 100 },
     modelVersion: { type: String, default: '2.0' },
-    
-    // Input data used for prediction (for tracking/debugging)
+
     inputData: {
       past7DayAvg: { type: Number },
       ageGroup: { type: String },
@@ -47,10 +43,8 @@ const predictionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Compound index for efficient queries
 predictionSchema.index({ user: 1, predictionDate: -1 });
 
-// Pre-save hook to calculate totals
 predictionSchema.pre('save', function(next) {
   if (this.weeklyPredictions && this.weeklyPredictions.length > 0) {
     this.totalWeeklySpend = this.weeklyPredictions.reduce(

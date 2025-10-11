@@ -9,8 +9,7 @@ export default function EmailModal({ isOpen, onClose, onSendEmail, userName }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    // Basic email validation
+
     if (!email) {
       setMessage('Please enter your email address')
       return
@@ -75,12 +74,12 @@ export default function EmailModal({ isOpen, onClose, onSendEmail, userName }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 max-w-md w-full relative overflow-hidden">
-        {/* Background effects */}
+        {}
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-violet-500/20 to-cyan-500/20 rounded-full blur-2xl"></div>
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 rounded-full blur-xl"></div>
         
         <div className="relative z-10">
-          {/* Header */}
+          {}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-xl flex items-center justify-center">
@@ -104,7 +103,7 @@ export default function EmailModal({ isOpen, onClose, onSendEmail, userName }) {
             </button>
           </div>
 
-          {/* Content */}
+          {}
           <div className="space-y-6">
             <div className="bg-gradient-to-r from-violet-500/10 to-cyan-500/10 border border-violet-500/20 rounded-xl p-4">
               <h4 className="text-white font-semibold mb-2">📊 What you'll receive:</h4>

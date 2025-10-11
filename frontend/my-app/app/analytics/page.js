@@ -63,7 +63,7 @@ export default function Analytics() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
-      {/* Background Effects */}
+      {}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-900/5 via-slate-900/10 to-cyan-900/5"></div>
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-full blur-3xl animate-float"></div>
@@ -89,7 +89,7 @@ export default function Analytics() {
 
       <div className="relative z-10 p-6">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
+          {}
           <div className="glass-morphism rounded-2xl p-6 mb-8">
             <div className="flex items-center justify-between">
               <div>
@@ -110,7 +110,7 @@ export default function Analytics() {
             </div>
           </div>
 
-          {/* Tab Navigation */}
+          {}
           <div className="glass-morphism rounded-2xl p-2 mb-8 inline-flex">
             <button
               onClick={() => setActiveTab('predictions')}
@@ -140,7 +140,7 @@ export default function Analytics() {
             </button>
           </div>
 
-          {/* Tab Content */}
+          {}
           {activeTab === 'predictions' && <PredictionsView />}
           {activeTab === 'expenses' && <ExpensesView />}
         </div>

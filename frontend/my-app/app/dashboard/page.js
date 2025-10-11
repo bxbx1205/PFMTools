@@ -15,7 +15,6 @@ export default function Dashboard() {
   const [showEmailModal, setShowEmailModal] = useState(false)
   const router = useRouter()
 
-  // Update time every minute
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date())
@@ -35,7 +34,7 @@ export default function Dashboard() {
     }
 
     try {
-      // Get user profile
+      
       const userResponse = await fetch('http://localhost:5000/api/user/profile', {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -45,8 +44,7 @@ export default function Dashboard() {
       if (userResponse.ok) {
         const userData = await userResponse.json()
         setUser(userData.user)
-        
-        // Check if user has completed onboarding
+
         try {
           const profileResponse = await fetch('http://localhost:5000/api/profile', {
             headers: {
@@ -58,7 +56,7 @@ export default function Dashboard() {
             const profileData = await profileResponse.json()
             setProfile(profileData.profile)
           } else {
-            // No profile found, show onboarding
+            
             setShowOnboarding(true)
           }
         } catch (error) {
@@ -66,7 +64,6 @@ export default function Dashboard() {
           setShowOnboarding(true)
         }
 
-        // Get debts
         try {
           const debtsResponse = await fetch('http://localhost:5000/api/debts', {
             headers: {
@@ -97,7 +94,7 @@ export default function Dashboard() {
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false)
-    // Refresh data after onboarding
+    
     checkAuth()
   }
 
@@ -120,10 +117,10 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center relative overflow-hidden">
-        {/* Neural Network Background */}
+        {}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-emerald-900/10"></div>
-          {/* Floating particles */}
+          {}
           {[...Array(20)].map((_, i) => (
             <div
               key={i}
@@ -140,30 +137,30 @@ export default function Dashboard() {
           ))}
         </div>
         
-        {/* Loading Content */}
+        {}
         <div className="relative z-10 text-center">
-          {/* SavR Logo */}
+          {}
           <div className="relative mb-8 group">
             <div className="w-24 h-24 mx-auto relative">
-              {/* Outer ring */}
+              {}
               <div className="absolute inset-0 rounded-full border-2 border-gradient-to-r from-green-500 to-emerald-500 animate-spin"></div>
-              {/* Inner logo */}
+              {}
               <div className="absolute inset-2 bg-gradient-to-br from-green-600 via-emerald-600 to-lime-600 rounded-full flex items-center justify-center shadow-2xl">
                 <span className="text-2xl font-black text-white tracking-tighter">S</span>
               </div>
-              {/* Pulse effect */}
+              {}
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-green-500/30 to-emerald-500/30 animate-ping"></div>
             </div>
           </div>
           
-          {/* Loading text */}
+          {}
           <div className="space-y-4">
             <h2 className="text-3xl font-black text-white tracking-tight">
               Sav<span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">R</span>
             </h2>
             <p className="text-green-300 font-medium">Initializing your financial ecosystem...</p>
             
-            {/* Progress dots */}
+            {}
             <div className="flex justify-center space-x-2 mt-6">
               {[...Array(3)].map((_, i) => (
                 <div
@@ -188,19 +185,19 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-950 relative overflow-hidden">
-      {/* Dynamic Background */}
+      {}
       <div className="fixed inset-0 pointer-events-none">
-        {/* Base gradient */}
+        {}
         <div className="absolute inset-0 bg-gradient-to-br from-green-900/5 via-gray-900/10 to-emerald-900/5"></div>
         
-        {/* Animated mesh */}
+        {}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full blur-3xl animate-float"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-lime-500/10 to-green-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '3s'}}></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '6s'}}></div>
         </div>
 
-        {/* Floating particles */}
+        {}
         {[...Array(15)].map((_, i) => (
           <div
             key={i}
@@ -217,7 +214,7 @@ export default function Dashboard() {
         ))}
       </div>
 
-          {/* Enhanced Styles */}
+          {}
           <style jsx global>{`
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
             
@@ -295,12 +292,12 @@ export default function Dashboard() {
         }
       `}</style>
 
-      {/* Floating Header */}
+      {}
       <header className="fixed top-6 left-6 right-6 z-50">
         <div className="glass-morphism rounded-2xl px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              {/* Logo */}
+              {}
               <div className="relative group">
                 <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <span className="text-xl font-black text-white">{user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
@@ -308,7 +305,7 @@ export default function Dashboard() {
                 <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
               </div>
               
-              {/* Greeting */}
+              {}
               <div>
                 <h1 className="text-xl font-bold text-white tracking-tight">
                   {getGreeting()}, <span className="text-gradient">{user?.name}</span>
@@ -323,7 +320,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Actions */}
+            {}
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowEmailModal(true)}
@@ -351,12 +348,12 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Main Content */}
+      {}
       <main className="relative z-10 pt-32 pb-12 px-6">
         <div className="max-w-7xl mx-auto">
-              {/* Featured Analytics Hub - Prime Position */}
+              {}
               <div className="glass-morphism rounded-3xl p-8 mb-8 card-hover relative overflow-hidden border-2 border-slate-600/30">
-                {/* Subtle Background Effects */}
+                {}
                 <div className="absolute top-0 right-0 w-60 h-60 bg-gradient-to-br from-emerald-500/8 via-green-500/5 to-slate-600/10 rounded-full blur-3xl opacity-70 animate-float"></div>
                 <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-green-500/6 to-emerald-500/8 rounded-full blur-2xl opacity-40 animate-float" style={{animationDelay: '2s'}}></div>
                 
@@ -392,7 +389,7 @@ export default function Dashboard() {
                     onClick={() => router.push('/analytics')}
                     className="group w-full relative overflow-hidden bg-gradient-to-br from-slate-700/20 via-emerald-500/8 to-slate-700/15 hover:from-slate-700/30 hover:via-emerald-500/15 hover:to-slate-700/25 border border-slate-600/40 hover:border-emerald-400/30 text-white p-6 rounded-2xl transition-all duration-500 text-left"
                   >
-                    {/* Enhanced hover effects */}
+                    {}
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-slate-600/8 to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/10 to-slate-500/15 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-150"></div>                <div className="relative z-10">
                   <div className="flex items-start justify-between mb-4">
@@ -421,7 +418,7 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {/* Compact feature highlights */}
+                  {}
                   <div className="grid grid-cols-3 gap-3">
                     <div className="bg-gradient-to-br from-emerald-500/15 to-emerald-600/25 border border-emerald-500/30 rounded-lg p-3 group-hover:border-emerald-400/50 transition-all duration-300">
                       <div className="flex items-center space-x-2">
@@ -470,7 +467,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Welcome Hero */}
+          {}
           <div className="glass-morphism rounded-3xl p-8 mb-12 card-hover">
             <div className="relative">
               <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full blur-2xl"></div>
@@ -494,7 +491,7 @@ export default function Dashboard() {
                     </p>
                   </div>
                   
-                  {/* Floating Stats Preview */}
+                  {}
                   <div className="hidden lg:block relative">
                     <div className="space-y-4">
                       <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-4 backdrop-blur-sm">
@@ -533,11 +530,11 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Smart Grid */}
+          {}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-            {/* Financial Overview */}
+            {}
             <div className="lg:col-span-8 space-y-8">
-              {/* Premium AdSense - Native Content Ad */}
+              {}
               <div className="glass-morphism rounded-2xl p-6 card-hover mb-6 border-purple-500/30">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
@@ -599,9 +596,9 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Stats Grid */}
+              {}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Income Card */}
+                {}
                 <div className="glass-morphism rounded-2xl p-6 card-hover group">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -631,7 +628,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Debts Card */}
+                {}
                 <div className="glass-morphism rounded-2xl p-6 card-hover group">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -662,7 +659,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Debt Portfolio */}
+              {}
               <div className="glass-morphism rounded-2xl p-8 card-hover">
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center space-x-4">
@@ -804,9 +801,9 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Profile Sidebar */}
+            {}
             <div className="lg:col-span-4 space-y-8">
-              {/* Sticky AdSense - Rectangle Ad */}
+              {}
               <div className="glass-morphism rounded-2xl p-4 card-hover border-cyan-500/30 sticky top-32">
                 <div className="text-center mb-3">
                   <span className="text-cyan-300 text-xs uppercase tracking-wider font-semibold">Advertisement</span>
@@ -853,7 +850,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Profile Card */}
+              {}
               <div className="glass-morphism rounded-2xl p-6 card-hover">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center space-x-3">
@@ -865,7 +862,7 @@ export default function Dashboard() {
                 
                 {profile ? (
                   <div className="space-y-6">
-                    {/* Quick Stats */}
+                    {}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-gradient-to-br from-slate-800/40 to-slate-700/40 rounded-xl p-4 border border-slate-600/30">
                         <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Age Group</p>
@@ -877,7 +874,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
-                    {/* Financial Goals */}
+                    {}
                     <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-xl p-6">
                       <h4 className="text-lg font-bold text-white mb-4 flex items-center">
                         <svg className="w-5 h-5 text-cyan-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -923,7 +920,7 @@ export default function Dashboard() {
                 )}
               </div>
 
-              {/* Quick Insights */}
+              {}
               <div className="glass-morphism rounded-2xl p-6 card-hover">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-2 h-8 bg-gradient-to-b from-rose-500 to-pink-500 rounded-full"></div>
@@ -962,14 +959,14 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Demo AdSense Sidebar Ad */}
+              {}
               <div className="glass-morphism rounded-2xl p-6 card-hover border-blue-500/30">
                 <div className="text-center">
                   <div className="text-xs text-blue-300 uppercase tracking-wider font-semibold mb-3">Advertisement</div>
                   
-                  {/* Demo Ad Content */}
+                  {}
                   <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 rounded-xl p-6 relative overflow-hidden">
-                    {/* Background Pattern */}
+                    {}
                     <div className="absolute inset-0 opacity-20">
                       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent"></div>
                     </div>
@@ -1007,7 +1004,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Quick Actions */}
+          {}
           <div className="glass-morphism rounded-2xl p-8 card-hover">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center space-x-4">
@@ -1018,7 +1015,7 @@ export default function Dashboard() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Add Transaction */}
+              {}
               <button 
                 onClick={() => router.push('/transactions')}
                 className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/8 to-slate-700/15 hover:from-emerald-500/15 hover:to-slate-700/25 border border-emerald-500/20 hover:border-emerald-400/40 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
@@ -1040,7 +1037,7 @@ export default function Dashboard() {
                 </div>
               </button>
 
-              {/* In-Feed AdSense - Blended with Actions */}
+              {}
               <div className="group relative overflow-hidden bg-gradient-to-br from-orange-500/10 to-amber-500/10 hover:from-orange-500/20 hover:to-amber-500/20 border border-orange-500/30 hover:border-orange-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover">
                 <div className="absolute top-2 right-2">
                   <span className="text-orange-300 text-xs bg-orange-500/20 px-2 py-1 rounded-full">Ad</span>
@@ -1065,7 +1062,7 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              {/* Manage Debts */}
+              {}
               <button 
                 onClick={() => router.push('/loans')}
                 className="group relative overflow-hidden bg-gradient-to-br from-red-500/10 to-rose-500/10 hover:from-red-500/20 hover:to-rose-500/20 border border-red-500/30 hover:border-red-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
@@ -1088,9 +1085,9 @@ export default function Dashboard() {
               </button>
             </div>
 
-            {/* Second Row of Actions with More Ads */}
+            {}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-              {/* Settings */}
+              {}
               <button 
                 onClick={() => router.push('/settings')}
                 className="group relative overflow-hidden bg-gradient-to-br from-slate-600/15 to-emerald-500/8 hover:from-slate-600/25 hover:to-emerald-500/15 border border-slate-500/30 hover:border-emerald-400/40 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover"
@@ -1113,7 +1110,7 @@ export default function Dashboard() {
                 </div>
               </button>
 
-              {/* Mobile App Ad */}
+              {}
               <div className="group relative overflow-hidden bg-gradient-to-br from-violet-500/10 to-purple-500/10 hover:from-violet-500/20 hover:to-purple-500/20 border border-violet-500/30 hover:border-violet-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover">
                 <div className="absolute top-2 right-2">
                   <span className="text-violet-300 text-xs bg-violet-500/20 px-2 py-1 rounded-full">Sponsored</span>
@@ -1138,7 +1135,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Insurance Ad */}
+              {}
               <div className="group relative overflow-hidden bg-gradient-to-br from-teal-500/10 to-cyan-500/10 hover:from-teal-500/20 hover:to-cyan-500/20 border border-teal-500/30 hover:border-teal-400/50 text-white p-6 rounded-xl transition-all duration-300 text-left card-hover">
                 <div className="absolute top-2 right-2">
                   <span className="text-teal-300 text-xs bg-teal-500/20 px-2 py-1 rounded-full">Ad</span>
@@ -1165,14 +1162,14 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Demo AdSense Footer Banner */}
+          {}
           <div className="glass-morphism rounded-2xl p-6 card-hover mt-8 border-yellow-500/30">
             <div className="text-center mb-4">
               <div className="text-xs text-yellow-300 uppercase tracking-wider font-semibold">Sponsored Content</div>
             </div>
             
             <div className="bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 rounded-xl p-6 relative overflow-hidden">
-              {/* Animated background */}
+              {}
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-red-500/20 animate-pulse"></div>
               
               <div className="relative z-10 flex items-center justify-between">
@@ -1210,21 +1207,21 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* Onboarding Modal */}
+      {}
       <OnboardingModal 
         isOpen={showOnboarding}
         onComplete={handleOnboardingComplete}
         userName={user?.name || 'User'}
       />
 
-      {/* Email Modal */}
+      {}
       <EmailModal
         isOpen={showEmailModal}
         onClose={() => setShowEmailModal(false)}
         userName={user?.name || 'User'}
       />
 
-      {/* Mobile Sticky Banner - Bottom of Screen */}
+      {}
       <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden">
         <div className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 p-4 shadow-lg">
           <div className="flex items-center justify-between">

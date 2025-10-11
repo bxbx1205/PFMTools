@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 export default function LoginPage() {
   const [phone, setPhone] = useState('')
   const [name, setName] = useState('')
-  const [step, setStep] = useState('enter-phone') // 'enter-phone' | 'enter-otp'
+  const [step, setStep] = useState('enter-phone') 
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -100,7 +100,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-950 relative overflow-hidden">
-      {/* Enhanced Styles */}
+      {}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
         
@@ -171,7 +171,7 @@ export default function LoginPage() {
         }
       `}</style>
 
-      {/* Dynamic Background */}
+      {}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-emerald-900/10"></div>
         <div className="absolute inset-0 opacity-30">
@@ -197,7 +197,7 @@ export default function LoginPage() {
 
       <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
         <div className="w-full max-w-md">
-          {/* Enhanced Logo/Header */}
+          {}
           <div className="text-center mb-12">
             <div className="mb-6">
               <Image
@@ -214,11 +214,11 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Enhanced Main Form Card */}
+          {}
           <div className="glass-morphism rounded-3xl p-8 card-hover">
-            {/* Phone + OTP only */}
+            {}
 
-            {/* Enhanced Error Message */}
+            {}
             {error && (
               <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 mb-6 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
@@ -230,7 +230,7 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Enhanced Success Message */}
+            {}
             {success && (
               <div className="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 mb-6 backdrop-blur-sm">
                 <div className="flex items-center space-x-3">
@@ -242,7 +242,7 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Enhanced Form */}
+            {}
             <form onSubmit={step === 'enter-phone' ? requestOtp : verifyOtp} className="space-y-6">
               <div className="space-y-3">
                 <label className="block text-sm font-bold text-green-300 tracking-wide uppercase">Full Name</label>
@@ -314,7 +314,7 @@ export default function LoginPage() {
             </form>
           </div>
 
-          {/* Enhanced Footer */}
+          {}
           <div className="text-center mt-12 space-y-4">
             <p className="text-green-300 font-medium">© 2025 sav₹. All rights reserved.</p>
             <div className="flex justify-center space-x-6 text-sm">

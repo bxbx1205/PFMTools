@@ -7,7 +7,6 @@ const path = require('path');
 const mongoose = require('mongoose');
 const connectDB = require('./db');
 
-// Import all models (ONLY ONCE)
 const User = require('./models/User');
 const Profile = require('./models/Profile');
 const Debt = require('./models/Debt');
@@ -21,29 +20,24 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Data directory setup (still used for profiles and debts for now)
 const DATA_DIR = path.join(__dirname, 'data');
 const USERS_JSON_FILE = path.join(DATA_DIR, 'users.json');
 const PROFILES_FILE = path.join(DATA_DIR, 'profiles.json');
 const DEBTS_FILE = path.join(DATA_DIR, 'debts.json');
 
-// Initialize data directory and files (no longer creates users.json)
 async function initializeDataFiles() {
   try {
     await fs.mkdir(DATA_DIR, { recursive: true });
-    
-    // Initialize profiles file
+
     try {
       await fs.access(PROFILES_FILE);
     } catch (error) {
       await fs.writeFile(PROFILES_FILE, JSON.stringify([]));
     }
-    
-    // Initialize debts file
+
     try {
       await fs.access(DEBTS_FILE);
     } catch (error) {
@@ -55,25 +49,23 @@ async function initializeDataFiles() {
     console.error('Error initializing data files:', error);
   }
 }
-// One-time migration: import users from JSON into MongoDB if collection is empty
+
 async function migrateUsersFromJsonIfAny() {
   try {
     const userCount = await User.estimatedDocumentCount();
     if (userCount > 0) {
-      return; // already have users, skip migration
+      return; 
     }
 
-    // Check if users.json exists and has content
     await fs.access(USERS_JSON_FILE);
     const raw = await fs.readFile(USERS_JSON_FILE, 'utf8');
     const arr = JSON.parse(raw || '[]');
     if (!Array.isArray(arr) || arr.length === 0) return;
 
-    // Map fields and insertMany
     const docs = arr.map(u => ({
       name: u.name,
       email: (u.email || '').toLowerCase(),
-      password: u.password, // already hashed in old storage
+      password: u.password, 
       pin: u.pin || null,
       pinEnabled: !!u.pinEnabled,
       faceIDEnabled: !!u.faceIDEnabled,
@@ -84,35 +76,34 @@ async function migrateUsersFromJsonIfAny() {
     if (docs.length) {
       await User.insertMany(docs, { ordered: false });
       console.log(`Migrated ${docs.length} users from users.json to MongoDB`);
-      // Backup old file to avoid re-import on next start
+      
       try {
         await fs.rename(USERS_JSON_FILE, path.join(DATA_DIR, 'users.json.bak'));
       } catch (e) {
-        // ignore if cannot rename
+        
       }
     }
   } catch (e) {
-    // If file doesn't exist or any error, just log and continue
+    
     if (e && e.code !== 'ENOENT') {
       console.warn('User migration skipped due to error:', e.message);
     }
   }
 }
 
-// One-time migration: import profiles and debts from JSON into MongoDB
 async function migrateProfilesAndDebtsFromJsonIfAny() {
-  // Build a mapping from legacy user id to Mongo ObjectId
+  
   let legacyUsers = [];
   try {
     const bak = await fs.readFile(path.join(DATA_DIR, 'users.json.bak'), 'utf8');
     legacyUsers = JSON.parse(bak || '[]');
   } catch (_) {
-    // ignore if no bak file
+    
   }
 
   const emailToMongoId = new Map();
   if (legacyUsers.length) {
-    // Fetch existing Mongo users by email
+    
     const emails = legacyUsers.map(u => (u.email || '').toLowerCase());
     const mongoUsers = await User.find({ email: { $in: emails } }, { _id: 1, email: 1 }).lean();
     const emailToId = new Map(mongoUsers.map(u => [u.email, u._id.toString()]));
@@ -122,7 +113,6 @@ async function migrateProfilesAndDebtsFromJsonIfAny() {
     }
   }
 
-  // Migrate profiles if collection empty
   try {
     const count = await Profile.estimatedDocumentCount();
     if (count === 0) {
@@ -142,10 +132,9 @@ async function migrateProfilesAndDebtsFromJsonIfAny() {
       }
     }
   } catch (e) {
-    // ignore if file not found
+    
   }
 
-  // Migrate debts if collection empty
   try {
     const count = await Debt.estimatedDocumentCount();
     if (count === 0) {
@@ -165,11 +154,10 @@ async function migrateProfilesAndDebtsFromJsonIfAny() {
       }
     }
   } catch (e) {
-    // ignore if file not found
+    
   }
 }
 
-// Helper functions for file operations
 async function readDataFile(filePath) {
   try {
     const data = await fs.readFile(filePath, 'utf8');
@@ -189,15 +177,12 @@ async function writeDataFile(filePath, data) {
   }
 }
 
-// Generate unique ID
 function generateId() {
   return Date.now().toString() + Math.random().toString(36).substr(2, 9);
 }
 
-// JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// JWT middleware
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -215,7 +200,6 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// Phone helpers (normalize to Indian E.164: +91XXXXXXXXXX)
 function normalizeIndianPhone(raw) {
   if (!raw) return null;
   const digits = String(raw).replace(/\D/g, '');
@@ -223,37 +207,30 @@ function normalizeIndianPhone(raw) {
   if (digits.length === 12 && digits.startsWith('91') && /^[6-9]\d{9}$/.test(digits.slice(2))) return `+${digits}`;
   if (digits.length === 11 && digits.startsWith('0') && /^[6-9]\d{9}$/.test(digits.slice(1))) return `+91${digits.slice(1)}`;
   if (raw.startsWith('+91') && /^[+]?91[6-9]\d{9}$/.test(raw.replace(/\s/g, ''))) return raw.replace(/\s/g, '');
-  return null; // invalid
+  return null; 
 }
 
 function generateOtpCode() {
-  // 6-digit numeric OTP, leading zeros allowed
+  
   return String(Math.floor(100000 + Math.random() * 900000));
 }
 
-// Routes
-
-// Health check
 app.get('/', (req, res) => {
   res.json({ message: 'PFM Backend API is running!' });
 });
 
-// Signup
 app.post('/api/auth/signup', async (req, res) => {
   return res.status(410).json({ message: 'Email/password signup is disabled. Use phone OTP login.' });
 });
 
-// Login
 app.post('/api/auth/login', async (req, res) => {
   return res.status(410).json({ message: 'Email/password login is disabled. Use phone OTP login.' });
 });
 
-// PIN Login (separate endpoint)
 app.post('/api/auth/login-pin', async (req, res) => {
   return res.status(410).json({ message: 'PIN login via email is disabled. Use phone OTP login.' });
 });
 
-// OTP-based auth routes
 app.post('/api/auth/otp/send', async (req, res) => {
   try {
     const { phone, name } = req.body || {};
@@ -262,7 +239,6 @@ app.post('/api/auth/otp/send', async (req, res) => {
       return res.status(400).json({ message: 'Enter a valid Indian mobile number' });
     }
 
-    // Throttle: prevent resend within 60 seconds
     const last = await Otp.findOne({ phone: normalized }).sort({ createdAt: -1 }).lean();
     if (last && Date.now() - new Date(last.createdAt).getTime() < 60 * 1000) {
       return res.status(429).json({ message: 'Please wait before requesting another OTP' });
@@ -270,19 +246,15 @@ app.post('/api/auth/otp/send', async (req, res) => {
 
     const code = generateOtpCode();
     const codeHash = await bcrypt.hash(code, 8);
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); 
 
     await Otp.create({ phone: normalized, codeHash, expiresAt });
 
-    // Optionally create a placeholder user name on first request (without saving yet)
-    // We will set name on verification if user is created.
-
-    // Send SMS via configured provider (mock in dev if SMS_PROVIDER unset)
     await sendOtpSms(normalized, code);
 
     const response = { message: 'OTP sent successfully' };
     if (process.env.NODE_ENV !== 'production') {
-      response.devCode = code; // for local testing only
+      response.devCode = code; 
     }
     res.json(response);
   } catch (error) {
@@ -301,7 +273,6 @@ app.post('/api/auth/otp/verify', async (req, res) => {
       return res.status(400).json({ message: 'Phone and OTP code are required' });
     }
 
-    // Fetch recent non-expired OTPs (e.g., last 3) to tolerate user entering prior code
     const now = new Date();
     const recent = await Otp.find({ phone: normalized, expiresAt: { $gte: now } })
       .sort({ createdAt: -1 })
@@ -318,12 +289,11 @@ app.post('/api/auth/otp/verify', async (req, res) => {
     }
     console.log('OTP matched:', !!matched);
     if (!matched) {
-      // increment attempts on the latest doc
+      
       try { recent[0].attempts += 1; await recent[0].save(); } catch (_) {}
       return res.status(400).json({ message: 'Invalid OTP' });
     }
 
-    // OTP valid: find or create user (atomic upsert to avoid duplicates on rapid clicks)
     console.log('Creating/finding user for phone:', normalized);
     let user = await User.findOneAndUpdate(
       { phone: normalized },
@@ -332,7 +302,6 @@ app.post('/api/auth/otp/verify', async (req, res) => {
     );
     console.log('User found/created:', user._id);
 
-    // Cleanup OTPs for this phone
     await Otp.deleteMany({ phone: normalized });
     console.log('OTPs cleaned up');
 
@@ -355,7 +324,7 @@ app.post('/api/auth/otp/verify', async (req, res) => {
       }
     });
   } catch (error) {
-    // Handle duplicate key race condition explicitly (shouldn't happen with upsert, but kept as safety)
+    
     if (error && error.code === 11000) {
       try {
         const existing = await User.findOne({ phone: (req.body?.phone && normalizeIndianPhone(req.body.phone)) || '' });
@@ -378,7 +347,7 @@ app.post('/api/auth/otp/verify', async (req, res) => {
           });
         }
       } catch (_) {
-        // fall through to generic handler below
+        
       }
     }
     console.error('OTP verify error:', error?.stack || error?.message || error);
@@ -386,7 +355,6 @@ app.post('/api/auth/otp/verify', async (req, res) => {
   }
 });
 
-// Current user route for auth check
 app.get('/api/auth/me', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).lean();
@@ -406,7 +374,6 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
   }
 });
 
-// PIN Routes
 app.post('/api/auth/set-pin', authenticateToken, async (req, res) => {
   try {
     const { pin } = req.body;
@@ -415,10 +382,8 @@ app.post('/api/auth/set-pin', authenticateToken, async (req, res) => {
       return res.status(400).json({ message: 'PIN must be exactly 4 digits' });
     }
 
-    // Hash PIN
     const hashedPin = await bcrypt.hash(pin, 10);
 
-    // Update user in MongoDB
     const result = await User.findByIdAndUpdate(
       req.user.id,
       { $set: { pin: hashedPin, pinEnabled: true } },
@@ -443,13 +408,11 @@ app.post('/api/auth/verify-pin', authenticateToken, async (req, res) => {
       return res.status(400).json({ message: 'Invalid PIN format' });
     }
 
-    // Find user in MongoDB
     const user = await User.findById(req.user.id);
     if (!user || !user.pinEnabled || !user.pin) {
       return res.status(400).json({ message: 'PIN not set for this user' });
     }
 
-    // Verify PIN
     const isValidPin = await bcrypt.compare(pin, user.pin);
     if (!isValidPin) {
       return res.status(400).json({ message: 'Invalid PIN' });
@@ -462,7 +425,6 @@ app.post('/api/auth/verify-pin', authenticateToken, async (req, res) => {
   }
 });
 
-// Profile Routes (MongoDB)
 app.post('/api/profile', authenticateToken, async (req, res) => {
   try {
     const profileData = req.body;
@@ -495,10 +457,9 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// Debt Routes (MongoDB)
 app.post('/api/debts', authenticateToken, async (req, res) => {
   try {
-    // Handle single debt creation (for individual loan/debt addition)
+    
     const debtData = {
       user: req.user.id,
       creditorName: req.body.creditorName,
@@ -565,10 +526,9 @@ app.delete('/api/debts/:debtId', authenticateToken, async (req, res) => {
   }
 });
 
-// User management routes
 app.get('/api/user/profile', authenticateToken, async (req, res) => {
   try {
-    // Find user in MongoDB
+    
     const user = await User.findById(req.user.id).lean();
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -590,7 +550,6 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// Transaction Routes
 app.post('/api/transactions', authenticateToken, async (req, res) => {
   try {
     const transaction = new Transaction({
@@ -659,7 +618,6 @@ app.put('/api/transactions/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Additional User Routes
 app.post('/api/user/change-password', authenticateToken, async (req, res) => {
   return res.status(410).json({ message: 'Password is not used. Login with phone OTP only.' });
 });
@@ -688,8 +646,7 @@ app.post('/api/user/setup-pin', authenticateToken, async (req, res) => {
 app.delete('/api/user/delete', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
-    
-    // Delete all user data
+
     await Promise.all([
       User.findByIdAndDelete(userId),
       Profile.findOneAndDelete({ user: userId }),
@@ -704,16 +661,10 @@ app.delete('/api/user/delete', authenticateToken, async (req, res) => {
   }
 });
 
-// ============================================
-// ML PREDICTION ROUTES (WEEKLY ONLY)
-// ============================================
-
-// Test ML Service Connection (No auth required for testing)
 app.get('/api/test-ml', async (req, res) => {
   try {
     console.log('Testing ML service connection...');
-    
-    // Test ML service health
+
     const healthResponse = await fetch('http://localhost:8000/health');
     console.log('Health response status:', healthResponse.status);
     
@@ -726,14 +677,13 @@ app.get('/api/test-ml', async (req, res) => {
     
     const healthData = await healthResponse.json();
     console.log('Health data:', healthData);
-    
-    // Test prediction with sample ACTUAL user data (not random)
+
     const testData = {
       age_group: '26-35',
       family_size: 2,
       daily_income: 2000,
       past_7day_avg: 1500,
-      // Sample actual expense categories (not defaults)
+      
       food: 450,
       transport: 250,
       bills: 600,
@@ -748,8 +698,7 @@ app.get('/api/test-ml', async (req, res) => {
     };
     
     console.log('Testing prediction with ACTUAL data:', testData);
-    
-    // Test the data reception endpoint first
+
     const dataTestResponse = await fetch('http://localhost:8000/test-data', {
       method: 'POST',
       headers: {
@@ -763,8 +712,7 @@ app.get('/api/test-ml', async (req, res) => {
       dataTestResult = await dataTestResponse.json();
       console.log('Data test result:', dataTestResult);
     }
-    
-    // Test actual prediction
+
     const predictionResponse = await fetch('http://localhost:8000/predict-weekly', {
       method: 'POST',
       headers: {
@@ -806,13 +754,11 @@ app.get('/api/test-ml', async (req, res) => {
   }
 });
 
-// ML Weekly Prediction Route
 app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     console.log('Prediction request for user:', userId);
-    
-    // Get user profile and past expenses
+
     const profile = await Profile.findOne({ user: userId }).lean();
     const pastExpenses = await DailyExpense.find({ user: userId })
       .sort({ date: -1 })
@@ -822,7 +768,6 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
     console.log('Profile found:', !!profile);
     console.log('Past expenses count:', pastExpenses.length);
 
-    // Check if user has at least 7 days of expense data
     if (pastExpenses.length < 7) {
       return res.json({
         success: false,
@@ -834,11 +779,9 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
       });
     }
 
-    // Calculate past 7-day average and category averages
     const recent7Days = pastExpenses.slice(0, 7);
     const past7DayAvg = recent7Days.reduce((sum, exp) => sum + (exp.totalSpend || 0), 0) / recent7Days.length;
 
-    // Calculate category averages from actual expenses (last 7 days)
     const categoryAverages = {
       food: recent7Days.reduce((sum, exp) => sum + (exp.food || 0), 0) / recent7Days.length,
       transport: recent7Days.reduce((sum, exp) => sum + (exp.transport || 0), 0) / recent7Days.length,
@@ -852,7 +795,6 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
     console.log('Past 7-day average:', past7DayAvg);
     console.log('Category averages from actual expenses:', categoryAverages);
 
-    // Validate that user has actually entered meaningful expense data
     const totalCategorySpend = Object.values(categoryAverages).reduce((sum, val) => sum + val, 0);
     if (totalCategorySpend === 0) {
       return res.json({
@@ -865,7 +807,6 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
       });
     }
 
-    // Get user's debt information
     const userDebts = await Debt.find({ user: userId }).lean();
     const totalDebtAmount = userDebts.reduce((sum, debt) => sum + (debt.totalAmount || 0), 0);
     const monthlyEMI = userDebts.reduce((sum, debt) => sum + (debt.monthlyEMI || 0), 0);
@@ -874,13 +815,12 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
       ? userDebts.reduce((sum, debt) => sum + (debt.interestRate || 0), 0) / userDebts.length 
       : 0;
 
-    // Prepare comprehensive data for ML service
     const mlData = {
       age_group: profile?.ageGroup || '26-35',
       family_size: parseInt(profile?.familySize) || 1,
       daily_income: parseFloat(profile?.dailyIncome) || parseFloat(profile?.monthlyIncome) / 30 || 1000,
       past_7day_avg: past7DayAvg,
-      // Category spending data from ACTUAL user expenses
+      
       food: categoryAverages.food,
       transport: categoryAverages.transport,
       bills: categoryAverages.bills,
@@ -888,7 +828,7 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
       education: categoryAverages.education,
       entertainment: categoryAverages.entertainment,
       other: categoryAverages.other,
-      // Debt information
+      
       debt_amount: totalDebtAmount,
       monthly_emi: monthlyEMI,
       loan_type: primaryLoanType,
@@ -899,10 +839,9 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
 
     try {
       console.log('Calling ML service at http://localhost:8000/predict-weekly');
-      
-      // Add timeout to the fetch request
+
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000); 
       
       const mlResponse = await fetch('http://localhost:8000/predict-weekly', {
         method: 'POST',
@@ -945,8 +884,7 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
       }
     } catch (mlError) {
       console.log('ML service error, using fallback weekly prediction:', mlError.message);
-      
-      // Fallback weekly prediction using actual category data
+
       const weeklyPredictions = generateFallbackWeeklyPrediction(past7DayAvg, categoryAverages);
       
       const fallbackResponse = {
@@ -978,31 +916,25 @@ app.post('/api/predict/weekly-expense', authenticateToken, async (req, res) => {
   }
 });
 
-// Helper function for fallback predictions
 function calculateFallbackPrediction(userData, pastExpenses) {
   const baseSpend = userData.past_7day_avg;
-  
-  // Apply various factors
+
   let prediction = baseSpend;
-  
-  // Weekend factor
+
   const today = new Date().getDay();
-  if (today === 0 || today === 6) { // Sunday or Saturday
+  if (today === 0 || today === 6) { 
     prediction *= 1.2;
   }
-  
-  // Family size factor
+
   prediction *= (1 + (userData.family_size - 1) * 0.1);
-  
-  // Income ratio factor
+
   const incomeRatio = prediction / userData.daily_income;
   if (incomeRatio > 0.8) {
-    prediction *= 0.9; // Reduce if too high relative to income
+    prediction *= 0.9; 
   }
-  
-  // Debt EMI factor
+
   if (userData.monthly_emi > 0) {
-    prediction *= 0.95; // Slight reduction due to debt obligations
+    prediction *= 0.95; 
   }
   
   return {
@@ -1013,22 +945,19 @@ function calculateFallbackPrediction(userData, pastExpenses) {
 
 function generateFallbackWeeklyPrediction(dailyAvg, categoryAverages = null) {
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  
-  // Calculate start date for next week (next Monday)
+
   const today = new Date();
-  const daysUntilMonday = (7 - today.getDay() + 1) % 7 || 7; // getDay() returns 0-6, Monday = 1
+  const daysUntilMonday = (7 - today.getDay() + 1) % 7 || 7; 
   const nextMonday = new Date(today.getTime() + daysUntilMonday * 24 * 60 * 60 * 1000);
   
   const predictions = daysOfWeek.map((day, index) => {
     let dayPrediction = dailyAvg;
-    
-    // If we have category data, use it for more accurate predictions
+
     if (categoryAverages) {
       const isWeekend = day === 'Saturday' || day === 'Sunday';
-      
-      // Adjust categories based on day type
+
       if (isWeekend) {
-        // Weekend: more entertainment and food, less transport
+        
         dayPrediction = 
           categoryAverages.food * 1.2 +
           categoryAverages.transport * 0.7 +
@@ -1038,7 +967,7 @@ function generateFallbackWeeklyPrediction(dailyAvg, categoryAverages = null) {
           categoryAverages.education +
           categoryAverages.other * 1.1;
       } else {
-        // Weekday: more transport, normal food, less entertainment
+        
         dayPrediction = 
           categoryAverages.food * 1.0 +
           categoryAverages.transport * 1.2 +
@@ -1049,12 +978,11 @@ function generateFallbackWeeklyPrediction(dailyAvg, categoryAverages = null) {
           categoryAverages.other;
       }
     } else {
-      // Fallback to simple multiplier
-      const weekendMultiplier = [1.0, 0.9, 0.85, 0.9, 1.1, 1.3, 1.2]; // Weekend higher
+      
+      const weekendMultiplier = [1.0, 0.9, 0.85, 0.9, 1.1, 1.3, 1.2]; 
       dayPrediction = dailyAvg * weekendMultiplier[index];
     }
-    
-    // Calculate the actual future date
+
     const predictionDate = new Date(nextMonday.getTime() + index * 24 * 60 * 60 * 1000);
     
     return {
@@ -1071,8 +999,7 @@ function generateFallbackWeeklyPrediction(dailyAvg, categoryAverages = null) {
 
 function generateRecommendations(predictedSpend, userData) {
   const recommendations = [];
-  
-  // Income-based recommendations
+
   const incomeRatio = predictedSpend / userData.daily_income;
   if (incomeRatio > 0.7) {
     recommendations.push({
@@ -1082,8 +1009,7 @@ function generateRecommendations(predictedSpend, userData) {
       action: 'Consider reducing non-essential expenses'
     });
   }
-  
-  // Category-specific recommendations
+
   if (userData.food > userData.daily_income * 0.3) {
     recommendations.push({
       type: 'suggestion',
@@ -1101,8 +1027,7 @@ function generateRecommendations(predictedSpend, userData) {
       action: 'Look for free or low-cost activities'
     });
   }
-  
-  // Debt-related recommendations
+
   if (userData.monthly_emi > 0) {
     recommendations.push({
       type: 'info',
@@ -1111,8 +1036,7 @@ function generateRecommendations(predictedSpend, userData) {
       action: 'Prioritize debt reduction strategies'
     });
   }
-  
-  // Positive reinforcement
+
   if (incomeRatio < 0.5) {
     recommendations.push({
       type: 'success',
@@ -1125,11 +1049,6 @@ function generateRecommendations(predictedSpend, userData) {
   return recommendations;
 }
 
-// ============================================
-// EMAIL ROUTES
-// ============================================
-
-// Test email configuration (admin only or for testing)
 app.get('/api/email/test', async (req, res) => {
   try {
     const result = await testEmailConnection();
@@ -1139,7 +1058,6 @@ app.get('/api/email/test', async (req, res) => {
   }
 });
 
-// Send weekly report email
 app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
   try {
     const { email } = req.body;
@@ -1152,7 +1070,6 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
       });
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ 
@@ -1163,7 +1080,6 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
 
     console.log('Weekly email report request for user:', userId, 'to email:', email);
 
-    // Get user profile
     const user = await User.findById(userId).lean();
     const profile = await Profile.findOne({ user: userId }).lean();
 
@@ -1174,7 +1090,6 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
       });
     }
 
-    // Get past week expenses
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
@@ -1185,7 +1100,6 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
 
     console.log('Found', weeklyExpenses.length, 'expenses from past week');
 
-    // Calculate totals and category breakdown
     const totalSpent = weeklyExpenses.reduce((sum, exp) => sum + (exp.totalSpend || 0), 0);
     
     const categoryBreakdown = {
@@ -1198,18 +1112,15 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
       'Other': weeklyExpenses.reduce((sum, exp) => sum + (exp.other || 0), 0)
     };
 
-    // Get predictions if available (call internal prediction API)
     let weeklyPredictions = [];
     let totalPredicted = 0;
 
     try {
       console.log('Calling prediction API for email report...');
-      
-      // Simulate internal API call for predictions
+
       if (weeklyExpenses.length >= 7) {
         const past7DayAvg = weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.totalSpend || 0), 0) / 7;
-        
-        // Calculate category averages
+
         const categoryAverages = {
           food: weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.food || 0), 0) / 7,
           transport: weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.transport || 0), 0) / 7,
@@ -1220,7 +1131,6 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
           other: weeklyExpenses.slice(0, 7).reduce((sum, exp) => sum + (exp.other || 0), 0) / 7
         };
 
-        // Generate fallback predictions for next week
         const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         const today = new Date();
         const daysUntilMonday = (7 - today.getDay() + 1) % 7 || 7;
@@ -1262,10 +1172,9 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
       }
     } catch (predictionError) {
       console.error('Prediction error for email:', predictionError);
-      // Continue without predictions
+      
     }
 
-    // Generate insights
     const insights = [];
     
     if (totalSpent > 0) {
@@ -1282,8 +1191,7 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
           insights.push(`✅ Great job! Your spending is well within your income (${spendingRatio.toFixed(1)}% of monthly income)`);
         }
       }
-      
-      // Category insights
+
       const topCategory = Object.entries(categoryBreakdown).reduce((a, b) => categoryBreakdown[a[0]] > categoryBreakdown[b[0]] ? a : b);
       if (topCategory[1] > 0) {
         insights.push(`Your highest expense category this week was ${topCategory[0]} (${formatCurrency(topCategory[1])})`);
@@ -1298,7 +1206,6 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
       insights.push('Start tracking your daily expenses to get personalized insights and predictions!');
     }
 
-    // Prepare email data
     const emailData = {
       userName: user.name,
       weeklyExpenses: weeklyExpenses.map(exp => ({
@@ -1320,7 +1227,6 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
       totalPredicted: emailData.totalPredicted
     });
 
-    // Send email
     const emailResult = await sendWeeklyReport(email, emailData);
 
     if (emailResult.success) {
@@ -1359,7 +1265,6 @@ app.post('/api/email/weekly-report', authenticateToken, async (req, res) => {
   }
 });
 
-// Helper function to format currency (moved here if not already available)
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -1369,15 +1274,13 @@ function formatCurrency(amount) {
   }).format(amount);
 }
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-// Initialize DB and data files on startup
 connectDB().then(async () => {
-  // Drop problematic unique index on email if exists
+  
   try {
     await mongoose.connection.db.collection('users').dropIndex('email_1');
     console.log('Dropped email_1 index');
@@ -1393,14 +1296,6 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// ============================================
-// DAILY EXPENSES ROUTES
-// ============================================
-
-// Import DailyExpense model at the top with other models
-
-
-// Get all expenses for user (with limit)
 app.get('/api/daily-expenses', authenticateToken, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 50;
@@ -1423,14 +1318,12 @@ app.get('/api/daily-expenses', authenticateToken, async (req, res) => {
   }
 });
 
-// Get summary for period (week/month/year)
 app.get('/api/daily-expenses/summary', authenticateToken, async (req, res) => {
   try {
     const period = req.query.period || 'month';
     const now = new Date();
     let startDate;
 
-    // Calculate start date based on period
     switch (period) {
       case 'week':
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -1450,13 +1343,11 @@ app.get('/api/daily-expenses/summary', authenticateToken, async (req, res) => {
       date: { $gte: startDate }
     }).lean();
 
-    // Calculate summary
     const totalSpend = expenses.reduce((sum, exp) => sum + (exp.totalSpend || 0), 0);
     const totalSavings = expenses.reduce((sum, exp) => sum + (exp.savings || 0), 0);
     const expenseCount = expenses.length;
     const averageDaily = expenseCount > 0 ? totalSpend / expenseCount : 0;
 
-    // Category breakdown
     const categoryBreakdown = {
       food: 0,
       transport: 0,
@@ -1499,7 +1390,6 @@ app.get('/api/daily-expenses/summary', authenticateToken, async (req, res) => {
   }
 });
 
-// Add new expense
 app.post('/api/daily-expenses', authenticateToken, async (req, res) => {
   try {
     const expenseData = {
@@ -1534,7 +1424,6 @@ app.post('/api/daily-expenses', authenticateToken, async (req, res) => {
   }
 });
 
-// Update expense
 app.put('/api/daily-expenses/:id', authenticateToken, async (req, res) => {
   try {
     const updateData = {
@@ -1542,7 +1431,6 @@ app.put('/api/daily-expenses/:id', authenticateToken, async (req, res) => {
       updatedAt: new Date()
     };
 
-    // Remove fields that shouldn't be updated
     delete updateData.user;
     delete updateData._id;
 
@@ -1573,7 +1461,6 @@ app.put('/api/daily-expenses/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Delete expense
 app.delete('/api/daily-expenses/:id', authenticateToken, async (req, res) => {
   try {
     const result = await DailyExpense.deleteOne({

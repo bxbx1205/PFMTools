@@ -28,7 +28,7 @@ export default function SEO({
 
   return (
     <Head>
-      {/* Basic Meta Tags */}
+      {}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={allKeywords.join(', ')} />
@@ -36,12 +36,12 @@ export default function SEO({
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta name="theme-color" content="#8b5cf6" />
       
-      {/* Favicon and Icons */}
+      {}
       <link rel="icon" href="/pfmlogo.png" />
       <link rel="apple-touch-icon" href="/pfmlogo.png" />
       <link rel="shortcut icon" href="/pfmlogo.png" />
       
-      {/* Open Graph / Facebook */}
+      {}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={fullUrl} />
       <meta property="og:title" content={fullTitle} />
@@ -50,7 +50,7 @@ export default function SEO({
       <meta property="og:site_name" content="PFM Tools" />
       <meta property="og:locale" content="en_US" />
       
-      {/* Twitter */}
+      {}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={fullUrl} />
       <meta name="twitter:title" content={fullTitle} />
@@ -58,7 +58,7 @@ export default function SEO({
       <meta name="twitter:image" content={`https://pfmtools.app${image}`} />
       <meta name="twitter:creator" content="@pfmtools" />
       
-      {/* Additional Meta Tags */}
+      {}
       <meta name="application-name" content="PFM Tools" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -68,16 +68,16 @@ export default function SEO({
       <meta name="msapplication-TileColor" content="#8b5cf6" />
       <meta name="msapplication-tap-highlight" content="no" />
       
-      {/* Canonical URL */}
+      {}
       <link rel="canonical" href={fullUrl} />
       
-      {/* Manifest */}
+      {}
       <link rel="manifest" href="/manifest.json" />
       
-      {/* Robots */}
+      {}
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       
-      {/* Preload Critical Resources */}
+      {}
       <link rel="preload" href="/pfmlogo.png" as="image" />
       <link rel="dns-prefetch" href="//fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />

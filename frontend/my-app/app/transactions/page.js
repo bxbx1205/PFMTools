@@ -14,7 +14,6 @@ export default function Transactions() {
   const [currentTime, setCurrentTime] = useState(new Date())
   const router = useRouter()
 
-  // Transaction form state
   const [formData, setFormData] = useState({
     type: 'expense',
     amount: '',
@@ -24,13 +23,11 @@ export default function Transactions() {
     notes: ''
   })
 
-  // Default categories
   const defaultCategories = {
     income: ['Salary', 'Freelancing', 'Business', 'Investments', 'Other Income'],
     expense: ['Food & Dining', 'Transportation', 'Shopping', 'Entertainment', 'Bills & Utilities', 'Healthcare', 'Education', 'Travel', 'Other Expenses']
   }
 
-  // Update time every minute
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date())
@@ -185,10 +182,10 @@ export default function Transactions() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden">
-        {/* Neural Network Background */}
+        {}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-violet-900/10 via-transparent to-cyan-900/10"></div>
-          {/* Floating particles */}
+          {}
           {[...Array(15)].map((_, i) => (
             <div
               key={i}
@@ -223,7 +220,7 @@ export default function Transactions() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
-      {/* Dynamic Background */}
+      {}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-900/5 via-slate-900/10 to-cyan-900/5"></div>
         <div className="absolute inset-0 opacity-30">
@@ -246,7 +243,7 @@ export default function Transactions() {
         ))}
       </div>
 
-      {/* Enhanced Styles */}
+      {}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
         
@@ -293,7 +290,7 @@ export default function Transactions() {
         }
       `}</style>
 
-      {/* Floating Header */}
+      {}
       <header className="fixed top-6 left-6 right-6 z-50">
         <div className="glass-morphism rounded-2xl px-6 py-4">
           <div className="flex justify-between items-center">
@@ -330,10 +327,10 @@ export default function Transactions() {
         </div>
       </header>
 
-      {/* Main Content */}
+      {}
       <main className="pt-32 px-6 pb-12 relative z-10">
         <div className="max-w-7xl mx-auto">
-          {/* Enhanced Summary Cards */}
+          {}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="glass-morphism rounded-2xl p-6 card-hover group">
               <div className="flex items-center">
@@ -417,7 +414,7 @@ export default function Transactions() {
             </div>
           </div>
 
-          {/* Enhanced Filters */}
+          {}
           <div className="glass-morphism rounded-2xl p-6 mb-8 card-hover">
             <div className="flex flex-wrap gap-6 items-end">
               <div className="flex-1 min-w-[200px]">
@@ -463,7 +460,7 @@ export default function Transactions() {
             </div>
           </div>
 
-          {/* Enhanced Transactions Table */}
+          {}
           <div className="glass-morphism rounded-2xl overflow-hidden card-hover">
             <div className="p-6 border-b border-slate-700/30">
               <div className="flex justify-between items-center">
@@ -555,11 +552,11 @@ export default function Transactions() {
         </div>
       </main>
 
-      {/* Enhanced Add Transaction Modal */}
+      {}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-lg flex items-center justify-center p-4 z-50">
           <div className="glass-morphism rounded-3xl p-8 w-full max-w-lg relative">
-            {/* Modal Header */}
+            {}
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h3 className="text-3xl font-bold text-white">Add Transaction</h3>
@@ -576,7 +573,7 @@ export default function Transactions() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Transaction Type Selection */}
+              {}
               <div>
                 <label className="text-sm font-semibold text-slate-400 mb-4 block tracking-wide">Transaction Type</label>
                 <div className="grid grid-cols-2 gap-4">
@@ -611,7 +608,7 @@ export default function Transactions() {
                 </div>
               </div>
 
-              {/* Amount Input */}
+              {}
               <div>
                 <label className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">Amount (₹)</label>
                 <div className="relative">
@@ -628,7 +625,7 @@ export default function Transactions() {
                 </div>
               </div>
 
-              {/* Description Input */}
+              {}
               <div>
                 <label className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">Description</label>
                 <input
@@ -641,7 +638,7 @@ export default function Transactions() {
                 />
               </div>
 
-              {/* Category Selection */}
+              {}
               <div>
                 <label className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">Category</label>
                 <select
@@ -657,7 +654,7 @@ export default function Transactions() {
                 </select>
               </div>
 
-              {/* Date Input */}
+              {}
               <div>
                 <label className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">Date</label>
                 <input
@@ -669,7 +666,7 @@ export default function Transactions() {
                 />
               </div>
 
-              {/* Notes Input */}
+              {}
               <div>
                 <label className="text-sm font-semibold text-slate-400 mb-3 block tracking-wide">Notes (Optional)</label>
                 <textarea
@@ -681,7 +678,7 @@ export default function Transactions() {
                 />
               </div>
 
-              {/* Form Buttons */}
+              {}
               <div className="flex gap-4 pt-6">
                 <button
                   type="button"

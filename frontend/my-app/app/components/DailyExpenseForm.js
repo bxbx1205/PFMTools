@@ -19,7 +19,6 @@ export default function DailyExpenseForm({ isOpen, onClose, onSave, expenseData 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Populate form if editing existing expense
   useEffect(() => {
     if (expenseData) {
       setFormData({
@@ -35,7 +34,7 @@ export default function DailyExpenseForm({ isOpen, onClose, onSave, expenseData 
         notes: expenseData.notes || ''
       })
     } else {
-      // Reset form for new expense
+      
       setFormData({
         date: new Date().toISOString().split('T')[0],
         food: 0,
@@ -130,7 +129,7 @@ export default function DailyExpenseForm({ isOpen, onClose, onSave, expenseData 
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Date */}
+          {}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Date
@@ -145,7 +144,7 @@ export default function DailyExpenseForm({ isOpen, onClose, onSave, expenseData 
             />
           </div>
 
-          {/* Expense Categories */}
+          {}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-white mb-4">Expense Categories</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -177,7 +176,7 @@ export default function DailyExpenseForm({ isOpen, onClose, onSave, expenseData 
             </div>
           </div>
 
-          {/* Savings */}
+          {}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-300 mb-2">
               💰 Savings (Optional)
@@ -194,7 +193,7 @@ export default function DailyExpenseForm({ isOpen, onClose, onSave, expenseData 
             />
           </div>
 
-          {/* Notes */}
+          {}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-300 mb-2">
               📝 Notes (Optional)
@@ -209,7 +208,7 @@ export default function DailyExpenseForm({ isOpen, onClose, onSave, expenseData 
             />
           </div>
 
-          {/* Total Summary */}
+          {}
           <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
             <div className="flex justify-between items-center">
               <span className="text-lg font-medium text-white">Total Spend:</span>
@@ -227,7 +226,7 @@ export default function DailyExpenseForm({ isOpen, onClose, onSave, expenseData 
             )}
           </div>
 
-          {/* Action Buttons */}
+          {}
           <div className="flex gap-4">
             <button
               type="button"

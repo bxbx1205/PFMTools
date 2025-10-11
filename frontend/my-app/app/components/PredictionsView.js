@@ -23,7 +23,7 @@ export default function PredictionsView() {
     }
 
     try {
-      // Check ML service health
+      
       try {
         const healthResponse = await fetch('http://localhost:8000/health')
         console.log('ML Service Health:', healthResponse.status)
@@ -33,7 +33,6 @@ export default function PredictionsView() {
         setMlServiceStatus('disconnected')
       }
 
-      // Load weekly predictions
       const weeklyResponse = await fetch('http://localhost:5000/api/predict/weekly-expense', {
         method: 'POST',
         headers: {
@@ -46,8 +45,7 @@ export default function PredictionsView() {
       if (weeklyResponse.ok) {
         const weeklyData = await weeklyResponse.json()
         console.log('✅ Data received:', weeklyData)
-        
-        // Check if this is an insufficient data response
+
         if (weeklyData.success === false && weeklyData.required_days) {
           setError({
             type: 'insufficient_data',
@@ -156,7 +154,7 @@ export default function PredictionsView() {
   }
 
   if (error) {
-    // Handle insufficient data error specifically
+    
     if (error.type === 'insufficient_data') {
       return (
         <div style={{minHeight: '100vh', background: '#0a0a0f', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
@@ -171,7 +169,7 @@ export default function PredictionsView() {
               AI predictions require at least <strong style={{color: '#f59e0b'}}>7 days</strong> of expense tracking data to provide accurate forecasts.
             </p>
             
-            {/* Progress indicator */}
+            {}
             <div style={{background: 'rgba(15, 15, 24, 0.6)', borderRadius: '12px', padding: '20px', marginBottom: '20px'}}>
               <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '10px'}}>
                 <span style={{color: '#94a3b8', fontSize: '14px'}}>Progress</span>
@@ -216,7 +214,6 @@ export default function PredictionsView() {
       )
     }
 
-    // Handle other errors
     return (
       <div style={{minHeight: '100vh', background: '#0a0a0f', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
         <div style={{textAlign: 'center'}}>
@@ -240,7 +237,7 @@ export default function PredictionsView() {
 
   return (
     <div style={{minHeight: '100vh', background: '#0a0a0f', padding: '40px', color: 'white'}}>
-      {/* Header */}
+      {}
       <div style={{maxWidth: '1280px', margin: '0 auto'}}>
         <div style={{background: 'rgba(15, 15, 24, 0.6)', backdropFilter: 'blur(20px)', border: '1px solid rgba(139, 92, 246, 0.1)', borderRadius: '16px', padding: '24px', marginBottom: '32px'}}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
@@ -263,7 +260,7 @@ export default function PredictionsView() {
           </div>
         </div>
 
-        {/* ML Service Status */}
+        {}
         <div style={{background: 'rgba(15, 15, 24, 0.6)', backdropFilter: 'blur(20px)', border: '1px solid rgba(139, 92, 246, 0.1)', borderRadius: '16px', padding: '16px', marginBottom: '32px'}}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
@@ -287,10 +284,10 @@ export default function PredictionsView() {
 
         {weeklyPrediction && weeklyPrediction.weekly_predictions && (
           <div style={{display: 'grid', gridTemplateColumns: '1fr', gap: '32px'}}>
-            {/* Main Content Grid */}
+            {}
             <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))', gap: '32px'}}>
               
-              {/* Next Week Predictions */}
+              {}
               <div style={{background: 'rgba(15, 15, 24, 0.6)', backdropFilter: 'blur(20px)', border: '1px solid rgba(139, 92, 246, 0.1)', borderRadius: '16px', padding: '32px'}}>
                 <h3 style={{fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px'}}>
                   <svg style={{width: '24px', height: '24px', color: '#22d3ee'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -330,7 +327,7 @@ export default function PredictionsView() {
                 </div>
               </div>
 
-              {/* Last Week Actual */}
+              {}
               {weeklyPrediction.last_week_actual && (
                 <div style={{background: 'rgba(15, 15, 24, 0.6)', backdropFilter: 'blur(20px)', border: '1px solid rgba(139, 92, 246, 0.1)', borderRadius: '16px', padding: '32px'}}>
                   <h3 style={{fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px'}}>

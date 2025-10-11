@@ -12,7 +12,6 @@ export default function Settings() {
   const [showPinModal, setShowPinModal] = useState(false)
   const router = useRouter()
 
-  // Form states
   const [profileForm, setProfileForm] = useState({
     ageGroup: '',
     familySize: '',
@@ -64,8 +63,7 @@ export default function Settings() {
 
     try {
       const token = localStorage.getItem('token')
-      
-      // Load user data
+
       const userResponse = await fetch('http://localhost:5000/api/user/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
@@ -75,7 +73,6 @@ export default function Settings() {
         setUser(userData.user)
       }
 
-      // Load profile data
       const profileResponse = await fetch('http://localhost:5000/api/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
@@ -252,25 +249,25 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
-      {/* Enhanced Neural Background */}
+      {}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Primary cosmic gradient */}
+        {}
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-conic from-violet-500/30 via-purple-600/20 to-violet-500/30 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-gradient-radial from-cyan-400/25 via-blue-500/15 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-conic from-purple-600/20 via-violet-500/10 to-cyan-400/20 rounded-full blur-3xl animate-spin" style={{animationDuration: '20s'}}></div>
         
-        {/* Neural network particles */}
+        {}
         <div className="absolute top-20 left-20 w-2 h-2 bg-violet-400 rounded-full animate-pulse"></div>
         <div className="absolute top-32 right-40 w-1 h-1 bg-cyan-400 rounded-full animate-ping delay-300"></div>
         <div className="absolute bottom-40 left-32 w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse delay-700"></div>
         <div className="absolute bottom-20 right-20 w-1 h-1 bg-violet-300 rounded-full animate-ping delay-1000"></div>
         
-        {/* Floating geometric shapes */}
+        {}
         <div className="absolute top-1/4 left-10 w-20 h-20 border border-violet-500/20 rotate-45 animate-float"></div>
         <div className="absolute bottom-1/4 right-10 w-16 h-16 border border-cyan-400/20 rounded-full animate-float delay-500"></div>
       </div>
 
-      {/* Enhanced Styles */}
+      {}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
@@ -323,7 +320,7 @@ export default function Settings() {
         }
       `}</style>
 
-      {/* Floating Header with Enhanced Design */}
+      {}
       <header className="glass-morphism border-b border-violet-500/20 relative z-10 shadow-2xl">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
@@ -353,10 +350,10 @@ export default function Settings() {
         </div>
       </header>
 
-      {/* Main Content with Enhanced Design */}
+      {}
       <main className="max-w-7xl mx-auto px-6 lg:px-8 py-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Enhanced Sidebar Navigation */}
+          {}
           <div className="lg:col-span-1">
             <div className="neural-card rounded-3xl p-8 shadow-2xl">
               <div className="mb-6">
@@ -445,9 +442,9 @@ export default function Settings() {
             </div>
           </div>
 
-          {/* Content Area */}
+          {}
           <div className="lg:col-span-3">
-            {/* Profile Settings Tab */}
+            {}
             {activeTab === 'profile' && (
               <div className="neural-card rounded-3xl p-10 shadow-2xl">
                 <div className="mb-8">
@@ -585,7 +582,7 @@ export default function Settings() {
               </div>
             )}
 
-            {/* Security Tab */}
+            {}
             {activeTab === 'security' && (
               <div className="space-y-8">
                 <div className="neural-card rounded-3xl p-10 shadow-2xl">
@@ -648,7 +645,7 @@ export default function Settings() {
               </div>
             )}
 
-            {/* Notifications Tab */}
+            {}
             {activeTab === 'notifications' && (
               <div className="neural-card rounded-3xl p-10 shadow-2xl">
                 <div className="mb-8">
@@ -748,7 +745,7 @@ export default function Settings() {
               </div>
             )}
 
-            {/* Preferences Tab */}
+            {}
             {activeTab === 'preferences' && (
               <div className="neural-card rounded-3xl p-10 shadow-2xl">
                 <div className="mb-8">
@@ -791,7 +788,7 @@ export default function Settings() {
               </div>
             )}
 
-            {/* Danger Zone Tab */}
+            {}
             {activeTab === 'danger' && (
               <div className="neural-card rounded-3xl p-10 shadow-2xl border border-red-500/30 bg-gradient-to-br from-red-900/10 to-rose-900/10">
                 <div className="mb-8">
@@ -832,7 +829,7 @@ export default function Settings() {
         </div>
       </main>
 
-      {/* Enhanced Password Change Modal */}
+      {}
       {showPasswordModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
           <div className="neural-card rounded-3xl p-10 w-full max-w-md shadow-2xl border border-blue-500/30">
@@ -911,7 +908,7 @@ export default function Settings() {
         </div>
       )}
 
-      {/* Enhanced PIN Setup Modal */}
+      {}
       {showPinModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
           <div className="neural-card rounded-3xl p-10 w-full max-w-md shadow-2xl border border-purple-500/30">

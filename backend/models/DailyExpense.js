@@ -14,8 +14,7 @@ const dailyExpenseSchema = new mongoose.Schema(
       index: true,
       default: Date.now 
     },
-    
-    // Expense Categories (used by ML model)
+
     food: { type: Number, default: 0, min: 0 },
     transport: { type: Number, default: 0, min: 0 },
     bills: { type: Number, default: 0, min: 0 },
@@ -23,11 +22,9 @@ const dailyExpenseSchema = new mongoose.Schema(
     education: { type: Number, default: 0, min: 0 },
     entertainment: { type: Number, default: 0, min: 0 },
     other: { type: Number, default: 0, min: 0 },
-    
-    // Auto-calculated (used by ML)
+
     totalSpend: { type: Number},
-    
-    // Optional fields (used by ML)
+
     savings: { type: Number, default: 0 },
     cashBalance: { type: Number, default: 0 },
     numTransactions: { type: Number, default: 1 },
@@ -36,10 +33,8 @@ const dailyExpenseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Compound index for efficient queries
 dailyExpenseSchema.index({ user: 1, date: -1 });
 
-// Pre-save hook to auto-calculate total
 dailyExpenseSchema.pre('save', function(next) {
   this.totalSpend = this.food + this.transport + this.bills + 
                    this.health + this.education + this.entertainment + this.other;

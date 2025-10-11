@@ -5,20 +5,18 @@ import { useState } from 'react'
 export default function OnboardingModal({ isOpen, onComplete, userName }) {
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
-    // User Profile (Step 1)
+    
     ageGroup: '',
     familySize: '',
     monthlyIncome: '',
-    
-    // Debt Information (Step 2)
+
     debtAmount: '',
     loanType: '',
     interestRate: '',
     loanTenureMonths: '',
     remainingTenureMonths: '',
     monthlyEMI: '',
-    
-    // Preferences (Step 3)
+
     notificationPreferences: {
       email: true,
       push: true,
@@ -26,8 +24,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
     },
     preferredCurrency: 'INR',
     darkMode: true,
-    
-    // Additional Info
+
     occupation: '',
     hasExistingInvestments: '',
     riskTolerance: '',
@@ -62,10 +59,10 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
       case 1:
         return formData.ageGroup && formData.familySize && formData.monthlyIncome
       case 2:
-        // Step 2 is optional (debt information)
+        
         return true
       case 3:
-        // Step 3 validation can be minimal since most fields are optional
+        
         return true
       default:
         return false
@@ -98,27 +95,23 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
         return
       }
 
-      // Calculate dailyIncome from monthlyIncome (required for ML model)
       const monthlyIncome = parseFloat(formData.monthlyIncome) || 0
       const dailyIncome = monthlyIncome > 0 ? Math.round(monthlyIncome / 30) : 0
 
-      // Prepare profile data - ALL FIELDS AS STRINGS to match Profile model
       const profileData = {
-        // Core fields for ML model (as strings)
+        
         ageGroup: formData.ageGroup,
         familySize: formData.familySize.toString(),
         dailyIncome: dailyIncome.toString(),
         monthlyIncome: formData.monthlyIncome.toString(),
-        
-        // Debt information (stored in Profile model as strings)
+
         debtAmount: formData.debtAmount.toString(),
         loanType: formData.loanType || '',
         interestRate: formData.interestRate.toString(),
         loanTenureMonths: formData.loanTenureMonths.toString(),
         remainingTenureMonths: formData.remainingTenureMonths.toString(),
         monthlyEMI: formData.monthlyEMI.toString(),
-        
-        // Additional profile info (as strings)
+
         occupation: formData.occupation,
         primaryGoal: formData.primaryGoal,
         riskTolerance: formData.riskTolerance,
@@ -126,8 +119,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
         savingsTarget: formData.savingsTarget.toString(),
         investmentExperience: formData.investmentExperience,
         hasExistingInvestments: formData.hasExistingInvestments,
-        
-        // Preferences (specific types for these)
+
         notificationPreferences: formData.notificationPreferences,
         preferredCurrency: formData.preferredCurrency,
         darkMode: formData.darkMode
@@ -135,7 +127,6 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
 
       console.log('Saving profile data:', profileData)
 
-      // Save profile data
       const profileResponse = await fetch('http://localhost:5000/api/profile', {
         method: 'POST',
         headers: {
@@ -154,7 +145,6 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
       const profileResult = await profileResponse.json()
       console.log('✓ Profile saved:', profileResult)
 
-      // Save debt data separately if provided using individual debt creation
       if (formData.debtAmount && parseFloat(formData.debtAmount) > 0) {
         const debtData = {
           creditorName: formData.loanType || 'Initial Loan',
@@ -185,14 +175,13 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
         }
       }
 
-      // Success! Complete onboarding
       console.log('✓ Onboarding completed successfully')
       onComplete()
 
     } catch (error) {
       console.error('Error saving onboarding data:', error)
       alert('Failed to save your information. Please try again.')
-      // Don't complete if there's an error - let user retry
+      
     }
   }
 
@@ -201,7 +190,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
-        {/* Header */}
+        {}
         <div className="p-6 border-b border-gray-700">
           <div className="flex justify-between items-center">
             <div>
@@ -456,7 +445,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                 </div>
               </div>
 
-              {/* Debt Summary */}
+              {}
               {formData.debtAmount && formData.monthlyEMI && (
                 <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
                   <h4 className="text-green-400 font-medium mb-2">Debt Summary</h4>
@@ -472,7 +461,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
             </div>
           )}
 
-          {/* Step 3: Preferences & Summary */}
+          {}
           {step === 3 && (
             <div className="space-y-6">
               <div>
@@ -480,7 +469,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                 <p className="text-gray-400 mb-6">Customize your experience and review your information.</p>
               </div>
 
-              {/* Summary Section */}
+              {}
               <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6 mb-6">
                 <h4 className="text-green-400 font-semibold mb-4">📋 Profile Summary</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -516,7 +505,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
               </div>
 
               <div className="space-y-6">
-                {/* Notification Preferences */}
+                {}
                 <div>
                   <h4 className="text-lg font-medium text-white mb-4">Notification Preferences</h4>
                   <div className="space-y-3">
@@ -562,7 +551,7 @@ export default function OnboardingModal({ isOpen, onComplete, userName }) {
                   </div>
                 </div>
 
-                {/* Additional Preferences */}
+                {}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">

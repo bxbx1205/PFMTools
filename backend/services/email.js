@@ -1,19 +1,17 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// Create reusable transporter object using the default SMTP transport
 const createTransporter = () => {
-  // Check if email is configured
+  
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.log('Email not configured - using console log simulation');
-    return null; // Will trigger simulation mode
+    return null; 
   }
 
-  // Use Gmail as default, but can be configured via environment variables
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: false, // Use STARTTLS instead of SSL
+    secure: false, 
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
@@ -24,7 +22,6 @@ const createTransporter = () => {
   });
 };
 
-// Format currency for display
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -34,7 +31,6 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
-// Generate HTML email template for weekly expense and prediction report
 const generateWeeklyReportHTML = (userData) => {
   const {
     userName,
@@ -302,12 +298,10 @@ const generateWeeklyReportHTML = (userData) => {
   `;
 };
 
-// Send weekly report email
 const sendWeeklyReport = async (userEmail, reportData) => {
   try {
     const transporter = createTransporter();
-    
-    // If no transporter (email not configured), simulate email sending
+
     if (!transporter) {
       console.log('='.repeat(60));
       console.log('📧 EMAIL SIMULATION - Weekly Report');
@@ -350,7 +344,6 @@ Best regards,
 PFM Tools Team`
     };
 
-    // Add timeout and retry logic
     const result = await Promise.race([
       transporter.sendMail(mailOptions),
       new Promise((_, reject) => 
@@ -363,8 +356,7 @@ PFM Tools Team`
     
   } catch (error) {
     console.error('Email sending error:', error);
-    
-    // If it's a network/connection error, fall back to simulation mode
+
     if (error.code === 'ESOCKET' || error.code === 'ETIMEDOUT' || error.message.includes('timeout')) {
       console.log('='.repeat(60));
       console.log('📧 EMAIL FALLBACK - Network Issue Detected');
@@ -400,7 +392,6 @@ PFM Tools Team`
   }
 };
 
-// Test email configuration
 const testEmailConnection = async () => {
   try {
     const transporter = createTransporter();

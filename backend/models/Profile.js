@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ProfileSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true, required: true, unique: true },
-    // Common profile fields observed; schema stays flexible
+    
     ageGroup: { type: String },
     familySize: { type: String },
     dailyIncome: { type: String },
