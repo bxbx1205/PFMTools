@@ -1,52 +1,104 @@
 @echo off
+setlocal enabledelayedexpansion
 echo =====================================================
-echo         PFM Tools - One-Click Start
+echo         PFM Tools - Personal Finance Manager
 echo =====================================================
-
+echo.
 set ROOT_DIR=%~dp0
-
-echo Starting all services...
+set ML_DIR=%ROOT_DIR%ml-services
+set BACKEND_DIR=%ROOT_DIR%backend
+set FRONTEND_DIR=%ROOT_DIR%frontend\my-app
+where node >nul 2>nul
+if errorlevel 1 (
+    echo ERROR: Node.js is not installed or not in PATH
+    echo Please install Node.js from https://nodejs.org/
+    pause
+    exit /b 1
+)
+where python >nul 2>nul
+if errorlevel 1 (
+    echo ERROR: Python is not installed or not in PATH
+    echo Please install Python from https://www.python.org/
+    pause
+    exit /b 1
+)
+echo Checking dependencies...
 echo.
-
-echo [1/3] Starting ML Service (Port 8000)...
-cd /d "%ROOT_DIR%\ml-services"
-start "PFM ML Service" cmd /k "echo ML Service Starting... && python app.py"
-
-echo [2/3] Starting Backend (Port 5000)...
-cd /d "%ROOT_DIR%\backend"
-start "PFM Backend" cmd /k "echo Backend Starting... && npm start"
-
-echo [3/3] Starting Frontend (Port 3000)...
-cd /d "%ROOT_DIR%\frontend\my-app"
-start "PFM Frontend" cmd /k "echo Frontend Starting... && npm run dev"
-
+if not exist "%BACKEND_DIR%\node_modules" (
+    echo [!] Installing Backend dependencies...
+    cd /d "%BACKEND_DIR%"
+    call npm install
+    if errorlevel 1 (
+        echo ERROR: Failed to install backend dependencies
+        pause
+        exit /b 1
+    )
+)
+if not exist "%FRONTEND_DIR%\node_modules" (
+    echo [!] Installing Frontend dependencies...
+    cd /d "%FRONTEND_DIR%"
+    call npm install
+    if errorlevel 1 (
+        echo ERROR: Failed to install frontend dependencies
+        pause
+        exit /b 1
+    )
+)
+python -c "import flask, flask_cors, pandas, scikit_learn, joblib" 2>nul
+if errorlevel 1 (
+    echo [!] Installing Python dependencies...
+    cd /d "%ML_DIR%"
+    call pip install flask flask-cors pandas scikit-learn joblib
+    if errorlevel 1 (
+        echo ERROR: Failed to install Python dependencies
+        pause
+        exit /b 1
+    )
+)
 echo.
 echo =====================================================
-echo               ALL SERVICES STARTING...
+echo            Starting All Services...
 echo =====================================================
 echo.
-echo Services will be available at:
-echo   ML Service:     http://localhost:8000
-echo   Backend API:    http://localhost:5000
-echo   Frontend App:   http://localhost:3000
+echo [1/3] Starting ML Service on Port 8000...
+cd /d "%ML_DIR%"
+start "PFM - ML Service" cmd /k "cd /d "%ML_DIR%" && python app.py"
+timeout /t 3 /nobreak >nul
+echo [2/3] Starting Backend API on Port 5000...
+cd /d "%BACKEND_DIR%"
+start "PFM - Backend API" cmd /k "cd /d "%BACKEND_DIR%" && npm start"
+timeout /t 3 /nobreak >nul
+echo [3/3] Starting Frontend on Port 3000...
+cd /d "%FRONTEND_DIR%"
+start "PFM - Frontend" cmd /k "cd /d "%FRONTEND_DIR%" && npm run dev"
+timeout /t 5 /nobreak >nul
 echo.
-echo Please wait 15-30 seconds for services to fully start...
+echo =====================================================
+echo              SERVICES STARTED SUCCESSFULLY
+echo =====================================================
 echo.
-timeout /t 15 /nobreak >nul
-
+echo Application Components:
+echo   - ML Service:      http://localhost:8000
+echo   - Backend API:     http://localhost:5000
+echo   - Frontend:        http://localhost:3000
+echo.
+echo Waiting for services to initialize...
+timeout /t 10 /nobreak >nul
+echo.
 echo Opening application in browser...
 start http://localhost:3000
-
 echo.
 echo =====================================================
-echo                    SUCCESS!
+echo                       READY
 echo =====================================================
 echo.
-echo Application should now be opening at: http://localhost:3000
+echo Frontend should open automatically at:
+echo   http://localhost:3000
 echo.
-echo If browser doesn't open, manually go to: http://localhost:3000
+echo If it doesn't open, manually visit: http://localhost:3000
 echo.
-echo To stop all services: Close the service windows
-echo Keep service windows open while using the application.
+echo IMPORTANT: Keep all service windows open while using the app.
+echo.
+echo To stop all services: Close all command windows
 echo.
 pause
